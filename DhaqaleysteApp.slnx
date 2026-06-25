@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="DhaqaleysteApi/DhaqaleysteApi.csproj" Id="2ae7fe29-56fe-4125-bb3e-d6027301b6b2" />
+  <Project Path="DhaqaleysteApp/DhaqaleysteApp.csproj" />
+</Solution>

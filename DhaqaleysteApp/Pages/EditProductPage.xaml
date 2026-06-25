@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="DhaqaleysteApp.Pages.EditProductPage"
+    Title="Edit Product">
+
+    <ScrollView>
+
+        <VerticalStackLayout Padding="20" Spacing="15">
+
+            <Label Text="Edit Product"
+                   FontSize="28"
+                   FontAttributes="Bold"
+                   TextColor="#4F46E5"/>
+
+            <Entry x:Name="ProductNameEntry"
+                   Placeholder="Product Name"/>
+
+            <Editor x:Name="DescriptionEditor"
+                    HeightRequest="100"
+                    Placeholder="Description"/>
+
+            <Entry x:Name="PriceEntry"
+                   Placeholder="Price"
+                   Keyboard="Numeric"/>
+
+            <Entry x:Name="QuantityEntry"
+                   Placeholder="Quantity"
+                   Keyboard="Numeric"/>
+
+            <Entry x:Name="ContactEntry"
+                   Placeholder="Contact"/>
+
+            <Entry x:Name="LocationEntry"
+                   Placeholder="Location"/>
+
+            <Entry x:Name="CategoryEntry"
+                   Placeholder="Category"/>
+
+            <Button Text="Update Product"
+                    Clicked="UpdateProduct_Clicked"
+                    BackgroundColor="#4F46E5"
+                    TextColor="White"/>
+
+        </VerticalStackLayout>
+
+    </ScrollView>
+
+</ContentPage>

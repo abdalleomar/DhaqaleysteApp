@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="DhaqaleysteApp.Pages.ManageProductsPage"
+    Title="Manage Products"
+    BackgroundColor="#F5F6FA">
+
+    <Grid RowDefinitions="Auto,*" Padding="20">
+
+        <Label Text="Manage Products"
+               FontSize="28"
+               FontAttributes="Bold"
+               TextColor="#4F46E5"/>
+
+        <CollectionView Grid.Row="1"
+                        Margin="0,20,0,0"
+                        ItemsSource="{Binding Products}">
+
+            <CollectionView.EmptyView>
+                <Label Text="No products to manage"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center"/>
+            </CollectionView.EmptyView>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border Stroke="#DDDDDD"
+                            StrokeThickness="1"
+                            BackgroundColor="White"
+                            Padding="15"
+                            Margin="0,0,0,12">
+
+                        <VerticalStackLayout Spacing="6">
+
+                            <Label Text="{Binding ProductName}"
+                                   FontSize="20"
+                                   FontAttributes="Bold"/>
+
+                            <Label Text="{Binding Price, StringFormat='Price: ${0}'}"
+                                   TextColor="Green"
+                                   FontSize="18"/>
+
+                            <Label Text="{Binding Quantity, StringFormat='Qty: {0}'}"/>
+
+                            <HorizontalStackLayout Spacing="10">
+                                <Button Text="Edit"
+        Clicked="EditProduct_Clicked"
+        BackgroundColor="#4F46E5"
+        TextColor="White"/>
+
+                                <Button Text="Delete"
+                                        Clicked="Delete_Clicked"
+                                        BackgroundColor="Red"
+                                        TextColor="White"/>
+                            </HorizontalStackLayout>
+
+                        </VerticalStackLayout>
+
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+
+        </CollectionView>
+
+    </Grid>
+
+</ContentPage>

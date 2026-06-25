@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="DhaqaleysteApp.Pages.ProductDetailsPage"
+    Title="Product Details">
+
+    <ScrollView>
+
+        <VerticalStackLayout Padding="20" Spacing="15">
+
+            <Image x:Name="ProductImage"
+                   HeightRequest="250"
+                   Aspect="AspectFill"
+                   BackgroundColor="#EEEEEE"/>
+            
+            <Button x:Name="PlayVideoButton"
+        Text="Play Product Video"
+        Clicked="PlayVideo_Clicked"
+        BackgroundColor="#4F46E5"
+        TextColor="White"
+        IsVisible="False"/>
+
+            <Label x:Name="ProductNameLabel"
+                   FontSize="28"
+                   FontAttributes="Bold"/>
+
+            <Label x:Name="PriceLabel"
+                   FontSize="24"
+                   TextColor="Green"/>
+
+            <Label x:Name="QuantityLabel"/>
+
+            <Label x:Name="LocationLabel"/>
+
+            <Label x:Name="ContactLabel"/>
+
+            <Label Text="Description"
+                   FontSize="18"
+                   FontAttributes="Bold"/>
+
+            <Label x:Name="DescriptionLabel"/>
+
+        </VerticalStackLayout>
+
+    </ScrollView>
+
+</ContentPage>
