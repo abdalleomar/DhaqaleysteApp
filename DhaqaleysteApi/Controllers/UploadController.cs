@@ -1,65 +1,48 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using DhaqaleysteApi.Dtos;
+using DhaqaleysteApi.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace DhaqaleysteApi.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class UploadController : ControllerBase
+    /// <summary>Media uploads for products. Staff only.</summary>
+    [Route("api/upload")]
+    [Authorize(Policy = AuthPolicies.Staff)]
+    [EnableRateLimiting(RateLimitPolicies.Upload)]
+    public class UploadController : ApiControllerBase
     {
-        private readonly IWebHostEnvironment _env;
+        // Request limits sit slightly above the file limits to leave room for multipart overhead.
+        // The exact per-file limit is enforced by FileStorageService from configuration.
+        private const long ImageRequestLimit = 6 * 1024 * 1024;
+        private const long VideoRequestLimit = 52 * 1024 * 1024;
 
-        public UploadController(IWebHostEnvironment env)
+        private readonly FileStorageService _storage;
+
+        public UploadController(FileStorageService storage)
         {
-            _env = env;
+            _storage = storage;
         }
 
         [HttpPost("image")]
-        public async Task<IActionResult> UploadImage(IFormFile file)
-        {
-            if (file == null || file.Length == 0)
-                return BadRequest("No image uploaded");
-
-            var folderPath = Path.Combine(_env.WebRootPath, "images");
-
-            if (!Directory.Exists(folderPath))
-                Directory.CreateDirectory(folderPath);
-
-            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
-            var filePath = Path.Combine(folderPath, fileName);
-
-            using var stream = new FileStream(filePath, FileMode.Create);
-            await file.CopyToAsync(stream);
-
-            var url = $"{Request.Scheme}://{Request.Host}/images/{fileName}";
-
-            return Ok(new { url });
-        }
+        [RequestSizeLimit(ImageRequestLimit)]
+        [RequestFormLimits(MultipartBodyLengthLimit = ImageRequestLimit)]
+        public Task<ActionResult<UploadResult>> UploadImage(IFormFile? file, CancellationToken ct) =>
+            Save(file, MediaKind.Image, ct);
 
         [HttpPost("video")]
-        public async Task<IActionResult> UploadVideo(IFormFile file)
+        [RequestSizeLimit(VideoRequestLimit)]
+        [RequestFormLimits(MultipartBodyLengthLimit = VideoRequestLimit)]
+        public Task<ActionResult<UploadResult>> UploadVideo(IFormFile? file, CancellationToken ct) =>
+            Save(file, MediaKind.Video, ct);
+
+        private async Task<ActionResult<UploadResult>> Save(IFormFile? file, MediaKind kind, CancellationToken ct)
         {
-            if (file == null || file.Length == 0)
-                return BadRequest("No video uploaded");
+            var result = await _storage.SaveAsync(file, kind, ct);
+            if (!result.Success)
+                return ValidationError("file", result.Error!);
 
-            long maxSize = 50 * 1024 * 1024;
-
-            if (file.Length > maxSize)
-                return BadRequest("Video maximum size is 50MB");
-
-            var folderPath = Path.Combine(_env.WebRootPath, "videos");
-
-            if (!Directory.Exists(folderPath))
-                Directory.CreateDirectory(folderPath);
-
-            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
-            var filePath = Path.Combine(folderPath, fileName);
-
-            using var stream = new FileStream(filePath, FileMode.Create);
-            await file.CopyToAsync(stream);
-
-            var url = $"{Request.Scheme}://{Request.Host}/videos/{fileName}";
-
-            return Ok(new { url });
+            return new UploadResult { Url = result.Url };
         }
     }
 }

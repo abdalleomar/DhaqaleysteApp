@@ -1,80 +1,114 @@
-﻿using DhaqaleysteApi.Data;
+using DhaqaleysteApi.Data;
+using DhaqaleysteApi.Dtos;
 using DhaqaleysteApi.Models;
+using DhaqaleysteApi.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace DhaqaleysteApi.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class ProductsController : ControllerBase
+    /// <summary>Reading products is public. Creating, editing and deleting require a staff account.</summary>
+    [Route("api/products")]
+    public class ProductsController : ApiControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly AppDbContext _db;
+        private readonly ILogger<ProductsController> _logger;
 
-        public ProductsController(AppDbContext context)
+        public ProductsController(AppDbContext db, ILogger<ProductsController> logger)
         {
-            _context = context;
+            _db = db;
+            _logger = logger;
         }
 
         // GET: api/products
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
+        [AllowAnonymous]
+        public async Task<ActionResult<IEnumerable<ProductDto>>> GetProducts()
         {
-            return await _context.Products.ToListAsync();
+            var products = await _db.Products.AsNoTracking()
+                .OrderByDescending(x => x.ProductId)
+                .ToListAsync();
+            return products.Select(ProductDto.From).ToList();
         }
 
         // GET: api/products/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Product>> GetProduct(int id)
+        [HttpGet("{id:int}")]
+        [AllowAnonymous]
+        public async Task<ActionResult<ProductDto>> GetProduct(int id)
         {
-            var product = await _context.Products.FindAsync(id);
-
-            if (product == null)
-                return NotFound();
-
-            return product;
+            var product = await _db.Products.AsNoTracking().FirstOrDefaultAsync(x => x.ProductId == id);
+            return product == null ? NotFound() : ProductDto.From(product);
         }
 
         // POST: api/products
         [HttpPost]
-        public async Task<ActionResult<Product>> CreateProduct(Product product)
+        [Authorize(Policy = AuthPolicies.Staff)]
+        public async Task<ActionResult<ProductDto>> CreateProduct(ProductRequest request)
         {
-            _context.Products.Add(product);
-            await _context.SaveChangesAsync();
+            var mediaError = ValidateMedia(request, existing: null);
+            if (mediaError != null)
+                return mediaError;
 
-            return CreatedAtAction(
-                nameof(GetProduct),
-                new { id = product.ProductId },
-                product);
+            var product = new Product();
+            request.ApplyTo(product);
+
+            _db.Products.Add(product);
+            await _db.SaveChangesAsync();
+            _logger.LogInformation("Staff {UserId} created product {ProductId}", CurrentUserId, product.ProductId);
+
+            return CreatedAtAction(nameof(GetProduct), new { id = product.ProductId }, ProductDto.From(product));
         }
 
         // PUT: api/products/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateProduct(int id, Product product)
+        [HttpPut("{id:int}")]
+        [Authorize(Policy = AuthPolicies.Staff)]
+        public async Task<ActionResult<ProductDto>> UpdateProduct(int id, ProductRequest request)
         {
-            if (id != product.ProductId)
-                return BadRequest();
+            var product = await _db.Products.FirstOrDefaultAsync(x => x.ProductId == id);
+            if (product == null)
+                return NotFound();
 
-            _context.Entry(product).State = EntityState.Modified;
+            var mediaError = ValidateMedia(request, product);
+            if (mediaError != null)
+                return mediaError;
 
-            await _context.SaveChangesAsync();
+            request.ApplyTo(product);
+            await _db.SaveChangesAsync();
+            _logger.LogInformation("Staff {UserId} updated product {ProductId}", CurrentUserId, product.ProductId);
+
+            return ProductDto.From(product);
+        }
+
+        // DELETE: api/products/5
+        [HttpDelete("{id:int}")]
+        [Authorize(Policy = AuthPolicies.Staff)]
+        public async Task<IActionResult> DeleteProduct(int id)
+        {
+            var product = await _db.Products.FirstOrDefaultAsync(x => x.ProductId == id);
+            if (product == null)
+                return NotFound();
+
+            _db.Products.Remove(product);
+            await _db.SaveChangesAsync();
+            _logger.LogInformation("Staff {UserId} deleted product {ProductId}", CurrentUserId, id);
 
             return NoContent();
         }
 
-        // DELETE: api/products/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteProduct(int id)
+        /// <summary>
+        /// Media paths must come from our own upload endpoint, so a product can never point at an
+        /// arbitrary external URL. Paths saved before this rule (legacy) may be kept unchanged.
+        /// </summary>
+        private ActionResult? ValidateMedia(ProductRequest request, Product? existing)
         {
-            var product = await _context.Products.FindAsync(id);
+            if (!FileStorageService.IsOwnMediaPath(request.ImagePath) && request.ImagePath?.Trim() != existing?.ImagePath)
+                return ValidationError(nameof(request.ImagePath), "Image must be uploaded through /api/upload/image.");
 
-            if (product == null)
-                return NotFound();
+            if (!FileStorageService.IsOwnMediaPath(request.VideoPath) && request.VideoPath?.Trim() != existing?.VideoPath)
+                return ValidationError(nameof(request.VideoPath), "Video must be uploaded through /api/upload/video.");
 
-            _context.Products.Remove(product);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            return null;
         }
     }
 }
