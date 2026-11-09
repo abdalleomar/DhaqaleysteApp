@@ -3,38 +3,52 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     x:Class="DhaqaleysteApp.Pages.AdminDashboardPage"
-    Title="Admin Dashboard">
+    Title="Dashboard">
 
     <ScrollView>
 
         <VerticalStackLayout Padding="20" Spacing="20">
 
-            <Label Text="Admin Dashboard"
-                   FontSize="28"
-                   FontAttributes="Bold"
-                   TextColor="#4F46E5"/>
+            <VerticalStackLayout Spacing="4">
+                <Label Text="Dashboard"
+                       FontSize="28"
+                       FontAttributes="Bold"
+                       TextColor="#4F46E5"/>
+                <Label x:Name="WelcomeLabel"
+                       TextColor="#6B7280"/>
+            </VerticalStackLayout>
 
             <Border Stroke="#DDDDDD"
-                    StrokeThickness="1">
+                    StrokeThickness="1"
+                    BackgroundColor="White">
 
                 <VerticalStackLayout Padding="15">
-                    <Label Text="📦 Total Products"/>
-                    <Label Text="0"
+                    <Label Text="📦 Total products"
+                           TextColor="#4B5563"/>
+                    <Label x:Name="ProductCountLabel"
+                           Text="…"
                            FontSize="30"
-                           FontAttributes="Bold"/>
+                           FontAttributes="Bold"
+                           TextColor="#111827"/>
                 </VerticalStackLayout>
 
             </Border>
 
             <Button Text="Add Product"
-        HeightRequest="55"
-        BackgroundColor="#4F46E5"
-        TextColor="White"
-        Clicked="AddProduct_Clicked"/>
+                    HeightRequest="55"
+                    BackgroundColor="#4F46E5"
+                    TextColor="White"
+                    Clicked="AddProduct_Clicked"/>
 
             <Button Text="Manage Products"
-        HeightRequest="55"
-        Clicked="ManageProducts_Clicked"/>
+                    HeightRequest="55"
+                    Clicked="ManageProducts_Clicked"/>
+
+            <Button Text="Sign out"
+                    HeightRequest="55"
+                    BackgroundColor="#B91C1C"
+                    TextColor="White"
+                    Clicked="Logout_Clicked"/>
 
         </VerticalStackLayout>
 

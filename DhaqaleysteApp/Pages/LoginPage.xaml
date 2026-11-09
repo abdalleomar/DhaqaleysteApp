@@ -3,32 +3,49 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     x:Class="DhaqaleysteApp.Pages.LoginPage"
-    Title="Login">
+    Title="Staff sign in">
 
-    <VerticalStackLayout Padding="25" Spacing="15">
+    <ScrollView>
+        <VerticalStackLayout Padding="25" Spacing="15">
 
-        <Label Text="Login"
-               FontSize="28"
-               FontAttributes="Bold"
-               TextColor="#4F46E5"/>
+            <Label Text="Staff sign in"
+                   FontSize="28"
+                   FontAttributes="Bold"
+                   TextColor="#4F46E5"/>
 
-        <Entry x:Name="EmailEntry"
-               Placeholder="Email"/>
+            <Label Text="For company staff only. Customers can browse products without signing in."
+                   FontSize="14"
+                   TextColor="#6B7280"/>
 
-        <Entry x:Name="PasswordEntry"
-               Placeholder="Password"
-               IsPassword="True"/>
+            <Entry x:Name="EmailEntry"
+                   Placeholder="Email or phone"
+                   Keyboard="Email"
+                   IsSpellCheckEnabled="False"
+                   IsTextPredictionEnabled="False"
+                   ReturnType="Next"/>
 
-        <Button Text="Login"
-                Clicked="Login_Clicked"
-                BackgroundColor="#4F46E5"
-                TextColor="White"/>
+            <Entry x:Name="PasswordEntry"
+                   Placeholder="Password"
+                   IsPassword="True"
+                   ReturnType="Go"
+                   Completed="Login_Clicked"/>
 
-        <Button Text="Create Account"
-                Clicked="Register_Clicked"
-                BackgroundColor="White"
-                TextColor="#4F46E5"/>
+            <Label x:Name="ErrorLabel"
+                   TextColor="#B91C1C"
+                   IsVisible="False"/>
 
-    </VerticalStackLayout>
+            <Button x:Name="LoginButton"
+                    Text="Sign in"
+                    Clicked="Login_Clicked"
+                    BackgroundColor="#4F46E5"
+                    TextColor="White"/>
+
+            <ActivityIndicator x:Name="Busy"
+                               IsRunning="False"
+                               IsVisible="False"
+                               Color="#4F46E5"/>
+
+        </VerticalStackLayout>
+    </ScrollView>
 
 </ContentPage>

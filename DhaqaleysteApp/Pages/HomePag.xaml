@@ -3,112 +3,130 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     x:Class="DhaqaleysteApp.Pages.HomePage"
-    Title="MyShop"
+    Title="Dhaqaleyste"
     BackgroundColor="#F5F6FA">
 
     <Grid RowDefinitions="Auto,Auto,*">
 
         <!-- Header -->
         <Grid Padding="20,15"
-      BackgroundColor="White"
-      ColumnDefinitions="*,Auto">
+              BackgroundColor="White"
+              ColumnDefinitions="*,Auto">
 
-            <Label Text="MyShop"
-           FontSize="28"
-           FontAttributes="Bold"
-           TextColor="#4F46E5"
-           VerticalOptions="Center"/>
+            <Label Text="Dhaqaleyste"
+                   FontSize="28"
+                   FontAttributes="Bold"
+                   TextColor="#4F46E5"
+                   VerticalOptions="Center"/>
 
-            <HorizontalStackLayout Grid.Column="1" Spacing="8">
-                <Button x:Name="AdminButton"
-            Text="Admin"
-            WidthRequest="90"
-            HeightRequest="45"
-            BackgroundColor="#4F46E5"
-            TextColor="White"
-            Clicked="Admin_Clicked"/>
-
-                <Button x:Name="LogoutButton"
-            Text="Logout"
-            WidthRequest="90"
-            HeightRequest="45"
-            BackgroundColor="Red"
-            TextColor="White"
-            Clicked="Logout_Clicked"
-            IsVisible="False"/>
-            </HorizontalStackLayout>
+            <Button x:Name="StaffButton"
+                    Grid.Column="1"
+                    Text="Staff"
+                    HeightRequest="45"
+                    Padding="16,0"
+                    BackgroundColor="#4F46E5"
+                    TextColor="White"
+                    Clicked="Staff_Clicked"/>
         </Grid>
 
         <!-- Search -->
         <SearchBar Grid.Row="1"
-           x:Name="SearchBarProducts"
-           Margin="15,10"
-           Placeholder="Search Products..."
-           TextChanged="SearchBarProducts_TextChanged"/>
+                   x:Name="SearchBarProducts"
+                   Margin="15,10"
+                   Placeholder="Search products..."
+                   TextChanged="SearchBarProducts_TextChanged"/>
 
         <!-- Products -->
-        <CollectionView Grid.Row="2"
-                        ItemsSource="{Binding Products}">
+        <RefreshView Grid.Row="2"
+                     x:Name="ProductsRefresh"
+                     Refreshing="ProductsRefresh_Refreshing">
 
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <Border Stroke="#DDDDDD"
-                StrokeThickness="1"
-                Padding="15"
-                Margin="15,10"
-                BackgroundColor="White">
+            <CollectionView ItemsSource="{Binding Products}">
 
-                        <VerticalStackLayout Spacing="6">
-                            <Image Source="{Binding ImagePath}"
-       HeightRequest="140"
-       Aspect="AspectFill"
-       IsVisible="{Binding HasImage}"/>
-                            <Label Text="{Binding ProductName}"
-                       FontSize="20"
-                       FontAttributes="Bold"/>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Stroke="#DDDDDD"
+                                StrokeThickness="1"
+                                Padding="15"
+                                Margin="15,10"
+                                BackgroundColor="White">
 
-                            <Label Text="{Binding Description}"
-                       FontSize="14"/>
+                            <VerticalStackLayout Spacing="6">
+                                <Image Source="{Binding ImageUrl}"
+                                       HeightRequest="160"
+                                       Aspect="AspectFill"
+                                       IsVisible="{Binding HasImage}"/>
 
-                            <Label Text="{Binding Price, StringFormat='Price: ${0}'}"
-                       TextColor="Green"
-                       FontSize="18"/>
+                                <Label Text="{Binding ProductName}"
+                                       FontSize="20"
+                                       FontAttributes="Bold"
+                                       TextColor="#111827"/>
 
-                            <Label Text="{Binding Quantity, StringFormat='Qty: {0}'}"/>
+                                <Label Text="{Binding Description}"
+                                       FontSize="14"
+                                       MaxLines="2"
+                                       LineBreakMode="TailTruncation"
+                                       TextColor="#4B5563"/>
 
-                            <Label Text="{Binding Location}"/>
+                                <Label Text="{Binding Price, StringFormat='${0:0.00}'}"
+                                       TextColor="#047857"
+                                       FontSize="18"
+                                       FontAttributes="Bold"/>
 
-                            <Button Text="View Details"
-        Clicked="ViewDetails_Clicked"
-        BackgroundColor="#4F46E5"
-        TextColor="White"/>
-                        </VerticalStackLayout>
+                                <Label Text="{Binding Location}"
+                                       TextColor="#6B7280"/>
 
-                    </Border>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
+                                <Button Text="View Details"
+                                        Clicked="ViewDetails_Clicked"
+                                        BackgroundColor="#4F46E5"
+                                        TextColor="White"/>
+                            </VerticalStackLayout>
 
-            <CollectionView.EmptyView>
-                <VerticalStackLayout
-                    VerticalOptions="Center"
-                    HorizontalOptions="Center">
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
 
-                    <Label Text="📦"
-                           FontSize="70"
-                           HorizontalOptions="Center"/>
+                <CollectionView.EmptyView>
+                    <VerticalStackLayout VerticalOptions="Center"
+                                         HorizontalOptions="Center"
+                                         Padding="30"
+                                         Spacing="10">
 
-                    <Label Text="No Products Available"
-                           FontSize="18"
-                           FontAttributes="Bold"
-                           HorizontalOptions="Center"/>
+                        <ActivityIndicator x:Name="LoadingIndicator"
+                                           IsRunning="False"
+                                           IsVisible="False"
+                                           Color="#4F46E5"/>
 
-                    <Label Text="Admin can add products from Dashboard"
-                           FontSize="14"
-                           HorizontalOptions="Center"/>
-                </VerticalStackLayout>
-            </CollectionView.EmptyView>
+                        <Label x:Name="EmptyIcon"
+                               Text="📦"
+                               FontSize="70"
+                               HorizontalOptions="Center"/>
 
-        </CollectionView>
+                        <Label x:Name="EmptyTitle"
+                               Text="No products available"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               TextColor="#111827"
+                               HorizontalTextAlignment="Center"/>
+
+                        <Label x:Name="EmptyMessage"
+                               Text="Please check back soon."
+                               FontSize="14"
+                               TextColor="#4B5563"
+                               HorizontalTextAlignment="Center"/>
+
+                        <Button x:Name="RetryButton"
+                                Text="Try again"
+                                IsVisible="False"
+                                HorizontalOptions="Center"
+                                BackgroundColor="#4F46E5"
+                                TextColor="White"
+                                Clicked="Retry_Clicked"/>
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
+
+            </CollectionView>
+        </RefreshView>
 
     </Grid>
 

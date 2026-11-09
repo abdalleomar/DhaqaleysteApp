@@ -4,56 +4,59 @@ namespace DhaqaleysteApp.Pages;
 
 public partial class LoginPage : ContentPage
 {
+    private readonly ApiService _api = ServiceHelper.Get<ApiService>();
+
     public LoginPage()
     {
         InitializeComponent();
     }
 
-    private async void Login_Clicked(object sender, EventArgs e)
+    private async void Login_Clicked(object? sender, EventArgs e)
     {
-        var api = new ApiService();
+        if (Busy.IsRunning)
+            return;
 
-        var user = await api.LoginAsync(
-            EmailEntry.Text ?? "",
-            PasswordEntry.Text ?? "");
+        var emailOrPhone = EmailEntry.Text?.Trim() ?? "";
+        var password = PasswordEntry.Text ?? "";
 
-        if (user == null)
+        if (emailOrPhone.Length == 0 || password.Length == 0)
         {
-            await DisplayAlert("Error", "Invalid email or password", "OK");
+            ShowError("Enter your email or phone and your password.");
             return;
         }
 
-
-        // SAVE SESSION 
-        await SessionService.SaveUserAsync(
-            user.UserId,
-            user.FullName,
-            user.Role);
-
-
-        if (user.Role == "ADMIN")
+        SetBusy(true);
+        try
         {
-            await DisplayAlert(
-                "Welcome",
-                $"Admin: {user.FullName}",
-                "OK");
+            var result = await _api.LoginAsync(emailOrPhone, password);
+            if (!result.Success)
+            {
+                ShowError(result.Error);
+                return;
+            }
 
-            await Navigation.PushAsync(
-                new AdminDashboardPage());
+            PasswordEntry.Text = "";
+            // Replace the sign-in page with the dashboard so "back" returns to the catalogue.
+            Navigation.InsertPageBefore(new AdminDashboardPage(), this);
+            await Navigation.PopAsync();
         }
-        else
+        finally
         {
-            await DisplayAlert(
-                "Welcome",
-                user.FullName,
-                "OK");
-
-            await Navigation.PopToRootAsync();
+            SetBusy(false);
         }
     }
 
-    private async void Register_Clicked(object sender, EventArgs e)
+    private void ShowError(string message)
     {
-        await Navigation.PushAsync(new RegisterPage());
+        ErrorLabel.Text = message;
+        ErrorLabel.IsVisible = true;
+    }
+
+    private void SetBusy(bool busy)
+    {
+        Busy.IsVisible = Busy.IsRunning = busy;
+        LoginButton.IsEnabled = !busy;
+        if (busy)
+            ErrorLabel.IsVisible = false;
     }
 }

@@ -13,28 +13,30 @@ public partial class ProductDetailsPage : ContentPage
         _product = product;
 
         ProductNameLabel.Text = product.ProductName;
-        PriceLabel.Text = $"Price: ${product.Price}";
-        QuantityLabel.Text = $"Qty: {product.Quantity}";
+        PriceLabel.Text = $"${product.Price:0.00}";
+        QuantityLabel.Text = product.Quantity > 0 ? $"In stock: {product.Quantity}" : "Out of stock";
         LocationLabel.Text = $"Location: {product.Location}";
         ContactLabel.Text = $"Contact: {product.Contact}";
         DescriptionLabel.Text = product.Description;
 
-        if (!string.IsNullOrEmpty(product.ImagePath))
-        {
-            ProductImage.Source = ImageSource.FromFile(product.ImagePath);
-        }
+        // Images are web URLs, so they load through the cached URI image source.
+        if (product.HasImage)
+            ProductImage.Source = new UriImageSource { Uri = new Uri(product.ImageUrl), CachingEnabled = true, CacheValidity = TimeSpan.FromDays(7) };
+        else
+            ProductImage.IsVisible = false;
 
-        if (!string.IsNullOrEmpty(product.VideoPath))
-        {
-            PlayVideoButton.IsVisible = true;
-        }
+        PlayVideoButton.IsVisible = product.HasVideo;
     }
 
     private async void PlayVideo_Clicked(object sender, EventArgs e)
     {
-        if (!string.IsNullOrEmpty(_product.VideoPath))
+        try
         {
-            await Launcher.Default.OpenAsync(_product.VideoPath);
+            await Launcher.Default.OpenAsync(new Uri(_product.VideoUrl));
+        }
+        catch (Exception)
+        {
+            await DisplayAlert("Video", "The video could not be opened on this device.", "OK");
         }
     }
 }

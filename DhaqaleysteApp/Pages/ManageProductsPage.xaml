@@ -18,9 +18,17 @@
                         ItemsSource="{Binding Products}">
 
             <CollectionView.EmptyView>
-                <Label Text="No products to manage"
-                       HorizontalOptions="Center"
-                       VerticalOptions="Center"/>
+                <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="10">
+                    <ActivityIndicator x:Name="LoadingIndicator" IsRunning="True" Color="#4F46E5"/>
+                    <Label x:Name="EmptyLabel"
+                           Text="No products to manage"
+                           IsVisible="False"
+                           HorizontalTextAlignment="Center"/>
+                    <Button x:Name="RetryButton"
+                            Text="Try again"
+                            IsVisible="False"
+                            Clicked="Retry_Clicked"/>
+                </VerticalStackLayout>
             </CollectionView.EmptyView>
 
             <CollectionView.ItemTemplate>
@@ -37,7 +45,7 @@
                                    FontSize="20"
                                    FontAttributes="Bold"/>
 
-                            <Label Text="{Binding Price, StringFormat='Price: ${0}'}"
+                            <Label Text="{Binding Price, StringFormat='Price: ${0:0.00}'}"
                                    TextColor="Green"
                                    FontSize="18"/>
 

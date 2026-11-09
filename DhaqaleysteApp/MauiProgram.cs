@@ -1,6 +1,5 @@
-﻿using DhaqaleysteApp.Services;
+using DhaqaleysteApp.Services;
 using Microsoft.Extensions.Logging;
-
 
 namespace DhaqaleysteApp
 {
@@ -17,11 +16,19 @@ namespace DhaqaleysteApp
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
 
-
-#if DEBUG   
-    		builder.Logging.AddDebug();
+#if DEBUG
+            builder.Logging.AddDebug();
 #endif
-            builder.Services.AddSingleton<ApiService>();
+
+            builder.Services.AddSingleton(AppConfig.Load());
+            builder.Services.AddSingleton<SessionService>();
+            builder.Services.AddTransient<AuthHandler>();
+
+            // One shared, pooled HttpClient for the whole app.
+            builder.Services
+                .AddHttpClient<ApiService>()
+                .AddHttpMessageHandler<AuthHandler>();
+
             return builder.Build();
         }
     }

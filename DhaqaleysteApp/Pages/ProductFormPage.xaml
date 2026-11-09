@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="DhaqaleysteApp.Pages.ProductFormPage"
+    Title="Product">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="12">
+
+            <Label x:Name="HeadingLabel"
+                   Text="Add Product"
+                   FontSize="28"
+                   FontAttributes="Bold"
+                   TextColor="#4F46E5"/>
+
+            <Label Text="Product name *" FontAttributes="Bold"/>
+            <Entry x:Name="ProductNameEntry" Placeholder="e.g. Samsung Galaxy A15" MaxLength="200"/>
+
+            <Label Text="Description" FontAttributes="Bold"/>
+            <Editor x:Name="DescriptionEditor" Placeholder="Describe the product" HeightRequest="100" MaxLength="4000" AutoSize="TextChanges"/>
+
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Price (USD) *" FontAttributes="Bold"/>
+                    <Entry x:Name="PriceEntry" Placeholder="0.00" Keyboard="Numeric"/>
+                </VerticalStackLayout>
+                <VerticalStackLayout Grid.Column="1" Spacing="6">
+                    <Label Text="Quantity *" FontAttributes="Bold"/>
+                    <Entry x:Name="QuantityEntry" Placeholder="0" Keyboard="Numeric"/>
+                </VerticalStackLayout>
+            </Grid>
+
+            <Label Text="Category" FontAttributes="Bold"/>
+            <Entry x:Name="CategoryEntry" Placeholder="e.g. Phones" MaxLength="100"/>
+
+            <Label Text="Location" FontAttributes="Bold"/>
+            <Entry x:Name="LocationEntry" Placeholder="e.g. Mogadishu" MaxLength="200"/>
+
+            <Label Text="Contact (optional, overrides company number)" FontAttributes="Bold"/>
+            <Entry x:Name="ContactEntry" Placeholder="Phone or WhatsApp" Keyboard="Telephone" MaxLength="100"/>
+
+            <Label Text="Image" FontAttributes="Bold"/>
+            <Image x:Name="PreviewImage"
+                   HeightRequest="160"
+                   Aspect="AspectFill"
+                   BackgroundColor="#EEEEEE"/>
+            <Button Text="Choose image (JPG, PNG, WEBP · max 5 MB)"
+                    Clicked="ChooseImage_Clicked"/>
+
+            <Label Text="Video" FontAttributes="Bold"/>
+            <Label x:Name="VideoLabel" Text="No video" TextColor="#6B7280"/>
+            <Button Text="Choose video (MP4, MOV · max 50 MB)"
+                    Clicked="ChooseVideo_Clicked"/>
+
+            <Label x:Name="ErrorLabel"
+                   TextColor="#B91C1C"
+                   IsVisible="False"/>
+
+            <ActivityIndicator x:Name="Busy"
+                               IsRunning="False"
+                               IsVisible="False"
+                               Color="#4F46E5"/>
+
+            <Button x:Name="SaveButton"
+                    Text="Save Product"
+                    Clicked="Save_Clicked"
+                    BackgroundColor="#4F46E5"
+                    TextColor="White"/>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
