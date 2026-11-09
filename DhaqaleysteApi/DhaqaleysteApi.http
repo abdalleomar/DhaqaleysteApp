@@ -1,6 +1,14 @@
-@DhaqaleysteApi_HostAddress = http://localhost:5092
+@host = http://localhost:5092
 
-GET {{DhaqaleysteApi_HostAddress}}/weatherforecast/
+### Public: list products
+GET {{host}}/api/products
 Accept: application/json
 
-###
+### Staff login (use the bootstrap admin you configured with user-secrets)
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "emailOrPhone": "admin@example.com",
+  "password": "change-me"
+}

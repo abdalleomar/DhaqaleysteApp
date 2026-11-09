@@ -361,3 +361,7 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+# Dhaqaleyste: uploaded media is runtime data, never commit it
+DhaqaleysteApi/uploads/
+DhaqaleysteApi/wwwroot/images/
+DhaqaleysteApi/wwwroot/videos/
