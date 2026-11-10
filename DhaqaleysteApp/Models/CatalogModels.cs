@@ -1,3 +1,5 @@
+using DhaqaleysteApp.Services.Localization;
+
 namespace DhaqaleysteApp.Models;
 
 public class PagedResult<T>
@@ -21,8 +23,15 @@ public class ProductQuery
     public bool? Featured { get; set; }
     public string Sort { get; set; } = "newest";
     public bool IncludeHidden { get; set; }
+    public string? Ids { get; set; }
     public int Page { get; set; } = 1;
     public int PageSize { get; set; } = 20;
+
+    public ProductQuery WithIds(string ids)
+    {
+        Ids = ids;
+        return this;
+    }
 
     public string ToQueryString()
     {
@@ -34,6 +43,7 @@ public class ProductQuery
         if (InStock != null) parts.Add($"inStock={InStock.Value.ToString().ToLowerInvariant()}");
         if (Featured != null) parts.Add($"featured={Featured.Value.ToString().ToLowerInvariant()}");
         if (IncludeHidden) parts.Add("includeHidden=true");
+        if (!string.IsNullOrWhiteSpace(Ids)) parts.Add($"ids={Uri.EscapeDataString(Ids)}");
         return string.Join("&", parts);
     }
 }
@@ -57,11 +67,15 @@ public class Category : BindableModel
         set => Set(ref _isSelected, value);
     }
 
-    public string DisplayName => string.IsNullOrWhiteSpace(Icon) ? Name : $"{Icon} {Name}";
+    /// <summary>Name in the selected language, with the icon when there is one.</summary>
+    public string DisplayName => string.IsNullOrWhiteSpace(Icon) ? LocalName : $"{Icon} {LocalName}";
+    public string LocalName => Loc.Pick(Name, NameSo);
+    public string ProductCountText => Loc.T("ProductsCount", ProductCount);
+    public string IconOrDefault => string.IsNullOrWhiteSpace(Icon) ? "🛍️" : Icon;
     public string StaffSummary => $"{ProductCount} product(s){(IsActive ? "" : " · hidden from customers")}";
 
     /// <summary>The "All" chip.</summary>
-    public static Category All() => new() { CategoryId = 0, Name = "All" };
+    public static Category All() => new() { CategoryId = 0, Name = Loc.T("All") };
 }
 
 public class CompanySettings

@@ -12,7 +12,7 @@
                    Text="Add Product"
                    FontSize="28"
                    FontAttributes="Bold"
-                   TextColor="#4F46E5"/>
+                   TextColor="{DynamicResource PrimaryColor}"/>
 
             <Label Text="Product name *" FontAttributes="Bold"/>
             <Entry x:Name="ProductNameEntry" Placeholder="e.g. Samsung Galaxy A15" MaxLength="200"/>
@@ -37,17 +37,17 @@
             <Grid ColumnDefinitions="*,Auto">
                 <VerticalStackLayout>
                     <Label Text="Available for sale" FontAttributes="Bold"/>
-                    <Label Text="Turn off to show it as sold out" FontSize="12" TextColor="#6B7280"/>
+                    <Label Text="Turn off to show it as sold out" FontSize="12" TextColor="{DynamicResource TextTertiaryColor}"/>
                 </VerticalStackLayout>
-                <Switch x:Name="AvailableSwitch" Grid.Column="1" IsToggled="True" OnColor="#4F46E5"/>
+                <Switch x:Name="AvailableSwitch" Grid.Column="1" IsToggled="True" OnColor="{DynamicResource PrimaryColor}"/>
             </Grid>
 
             <Grid ColumnDefinitions="*,Auto">
                 <VerticalStackLayout>
                     <Label Text="Featured" FontAttributes="Bold"/>
-                    <Label Text="Show in the featured section" FontSize="12" TextColor="#6B7280"/>
+                    <Label Text="Show in the featured section" FontSize="12" TextColor="{DynamicResource TextTertiaryColor}"/>
                 </VerticalStackLayout>
-                <Switch x:Name="FeaturedSwitch" Grid.Column="1" OnColor="#4F46E5"/>
+                <Switch x:Name="FeaturedSwitch" Grid.Column="1" OnColor="{DynamicResource PrimaryColor}"/>
             </Grid>
 
             <Label Text="Location" FontAttributes="Bold"/>
@@ -62,7 +62,7 @@
                 <Button Grid.Column="1" Text="+ Add images" Clicked="AddImages_Clicked"/>
             </Grid>
             <Label Text="The first image is the main photo. Tap an image to change it."
-                   FontSize="12" TextColor="#6B7280"/>
+                   FontSize="12" TextColor="{DynamicResource TextTertiaryColor}"/>
             <CollectionView x:Name="ImagesList"
                             ItemsSource="{Binding Images}"
                             HeightRequest="110"
@@ -76,11 +76,11 @@
                             <Grid.GestureRecognizers>
                                 <TapGestureRecognizer Tapped="Image_Tapped"/>
                             </Grid.GestureRecognizers>
-                            <Image Source="{Binding Preview}" Aspect="AspectFill" BackgroundColor="#EEEEEE"/>
+                            <Image Source="{Binding Preview}" Aspect="AspectFill" BackgroundColor="{DynamicResource SurfaceVariantColor}"/>
                             <Label Text="Main"
                                    IsVisible="{Binding IsMain}"
-                                   BackgroundColor="#4F46E5"
-                                   TextColor="White"
+                                   BackgroundColor="{DynamicResource PrimaryColor}"
+                                   TextColor="{DynamicResource OnPrimaryColor}"
                                    FontSize="11"
                                    Padding="6,2"
                                    VerticalOptions="Start"
@@ -89,7 +89,7 @@
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
                 <CollectionView.EmptyView>
-                    <Label Text="No images yet" TextColor="#6B7280" VerticalOptions="Center"/>
+                    <Label Text="No images yet" TextColor="{DynamicResource TextTertiaryColor}" VerticalOptions="Center"/>
                 </CollectionView.EmptyView>
             </CollectionView>
 
@@ -101,22 +101,22 @@
             <VerticalStackLayout x:Name="VideosList" Spacing="6"/>
 
             <Label x:Name="ErrorLabel"
-                   TextColor="#B91C1C"
+                   TextColor="{DynamicResource DangerColor}"
                    IsVisible="False"/>
 
             <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
                 <ActivityIndicator x:Name="Busy"
                                    IsRunning="False"
                                    IsVisible="False"
-                                   Color="#4F46E5"/>
-                <Label x:Name="BusyLabel" VerticalOptions="Center" TextColor="#4B5563"/>
+                                   Color="{DynamicResource PrimaryColor}"/>
+                <Label x:Name="BusyLabel" VerticalOptions="Center" TextColor="{DynamicResource TextSecondaryColor}"/>
             </HorizontalStackLayout>
 
             <Button x:Name="SaveButton"
                     Text="Save Product"
                     Clicked="Save_Clicked"
-                    BackgroundColor="#4F46E5"
-                    TextColor="White"/>
+                    BackgroundColor="{DynamicResource PrimaryColor}"
+                    TextColor="{DynamicResource OnPrimaryColor}"/>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

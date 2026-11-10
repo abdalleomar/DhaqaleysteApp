@@ -1,109 +1,117 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage
-    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    x:Class="DhaqaleysteApp.Pages.ProductDetailsPage"
-    Title="Product"
-    BackgroundColor="White">
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:DhaqaleysteApp.ViewModels"
+             xmlns:models="clr-namespace:DhaqaleysteApp.Models"
+             xmlns:loc="clr-namespace:DhaqaleysteApp.Services.Localization"
+             x:Class="DhaqaleysteApp.Pages.ProductDetailsPage"
+             x:DataType="vm:ProductDetailsViewModel"
+             Title="{loc:Translate ProductTitle}">
 
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Share" Clicked="Share_Clicked"/>
+        <ToolbarItem Text="{loc:Translate Share}" Command="{Binding ShareCommand}">
+            <ToolbarItem.IconImageSource>
+                <FontImageSource FontFamily="Icons" Glyph="{StaticResource IconShare}" Color="{DynamicResource TextPrimaryColor}" Size="22" />
+            </ToolbarItem.IconImageSource>
+        </ToolbarItem>
     </ContentPage.ToolbarItems>
 
     <Grid RowDefinitions="*,Auto">
-
         <ScrollView>
-            <VerticalStackLayout Spacing="14" Padding="0,0,0,20">
+            <VerticalStackLayout Spacing="16" Padding="0,0,0,24">
 
                 <!-- Gallery -->
-                <Grid HeightRequest="300" BackgroundColor="#F3F4F6">
-                    <CarouselView x:Name="Gallery"
-                                  IndicatorView="GalleryIndicator"
-                                  Loop="False">
+                <Grid HeightRequest="320" BackgroundColor="{DynamicResource SurfaceVariantColor}">
+                    <Label Text="{StaticResource IconStore}" Style="{StaticResource Icon}" FontSize="72"
+                           TextColor="{DynamicResource TextTertiaryColor}" />
+                    <CarouselView ItemsSource="{Binding Images}" IndicatorView="GalleryIndicator" Loop="False">
                         <CarouselView.ItemTemplate>
-                            <DataTemplate>
-                                <Image Source="{Binding DisplayUrl}" Aspect="AspectFill"/>
+                            <DataTemplate x:DataType="models:ProductMediaItem">
+                                <Image Source="{Binding DisplayUrl}" Aspect="AspectFill" />
                             </DataTemplate>
                         </CarouselView.ItemTemplate>
-                        <CarouselView.EmptyView>
-                            <Label Text="📦" FontSize="80" HorizontalOptions="Center" VerticalOptions="Center"/>
-                        </CarouselView.EmptyView>
                     </CarouselView>
-                    <IndicatorView x:Name="GalleryIndicator"
-                                   VerticalOptions="End"
-                                   HorizontalOptions="Center"
-                                   Margin="0,0,0,10"
-                                   IndicatorColor="#D1D5DB"
-                                   SelectedIndicatorColor="#4F46E5"/>
+                    <IndicatorView x:Name="GalleryIndicator" IsVisible="{Binding HasManyImages}"
+                                   VerticalOptions="End" HorizontalOptions="Center" Margin="0,0,0,12" />
+
+                    <!-- Favourite -->
+                    <Border WidthRequest="48" HeightRequest="48" StrokeThickness="0" StrokeShape="RoundRectangle 24"
+                            BackgroundColor="{DynamicResource SurfaceColor}" HorizontalOptions="End" VerticalOptions="Start"
+                            Margin="12" SemanticProperties.Description="{Binding FavoriteText}">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding ToggleFavoriteCommand}" />
+                        </Border.GestureRecognizers>
+                        <Label Text="{Binding FavoriteIcon}" Style="{StaticResource Icon}" FontSize="26"
+                               TextColor="{DynamicResource FavoriteColor}" />
+                    </Border>
                 </Grid>
 
                 <VerticalStackLayout Padding="20,0" Spacing="10">
-
-                    <Label x:Name="CategoryLabel" TextColor="#4F46E5" FontSize="14"/>
-
-                    <Label x:Name="ProductNameLabel"
-                           FontSize="26"
-                           FontAttributes="Bold"
-                           TextColor="#111827"/>
+                    <Label Text="{Binding Product.CategoryDisplayName}" Style="{StaticResource LinkText}" FontSize="14"
+                           IsVisible="{Binding Product.HasCategory}" />
+                    <Label Text="{Binding Product.ProductName}" Style="{StaticResource TitleText}" />
 
                     <Grid ColumnDefinitions="*,Auto">
-                        <Label x:Name="PriceLabel"
-                               FontSize="26"
-                               FontAttributes="Bold"
-                               TextColor="#047857"/>
-                        <Border x:Name="StockBadge"
-                                Grid.Column="1"
-                                Padding="10,4"
-                                StrokeShape="RoundRectangle 10"
-                                StrokeThickness="0"
-                                VerticalOptions="Center">
-                            <Label x:Name="StockLabel" FontSize="13"/>
+                        <Label Text="{Binding Product.PriceText}" Style="{StaticResource PriceText}" FontSize="26" />
+                        <Border Grid.Column="1" Style="{StaticResource Badge}" VerticalOptions="Center" Padding="10,5">
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border" Binding="{Binding Product.InStock}" Value="True">
+                                    <Setter Property="BackgroundColor" Value="{DynamicResource SuccessSoftColor}" />
+                                </DataTrigger>
+                                <DataTrigger TargetType="Border" Binding="{Binding Product.InStock}" Value="False">
+                                    <Setter Property="BackgroundColor" Value="{DynamicResource DangerSoftColor}" />
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <Label Text="{Binding Product.StockText}" FontSize="13" FontFamily="OpenSansSemibold">
+                                <Label.Triggers>
+                                    <DataTrigger TargetType="Label" Binding="{Binding Product.InStock}" Value="True">
+                                        <Setter Property="TextColor" Value="{DynamicResource SuccessColor}" />
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="Label" Binding="{Binding Product.InStock}" Value="False">
+                                        <Setter Property="TextColor" Value="{DynamicResource DangerColor}" />
+                                    </DataTrigger>
+                                </Label.Triggers>
+                            </Label>
                         </Border>
                     </Grid>
 
-                    <Label x:Name="LocationLabel" TextColor="#4B5563"/>
+                    <HorizontalStackLayout Spacing="6" IsVisible="{Binding Product.Location, Converter={StaticResource NotEmpty}}">
+                        <Label Text="{StaticResource IconLocation}" Style="{StaticResource Icon}" FontSize="18" />
+                        <Label Text="{Binding Product.Location}" Style="{StaticResource BodyText}" VerticalOptions="Center" />
+                    </HorizontalStackLayout>
 
-                    <ActivityIndicator x:Name="Busy" IsRunning="True" Color="#4F46E5"/>
+                    <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}" />
+                    <Label Text="{Binding ErrorMessage}" Style="{StaticResource ErrorText}" IsVisible="{Binding HasError}" />
 
-                    <Label x:Name="ErrorLabel" TextColor="#B91C1C" IsVisible="False"/>
+                    <BoxView Style="{StaticResource Divider}" Margin="0,6" />
 
-                    <Label x:Name="DescriptionTitle"
-                           Text="Description"
-                           FontSize="18"
-                           FontAttributes="Bold"
-                           TextColor="#111827"
-                           IsVisible="False"/>
-                    <Label x:Name="DescriptionLabel" TextColor="#374151" LineHeight="1.3"/>
-
-                    <VerticalStackLayout x:Name="VideosSection" Spacing="8" IsVisible="False">
-                        <Label Text="Videos" FontSize="18" FontAttributes="Bold" TextColor="#111827"/>
-                        <VerticalStackLayout x:Name="VideoButtons" Spacing="8"/>
+                    <VerticalStackLayout Spacing="6" IsVisible="{Binding HasDescription}">
+                        <Label Text="{loc:Translate Description}" Style="{StaticResource SectionTitleText}" />
+                        <Label Text="{Binding Description}" Style="{StaticResource BodyText}" />
                     </VerticalStackLayout>
 
+                    <VerticalStackLayout Spacing="8" IsVisible="{Binding HasVideos}">
+                        <Label Text="{loc:Translate Videos}" Style="{StaticResource SectionTitleText}" />
+                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding Videos}" Spacing="8">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="vm:VideoItem">
+                                    <Button Text="{Binding Label}" Style="{StaticResource SecondaryButton}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ProductDetailsViewModel}}, Path=PlayVideoCommand, x:DataType=vm:ProductDetailsViewModel}"
+                                            CommandParameter="{Binding .}" />
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
                 </VerticalStackLayout>
             </VerticalStackLayout>
         </ScrollView>
 
         <!-- Contact bar -->
-        <Grid Grid.Row="1"
-              x:Name="ContactBar"
-              ColumnDefinitions="*,*"
-              ColumnSpacing="12"
-              Padding="20,12"
-              BackgroundColor="White"
-              IsVisible="False">
-            <Button x:Name="CallButton"
-                    Text="📞 Call"
-                    BackgroundColor="#4F46E5"
-                    TextColor="White"
-                    Clicked="Call_Clicked"/>
-            <Button x:Name="WhatsAppButton"
-                    Grid.Column="1"
-                    Text="💬 WhatsApp"
-                    BackgroundColor="#16A34A"
-                    TextColor="White"
-                    Clicked="WhatsApp_Clicked"/>
+        <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="12" Padding="16,12"
+              BackgroundColor="{DynamicResource SurfaceColor}" IsVisible="{Binding HasContact}">
+            <Button Text="{loc:Translate Call}" Command="{Binding CallCommand}" IsVisible="{Binding CanCall}" />
+            <Button Grid.Column="1" Text="{loc:Translate WhatsApp}" Style="{StaticResource WhatsAppButton}"
+                    Command="{Binding WhatsAppCommand}" IsVisible="{Binding CanWhatsApp}" />
         </Grid>
     </Grid>
-
 </ContentPage>

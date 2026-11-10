@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:DhaqaleysteApp.ViewModels"
+             xmlns:models="clr-namespace:DhaqaleysteApp.Models"
+             xmlns:views="clr-namespace:DhaqaleysteApp.Views"
+             xmlns:loc="clr-namespace:DhaqaleysteApp.Services.Localization"
+             x:Class="DhaqaleysteApp.Pages.FavoritesPage"
+             x:DataType="vm:FavoritesViewModel"
+             Title="{loc:Translate FavoritesTitle}">
+
+    <Grid RowDefinitions="Auto,*">
+        <Border Style="{StaticResource Badge}" BackgroundColor="{DynamicResource AccentSoftColor}" Margin="16,8,16,0"
+                Padding="12,8" IsVisible="{Binding ShowingSavedDetails}">
+            <Label Text="{loc:Translate FavoritesOffline}" FontSize="13" TextColor="{DynamicResource TextPrimaryColor}" />
+        </Border>
+
+        <RefreshView Grid.Row="1" IsRefreshing="{Binding IsRefreshing}" Command="{Binding RefreshCommand}"
+                     IsVisible="{Binding ShowContent}">
+            <CollectionView ItemsSource="{Binding Favorites}" SelectionMode="None" Margin="10,6">
+                <CollectionView.ItemsLayout>
+                    <GridItemsLayout Orientation="Vertical" Span="2" />
+                </CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Product">
+                        <Grid Padding="6">
+                            <views:ProductCard>
+                                <views:ProductCard.GestureRecognizers>
+                                    <TapGestureRecognizer
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:FavoritesViewModel}}, Path=OpenProductCommand, x:DataType=vm:FavoritesViewModel}"
+                                        CommandParameter="{Binding .}" />
+                                </views:ProductCard.GestureRecognizers>
+                            </views:ProductCard>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+
+        <views:StateView Grid.Row="1"
+                         IsVisible="{Binding ShowState}"
+                         IsLoading="{Binding IsLoading}"
+                         Icon="{Binding StateIcon}"
+                         Title="{Binding StateTitle}"
+                         Message="{Binding StateMessage}"
+                         ActionText="{loc:Translate BrowseProducts}"
+                         ActionCommand="{Binding BrowseCommand}" />
+    </Grid>
+</ContentPage>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:loc="clr-namespace:DhaqaleysteApp.Services.Localization"
+             x:Class="DhaqaleysteApp.Pages.FilterPage"
+             Title="{loc:Translate FiltersTitle}">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="{loc:Translate Reset}" Clicked="Reset_Clicked" />
+    </ContentPage.ToolbarItems>
+
+    <Grid RowDefinitions="*,Auto">
+        <ScrollView>
+            <VerticalStackLayout Padding="20" Spacing="14">
+
+                <Label Text="{loc:Translate Sort}" Style="{StaticResource FieldLabel}" />
+                <Border Style="{StaticResource InputBox}">
+                    <Picker x:Name="SortPicker" />
+                </Border>
+
+                <Label Text="{loc:Translate Category}" Style="{StaticResource FieldLabel}" />
+                <Border Style="{StaticResource InputBox}">
+                    <Picker x:Name="CategoryPicker" />
+                </Border>
+
+                <Border Style="{StaticResource Card}" Padding="14,10">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Text="{loc:Translate InStockOnly}" VerticalOptions="Center" />
+                        <Switch x:Name="InStockSwitch" Grid.Column="1" />
+                    </Grid>
+                </Border>
+
+                <Label Text="{loc:Translate PriceRange}" Style="{StaticResource FieldLabel}" />
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                    <Border Style="{StaticResource InputBox}">
+                        <Entry x:Name="MinEntry" Placeholder="{loc:Translate MinPrice}" Keyboard="Numeric" />
+                    </Border>
+                    <Border Grid.Column="1" Style="{StaticResource InputBox}">
+                        <Entry x:Name="MaxEntry" Placeholder="{loc:Translate MaxPrice}" Keyboard="Numeric" />
+                    </Border>
+                </Grid>
+
+                <Label x:Name="ErrorLabel" Style="{StaticResource ErrorText}" IsVisible="False" />
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <Grid Grid.Row="1" ColumnDefinitions="*,2*" ColumnSpacing="12" Padding="20,12"
+              BackgroundColor="{DynamicResource SurfaceColor}">
+            <Button Text="{loc:Translate Cancel}" Style="{StaticResource SecondaryButton}" Clicked="Cancel_Clicked" />
+            <Button Grid.Column="1" Text="{loc:Translate ShowResults}" Clicked="Apply_Clicked" />
+        </Grid>
+    </Grid>
+</ContentPage>

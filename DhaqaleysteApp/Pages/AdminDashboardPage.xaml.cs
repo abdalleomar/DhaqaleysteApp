@@ -57,7 +57,11 @@ public partial class AdminDashboardPage : ContentPage
 
         LowStockList.Children.Clear();
         foreach (var product in stats.LowStock)
-            LowStockList.Children.Add(new Label { Text = $"{product.ProductName}: {product.Quantity} left", TextColor = Color.FromArgb("#4B5563") });
+        {
+            var label = new Label { Text = $"{product.ProductName}: {product.Quantity} left" };
+            label.SetDynamicResource(Label.TextColorProperty, "TextSecondaryColor");
+            LowStockList.Children.Add(label);
+        }
         LowStockCard.IsVisible = stats.LowStock.Count > 0;
     }
 
@@ -70,7 +74,7 @@ public partial class AdminDashboardPage : ContentPage
         await Navigation.PushAsync(new ManageProductsPage());
 
     private async void Categories_Clicked(object sender, EventArgs e) =>
-        await Navigation.PushAsync(new CategoriesPage());
+        await Navigation.PushAsync(new ManageCategoriesPage());
 
     private async void Company_Clicked(object sender, EventArgs e) =>
         await Navigation.PushAsync(new CompanySettingsPage());

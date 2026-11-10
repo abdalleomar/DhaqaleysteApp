@@ -4,7 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     x:Class="DhaqaleysteApp.Pages.ManageProductsPage"
     Title="Manage Products"
-    BackgroundColor="#F5F6FA">
+    BackgroundColor="{DynamicResource PageBackgroundColor}">
 
     <Grid RowDefinitions="Auto,Auto,*" Padding="15,10">
 
@@ -12,10 +12,10 @@
             <Label Text="Manage Products"
                    FontSize="26"
                    FontAttributes="Bold"
-                   TextColor="#4F46E5"
+                   TextColor="{DynamicResource PrimaryColor}"
                    VerticalOptions="Center"/>
             <Button Grid.Column="1" Text="+ Add" Clicked="Add_Clicked"
-                    BackgroundColor="#4F46E5" TextColor="White"/>
+                    BackgroundColor="{DynamicResource PrimaryColor}" TextColor="{DynamicResource OnPrimaryColor}"/>
         </Grid>
 
         <SearchBar Grid.Row="1"
@@ -31,7 +31,7 @@
 
                 <CollectionView.EmptyView>
                     <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="10">
-                        <ActivityIndicator x:Name="LoadingIndicator" IsRunning="True" Color="#4F46E5"/>
+                        <ActivityIndicator x:Name="LoadingIndicator" IsRunning="True" Color="{DynamicResource PrimaryColor}"/>
                         <Label x:Name="EmptyLabel"
                                Text="No products to manage"
                                IsVisible="False"
@@ -44,14 +44,14 @@
                 </CollectionView.EmptyView>
 
                 <CollectionView.Footer>
-                    <ActivityIndicator x:Name="LoadMoreIndicator" IsRunning="False" IsVisible="False" Margin="0,10" Color="#4F46E5"/>
+                    <ActivityIndicator x:Name="LoadMoreIndicator" IsRunning="False" IsVisible="False" Margin="0,10" Color="{DynamicResource PrimaryColor}"/>
                 </CollectionView.Footer>
 
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Border Stroke="#DDDDDD"
+                        <Border Stroke="{DynamicResource BorderColor}"
                                 StrokeThickness="1"
-                                BackgroundColor="White"
+                                BackgroundColor="{DynamicResource SurfaceColor}"
                                 Padding="12"
                                 Margin="0,0,0,10">
 
@@ -59,23 +59,23 @@
                                 <Image Source="{Binding ImageUrl}"
                                        WidthRequest="72" HeightRequest="72"
                                        Aspect="AspectFill"
-                                       BackgroundColor="#EEEEEE"
+                                       BackgroundColor="{DynamicResource SurfaceVariantColor}"
                                        VerticalOptions="Start"/>
 
                                 <VerticalStackLayout Grid.Column="1" Spacing="3">
-                                    <Label Text="{Binding ProductName}" FontSize="17" FontAttributes="Bold" TextColor="#111827"/>
-                                    <Label Text="{Binding CategoryName}" FontSize="13" TextColor="#4F46E5"/>
-                                    <Label Text="{Binding PriceText}" TextColor="#047857" FontAttributes="Bold"/>
-                                    <Label Text="{Binding StockText}" FontSize="13" TextColor="#4B5563"/>
+                                    <Label Text="{Binding ProductName}" FontSize="17" FontAttributes="Bold" TextColor="{DynamicResource TextPrimaryColor}"/>
+                                    <Label Text="{Binding CategoryName}" FontSize="13" TextColor="{DynamicResource PrimaryColor}"/>
+                                    <Label Text="{Binding PriceText}" TextColor="{DynamicResource SuccessColor}" FontAttributes="Bold"/>
+                                    <Label Text="{Binding StaffStockText}" FontSize="13" TextColor="{DynamicResource TextSecondaryColor}"/>
                                 </VerticalStackLayout>
 
                                 <FlexLayout Grid.Row="1" Grid.ColumnSpan="2" Wrap="Wrap" Margin="0,8,0,0">
                                     <Button Text="Edit" Clicked="Edit_Clicked" Margin="0,0,8,6"
-                                            BackgroundColor="#4F46E5" TextColor="White"/>
+                                            BackgroundColor="{DynamicResource PrimaryColor}" TextColor="{DynamicResource OnPrimaryColor}"/>
                                     <Button Text="{Binding AvailabilityActionText}" Clicked="ToggleAvailable_Clicked" Margin="0,0,8,6"/>
                                     <Button Text="{Binding FeaturedActionText}" Clicked="ToggleFeatured_Clicked" Margin="0,0,8,6"/>
                                     <Button Text="Delete" Clicked="Delete_Clicked" Margin="0,0,8,6"
-                                            BackgroundColor="#B91C1C" TextColor="White"/>
+                                            BackgroundColor="{DynamicResource DangerColor}" TextColor="{DynamicResource OnPrimaryColor}"/>
                                 </FlexLayout>
                             </Grid>
                         </Border>

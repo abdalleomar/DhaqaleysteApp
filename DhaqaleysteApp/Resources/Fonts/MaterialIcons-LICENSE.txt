@@ -1,0 +1,3 @@
+MaterialIcons-Regular.ttf is Google's Material Icons font, licensed under the
+Apache License, Version 2.0: https://www.apache.org/licenses/LICENSE-2.0
+Obtained from the material-design-icons-iconfont npm package (version 6.7.0).

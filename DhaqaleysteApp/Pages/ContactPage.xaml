@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:DhaqaleysteApp.ViewModels"
+             xmlns:views="clr-namespace:DhaqaleysteApp.Views"
+             xmlns:loc="clr-namespace:DhaqaleysteApp.Services.Localization"
+             x:Class="DhaqaleysteApp.Pages.ContactPage"
+             x:DataType="vm:ContactViewModel"
+             Title="{loc:Translate ContactTitle}">
+
+    <RefreshView IsRefreshing="{Binding IsRefreshing}" Command="{Binding RefreshCommand}">
+        <ScrollView>
+            <VerticalStackLayout Padding="16" Spacing="16">
+
+                <!-- Company -->
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="12">
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14">
+                            <Border WidthRequest="64" HeightRequest="64" StrokeThickness="0" StrokeShape="RoundRectangle 16"
+                                    BackgroundColor="{DynamicResource PrimarySoftColor}">
+                                <Grid>
+                                    <Label Text="{StaticResource IconStore}" Style="{StaticResource Icon}" FontSize="32"
+                                           TextColor="{DynamicResource PrimaryColor}" />
+                                    <Image Source="{Binding LogoUrl}" Aspect="AspectFit" IsVisible="{Binding HasLogo}" />
+                                </Grid>
+                            </Border>
+                            <Label Grid.Column="1" Text="{Binding Company.CompanyName}" Style="{StaticResource HeadlineText}"
+                                   VerticalOptions="Center" />
+                        </Grid>
+                        <Label Text="{Binding About}" Style="{StaticResource BodyText}" IsVisible="{Binding HasAbout}" />
+
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                            <Button Text="{loc:Translate Call}" Command="{Binding CallCommand}" IsVisible="{Binding HasPhone}" />
+                            <Button Grid.Column="1" Text="{loc:Translate WhatsApp}" Style="{StaticResource WhatsAppButton}"
+                                    Command="{Binding WhatsAppCommand}" IsVisible="{Binding HasWhatsApp}" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <views:StateView IsVisible="{Binding ShowState}"
+                                 IsLoading="{Binding IsLoading}"
+                                 Icon="{Binding StateIcon}"
+                                 Title="{Binding StateTitle}"
+                                 Message="{Binding StateMessage}"
+                                 ActionText="{loc:Translate TryAgain}"
+                                 ActionCommand="{Binding RefreshCommand}" />
+
+                <!-- Details -->
+                <Border Style="{StaticResource Card}" Padding="0" IsVisible="{Binding HasAnyContact}">
+                    <VerticalStackLayout>
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14" Padding="16,12" IsVisible="{Binding HasPhone}">
+                            <Grid.GestureRecognizers><TapGestureRecognizer Command="{Binding CallCommand}" /></Grid.GestureRecognizers>
+                            <Label Text="{StaticResource IconCall}" Style="{StaticResource Icon}" TextColor="{DynamicResource PrimaryColor}" />
+                            <VerticalStackLayout Grid.Column="1">
+                                <Label Text="{loc:Translate Phone}" Style="{StaticResource CaptionText}" />
+                                <Label Text="{Binding Company.Phone}" />
+                            </VerticalStackLayout>
+                            <Label Grid.Column="2" Text="{StaticResource IconChevron}" Style="{StaticResource Icon}" />
+                        </Grid>
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14" Padding="16,12" IsVisible="{Binding HasEmail}">
+                            <Grid.GestureRecognizers><TapGestureRecognizer Command="{Binding EmailCommand}" /></Grid.GestureRecognizers>
+                            <Label Text="{StaticResource IconEmail}" Style="{StaticResource Icon}" TextColor="{DynamicResource PrimaryColor}" />
+                            <VerticalStackLayout Grid.Column="1">
+                                <Label Text="{loc:Translate Email}" Style="{StaticResource CaptionText}" />
+                                <Label Text="{Binding Company.Email}" />
+                            </VerticalStackLayout>
+                            <Label Grid.Column="2" Text="{StaticResource IconChevron}" Style="{StaticResource Icon}" />
+                        </Grid>
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14" Padding="16,12" IsVisible="{Binding HasAddress}">
+                            <Grid.GestureRecognizers><TapGestureRecognizer Command="{Binding OpenMapCommand}" /></Grid.GestureRecognizers>
+                            <Label Text="{StaticResource IconLocation}" Style="{StaticResource Icon}" TextColor="{DynamicResource PrimaryColor}" />
+                            <VerticalStackLayout Grid.Column="1">
+                                <Label Text="{loc:Translate Address}" Style="{StaticResource CaptionText}" />
+                                <Label Text="{Binding FullAddress}" />
+                            </VerticalStackLayout>
+                            <Label Grid.Column="2" Text="{StaticResource IconMap}" Style="{StaticResource Icon}" IsVisible="{Binding HasMap}" />
+                        </Grid>
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14" Padding="16,12" IsVisible="{Binding HasHours}">
+                            <Label Text="{StaticResource IconSchedule}" Style="{StaticResource Icon}" TextColor="{DynamicResource PrimaryColor}" />
+                            <VerticalStackLayout Grid.Column="1">
+                                <Label Text="{loc:Translate WorkingHours}" Style="{StaticResource CaptionText}" />
+                                <Label Text="{Binding Company.WorkingHours}" />
+                            </VerticalStackLayout>
+                        </Grid>
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14" Padding="16,12" IsVisible="{Binding HasWebsite}">
+                            <Grid.GestureRecognizers><TapGestureRecognizer Command="{Binding OpenWebsiteCommand}" /></Grid.GestureRecognizers>
+                            <Label Text="{StaticResource IconPublic}" Style="{StaticResource Icon}" TextColor="{DynamicResource PrimaryColor}" />
+                            <VerticalStackLayout Grid.Column="1">
+                                <Label Text="{loc:Translate Website}" Style="{StaticResource CaptionText}" />
+                                <Label Text="{Binding Company.WebsiteUrl}" LineBreakMode="TailTruncation" />
+                            </VerticalStackLayout>
+                            <Label Grid.Column="2" Text="{StaticResource IconChevron}" Style="{StaticResource Icon}" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Social -->
+                <VerticalStackLayout Spacing="8" IsVisible="{Binding HasSocial}">
+                    <Label Text="{loc:Translate FollowUs}" Style="{StaticResource SectionTitleText}" />
+                    <FlexLayout Wrap="Wrap">
+                        <Button Text="Facebook" Style="{StaticResource SecondaryButton}" Margin="0,0,8,8"
+                                Command="{Binding OpenFacebookCommand}" IsVisible="{Binding HasFacebook}" />
+                        <Button Text="Instagram" Style="{StaticResource SecondaryButton}" Margin="0,0,8,8"
+                                Command="{Binding OpenInstagramCommand}" IsVisible="{Binding HasInstagram}" />
+                        <Button Text="TikTok" Style="{StaticResource SecondaryButton}" Margin="0,0,8,8"
+                                Command="{Binding OpenTikTokCommand}" IsVisible="{Binding HasTikTok}" />
+                    </FlexLayout>
+                </VerticalStackLayout>
+
+                <!-- Settings -->
+                <Label Text="{loc:Translate Settings}" Style="{StaticResource SectionTitleText}" />
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="14">
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14">
+                            <Label Text="{StaticResource IconLanguage}" Style="{StaticResource Icon}" TextColor="{DynamicResource PrimaryColor}" />
+                            <Label Grid.Column="1" Text="{loc:Translate Language}" VerticalOptions="Center" />
+                        </Grid>
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                            <Button x:Name="EnglishButton" Text="{loc:Translate English}" Command="{Binding SetLanguageCommand}" CommandParameter="en" />
+                            <Button x:Name="SomaliButton" Grid.Column="1" Text="{loc:Translate Somali}" Command="{Binding SetLanguageCommand}" CommandParameter="so" />
+                        </Grid>
+
+                        <BoxView Style="{StaticResource Divider}" />
+
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14">
+                            <Label Text="{StaticResource IconDarkMode}" Style="{StaticResource Icon}" TextColor="{DynamicResource PrimaryColor}" />
+                            <Label Grid.Column="1" Text="{loc:Translate Theme}" VerticalOptions="Center" />
+                        </Grid>
+                        <Border Style="{StaticResource InputBox}">
+                            <Picker ItemsSource="{Binding ThemeOptions}" SelectedIndex="{Binding ThemeIndex}" />
+                        </Border>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Staff entrance -->
+                <Button Text="{Binding StaffText}" Style="{StaticResource TextButton}" Command="{Binding OpenStaffCommand}"
+                        HorizontalOptions="Center" Margin="0,4,0,16" />
+            </VerticalStackLayout>
+        </ScrollView>
+    </RefreshView>
+</ContentPage>

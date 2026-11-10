@@ -193,7 +193,8 @@ public partial class ProductFormPage : ContentPage
         {
             var row = new Grid { ColumnDefinitions = new ColumnDefinitionCollection(new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto)) };
             row.Add(new Label { Text = "🎬 " + video.Label, VerticalOptions = LayoutOptions.Center, LineBreakMode = LineBreakMode.MiddleTruncation });
-            var remove = new Button { Text = "Remove", BackgroundColor = Colors.Transparent, TextColor = Color.FromArgb("#B91C1C") };
+            var remove = new Button { Text = "Remove", BackgroundColor = Colors.Transparent };
+            remove.SetDynamicResource(Button.TextColorProperty, "DangerColor");
             remove.Clicked += (_, _) => { _videos.Remove(video); RefreshMedia(); };
             row.Add(remove, 1);
             VideosList.Children.Add(row);

@@ -1,4 +1,6 @@
 using System.Text.Json.Serialization;
+using DhaqaleysteApp.Services;
+using DhaqaleysteApp.Services.Localization;
 
 namespace DhaqaleysteApp.Models;
 
@@ -35,13 +37,13 @@ public class Product : BindableModel
     public int Quantity
     {
         get => _quantity;
-        set => Set(ref _quantity, value, alsoChanged: new[] { nameof(InStock), nameof(StockText), nameof(IsOutOfStock) });
+        set => Set(ref _quantity, value, alsoChanged: new[] { nameof(InStock), nameof(StockText), nameof(StaffStockText), nameof(IsOutOfStock) });
     }
 
     public bool IsAvailable
     {
         get => _isAvailable;
-        set => Set(ref _isAvailable, value, alsoChanged: new[] { nameof(InStock), nameof(StockText), nameof(IsOutOfStock), nameof(AvailabilityActionText) });
+        set => Set(ref _isAvailable, value, alsoChanged: new[] { nameof(InStock), nameof(StockText), nameof(StaffStockText), nameof(IsOutOfStock), nameof(AvailabilityActionText) });
     }
 
     public bool IsFeatured
@@ -74,8 +76,13 @@ public class Product : BindableModel
     [JsonIgnore] public bool InStock => IsAvailable && Quantity > 0;
     [JsonIgnore] public bool IsOutOfStock => !InStock;
     [JsonIgnore] public bool HasImage => !string.IsNullOrWhiteSpace(ImageUrl);
-    [JsonIgnore] public string PriceText => $"${Price:0.00}";
-    [JsonIgnore] public string StockText => !IsAvailable ? "Sold out" : Quantity > 0 ? $"In stock ({Quantity})" : "Out of stock";
+    [JsonIgnore] public string PriceText => PriceFormatter.Format(Price);
+    [JsonIgnore] public string StockText => !IsAvailable ? Loc.T("SoldOut") : Quantity > 0 ? Loc.T("InStock") : Loc.T("OutOfStock");
+    [JsonIgnore] public string CategoryDisplayName => Loc.Pick(CategoryName, CategoryNameSo);
+    [JsonIgnore] public bool HasCategory => !string.IsNullOrWhiteSpace(CategoryName);
+
+    /// <summary>Staff lists show the exact quantity.</summary>
+    [JsonIgnore] public string StaffStockText => !IsAvailable ? "Sold out" : Quantity > 0 ? $"In stock ({Quantity})" : "Out of stock";
     [JsonIgnore] public string AvailabilityActionText => IsAvailable ? "Mark sold out" : "Mark available";
     [JsonIgnore] public string FeaturedActionText => IsFeatured ? "Unfeature" : "Feature";
 

@@ -7,13 +7,13 @@
 
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="10">
-            <Label Text="Company details" FontSize="26" FontAttributes="Bold" TextColor="#4F46E5"/>
+            <Label Text="Company details" FontSize="26" FontAttributes="Bold" TextColor="{DynamicResource PrimaryColor}"/>
             <Label Text="Customers see these in the app and use them to call or message you."
-                   FontSize="13" TextColor="#6B7280"/>
+                   FontSize="13" TextColor="{DynamicResource TextTertiaryColor}"/>
 
             <Label Text="Logo" FontAttributes="Bold"/>
             <HorizontalStackLayout Spacing="12">
-                <Image x:Name="LogoImage" WidthRequest="72" HeightRequest="72" Aspect="AspectFit" BackgroundColor="#EEEEEE"/>
+                <Image x:Name="LogoImage" WidthRequest="72" HeightRequest="72" Aspect="AspectFit" BackgroundColor="{DynamicResource SurfaceVariantColor}"/>
                 <Button Text="Choose logo" Clicked="ChooseLogo_Clicked" VerticalOptions="Center"/>
             </HorizontalStackLayout>
 
@@ -51,10 +51,10 @@
             <Entry x:Name="InstagramEntry" Placeholder="Instagram" Keyboard="Url" MaxLength="500"/>
             <Entry x:Name="TikTokEntry" Placeholder="TikTok" Keyboard="Url" MaxLength="500"/>
 
-            <Label x:Name="ErrorLabel" TextColor="#B91C1C" IsVisible="False"/>
-            <ActivityIndicator x:Name="Busy" IsRunning="False" IsVisible="False" Color="#4F46E5"/>
+            <Label x:Name="ErrorLabel" TextColor="{DynamicResource DangerColor}" IsVisible="False"/>
+            <ActivityIndicator x:Name="Busy" IsRunning="False" IsVisible="False" Color="{DynamicResource PrimaryColor}"/>
 
-            <Button x:Name="SaveButton" Text="Save" Clicked="Save_Clicked" BackgroundColor="#4F46E5" TextColor="White"/>
+            <Button x:Name="SaveButton" Text="Save" Clicked="Save_Clicked" BackgroundColor="{DynamicResource PrimaryColor}" TextColor="{DynamicResource OnPrimaryColor}"/>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

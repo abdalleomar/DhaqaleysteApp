@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
 using DhaqaleysteApp.Models;
+using DhaqaleysteApp.Services.Localization;
 
 namespace DhaqaleysteApp.Services;
 
@@ -67,7 +68,10 @@ public class ApiService
     {
         var result = await SendAsync<CompanySettings>(() => new HttpRequestMessage(HttpMethod.Get, "api/company"), ct);
         if (result.Success)
+        {
             _company = result.Data;
+            PriceFormatter.CurrencyCode = string.IsNullOrWhiteSpace(_company!.CurrencyCode) ? "USD" : _company.CurrencyCode;
+        }
         return result;
     }
 
@@ -200,10 +204,10 @@ public class ApiService
     private async Task<ApiResult<T>> SendAsync<T>(Func<HttpRequestMessage> build, CancellationToken ct = default, bool expectBody = true)
     {
         if (!IsConfigured)
-            return ApiResult<T>.Fail("The app is not connected to a server. Please contact the company.");
+            return ApiResult<T>.Fail(Loc.T("ErrNotConfigured"));
 
         if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            return ApiResult<T>.Fail("No internet connection. Check your connection and try again.", network: true);
+            return ApiResult<T>.Fail(Loc.T("ErrNoInternet"), network: true);
 
         try
         {
@@ -223,10 +227,10 @@ public class ApiService
             {
                 HttpStatusCode.Unauthorized => ApiResult<T>.Fail(message ?? "Please sign in again.", unauthorized: true),
                 HttpStatusCode.Forbidden => ApiResult<T>.Fail("You do not have permission to do this."),
-                HttpStatusCode.NotFound => ApiResult<T>.Fail(message ?? "This item no longer exists."),
-                HttpStatusCode.TooManyRequests => ApiResult<T>.Fail("Too many attempts. Please wait a minute and try again."),
+                HttpStatusCode.NotFound => ApiResult<T>.Fail(message ?? Loc.T("ErrNotFound")),
+                HttpStatusCode.TooManyRequests => ApiResult<T>.Fail(Loc.T("ErrTooMany")),
                 HttpStatusCode.RequestEntityTooLarge => ApiResult<T>.Fail("The file is too large."),
-                >= HttpStatusCode.InternalServerError => ApiResult<T>.Fail("The server had a problem. Please try again later."),
+                >= HttpStatusCode.InternalServerError => ApiResult<T>.Fail(Loc.T("ErrServer")),
                 _ => ApiResult<T>.Fail(message ?? "The request could not be completed.")
             };
         }
@@ -236,11 +240,11 @@ public class ApiService
         }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or IOException)
         {
-            return ApiResult<T>.Fail("Could not reach the server. Check your connection and try again.", network: true);
+            return ApiResult<T>.Fail(Loc.T("ErrUnreachable"), network: true);
         }
         catch (JsonException)
         {
-            return ApiResult<T>.Fail("The server sent an unexpected response.");
+            return ApiResult<T>.Fail(Loc.T("ErrUnexpected"));
         }
     }
 

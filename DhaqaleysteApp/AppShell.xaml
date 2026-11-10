@@ -1,14 +1,32 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<Shell
-    x:Class="DhaqaleysteApp.AppShell"
-    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:local="clr-namespace:DhaqaleysteApp"
-    Title="DhaqaleysteApp">
+<Shell x:Class="DhaqaleysteApp.AppShell"
+       xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+       xmlns:loc="clr-namespace:DhaqaleysteApp.Services.Localization"
+       Title="Dhaqaleyste"
+       FlyoutBehavior="Disabled">
 
-    <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
-
+    <!-- Bottom navigation: Home · Categories · Favorites · Contact. Pages are created from DI in AppShell.xaml.cs. -->
+    <TabBar x:Name="Tabs">
+        <Tab x:Name="HomeTab" Route="home" Title="{loc:Translate TabHome}">
+            <Tab.Icon>
+                <FontImageSource FontFamily="Icons" Glyph="{StaticResource IconHome}" Size="24" />
+            </Tab.Icon>
+        </Tab>
+        <Tab x:Name="CategoriesTab" Route="categories" Title="{loc:Translate TabCategories}">
+            <Tab.Icon>
+                <FontImageSource FontFamily="Icons" Glyph="{StaticResource IconCategories}" Size="24" />
+            </Tab.Icon>
+        </Tab>
+        <Tab x:Name="FavoritesTab" Route="favorites" Title="{loc:Translate TabFavorites}">
+            <Tab.Icon>
+                <FontImageSource FontFamily="Icons" Glyph="{StaticResource IconFavorite}" Size="24" />
+            </Tab.Icon>
+        </Tab>
+        <Tab x:Name="ContactTab" Route="contact" Title="{loc:Translate TabContact}">
+            <Tab.Icon>
+                <FontImageSource FontFamily="Icons" Glyph="{StaticResource IconStore}" Size="24" />
+            </Tab.Icon>
+        </Tab>
+    </TabBar>
 </Shell>

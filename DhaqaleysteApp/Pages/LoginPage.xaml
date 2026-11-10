@@ -11,11 +11,11 @@
             <Label Text="Staff sign in"
                    FontSize="28"
                    FontAttributes="Bold"
-                   TextColor="#4F46E5"/>
+                   TextColor="{DynamicResource PrimaryColor}"/>
 
             <Label Text="For company staff only. Customers can browse products without signing in."
                    FontSize="14"
-                   TextColor="#6B7280"/>
+                   TextColor="{DynamicResource TextTertiaryColor}"/>
 
             <Entry x:Name="EmailEntry"
                    Placeholder="Email or phone"
@@ -31,19 +31,19 @@
                    Completed="Login_Clicked"/>
 
             <Label x:Name="ErrorLabel"
-                   TextColor="#B91C1C"
+                   TextColor="{DynamicResource DangerColor}"
                    IsVisible="False"/>
 
             <Button x:Name="LoginButton"
                     Text="Sign in"
                     Clicked="Login_Clicked"
-                    BackgroundColor="#4F46E5"
-                    TextColor="White"/>
+                    BackgroundColor="{DynamicResource PrimaryColor}"
+                    TextColor="{DynamicResource OnPrimaryColor}"/>
 
             <ActivityIndicator x:Name="Busy"
                                IsRunning="False"
                                IsVisible="False"
-                               Color="#4F46E5"/>
+                               Color="{DynamicResource PrimaryColor}"/>
 
         </VerticalStackLayout>
     </ScrollView>
