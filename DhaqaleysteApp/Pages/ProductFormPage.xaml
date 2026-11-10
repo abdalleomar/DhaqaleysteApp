@@ -17,6 +17,9 @@
             <Label Text="Product name *" FontAttributes="Bold"/>
             <Entry x:Name="ProductNameEntry" Placeholder="e.g. Samsung Galaxy A15" MaxLength="200"/>
 
+            <Label Text="Category" FontAttributes="Bold"/>
+            <Picker x:Name="CategoryPicker" Title="Choose a category" ItemDisplayBinding="{Binding Name}"/>
+
             <Label Text="Description" FontAttributes="Bold"/>
             <Editor x:Name="DescriptionEditor" Placeholder="Describe the product" HeightRequest="100" MaxLength="4000" AutoSize="TextChanges"/>
 
@@ -31,36 +34,83 @@
                 </VerticalStackLayout>
             </Grid>
 
-            <Label Text="Category" FontAttributes="Bold"/>
-            <Entry x:Name="CategoryEntry" Placeholder="e.g. Phones" MaxLength="100"/>
+            <Grid ColumnDefinitions="*,Auto">
+                <VerticalStackLayout>
+                    <Label Text="Available for sale" FontAttributes="Bold"/>
+                    <Label Text="Turn off to show it as sold out" FontSize="12" TextColor="#6B7280"/>
+                </VerticalStackLayout>
+                <Switch x:Name="AvailableSwitch" Grid.Column="1" IsToggled="True" OnColor="#4F46E5"/>
+            </Grid>
+
+            <Grid ColumnDefinitions="*,Auto">
+                <VerticalStackLayout>
+                    <Label Text="Featured" FontAttributes="Bold"/>
+                    <Label Text="Show in the featured section" FontSize="12" TextColor="#6B7280"/>
+                </VerticalStackLayout>
+                <Switch x:Name="FeaturedSwitch" Grid.Column="1" OnColor="#4F46E5"/>
+            </Grid>
 
             <Label Text="Location" FontAttributes="Bold"/>
             <Entry x:Name="LocationEntry" Placeholder="e.g. Mogadishu" MaxLength="200"/>
 
-            <Label Text="Contact (optional, overrides company number)" FontAttributes="Bold"/>
+            <Label Text="Contact (optional, replaces the company number)" FontAttributes="Bold"/>
             <Entry x:Name="ContactEntry" Placeholder="Phone or WhatsApp" Keyboard="Telephone" MaxLength="100"/>
 
-            <Label Text="Image" FontAttributes="Bold"/>
-            <Image x:Name="PreviewImage"
-                   HeightRequest="160"
-                   Aspect="AspectFill"
-                   BackgroundColor="#EEEEEE"/>
-            <Button Text="Choose image (JPG, PNG, WEBP · max 5 MB)"
-                    Clicked="ChooseImage_Clicked"/>
+            <!-- Images -->
+            <Grid ColumnDefinitions="*,Auto">
+                <Label x:Name="ImagesTitle" Text="Images (0/10)" FontAttributes="Bold" VerticalOptions="Center"/>
+                <Button Grid.Column="1" Text="+ Add images" Clicked="AddImages_Clicked"/>
+            </Grid>
+            <Label Text="The first image is the main photo. Tap an image to change it."
+                   FontSize="12" TextColor="#6B7280"/>
+            <CollectionView x:Name="ImagesList"
+                            ItemsSource="{Binding Images}"
+                            HeightRequest="110"
+                            SelectionMode="None">
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Horizontal" ItemSpacing="8"/>
+                </CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid WidthRequest="100" HeightRequest="100">
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="Image_Tapped"/>
+                            </Grid.GestureRecognizers>
+                            <Image Source="{Binding Preview}" Aspect="AspectFill" BackgroundColor="#EEEEEE"/>
+                            <Label Text="Main"
+                                   IsVisible="{Binding IsMain}"
+                                   BackgroundColor="#4F46E5"
+                                   TextColor="White"
+                                   FontSize="11"
+                                   Padding="6,2"
+                                   VerticalOptions="Start"
+                                   HorizontalOptions="Start"/>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+                <CollectionView.EmptyView>
+                    <Label Text="No images yet" TextColor="#6B7280" VerticalOptions="Center"/>
+                </CollectionView.EmptyView>
+            </CollectionView>
 
-            <Label Text="Video" FontAttributes="Bold"/>
-            <Label x:Name="VideoLabel" Text="No video" TextColor="#6B7280"/>
-            <Button Text="Choose video (MP4, MOV · max 50 MB)"
-                    Clicked="ChooseVideo_Clicked"/>
+            <!-- Videos -->
+            <Grid ColumnDefinitions="*,Auto">
+                <Label x:Name="VideosTitle" Text="Videos (0/3)" FontAttributes="Bold" VerticalOptions="Center"/>
+                <Button Grid.Column="1" Text="+ Add video" Clicked="AddVideo_Clicked"/>
+            </Grid>
+            <VerticalStackLayout x:Name="VideosList" Spacing="6"/>
 
             <Label x:Name="ErrorLabel"
                    TextColor="#B91C1C"
                    IsVisible="False"/>
 
-            <ActivityIndicator x:Name="Busy"
-                               IsRunning="False"
-                               IsVisible="False"
-                               Color="#4F46E5"/>
+            <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                <ActivityIndicator x:Name="Busy"
+                                   IsRunning="False"
+                                   IsVisible="False"
+                                   Color="#4F46E5"/>
+                <Label x:Name="BusyLabel" VerticalOptions="Center" TextColor="#4B5563"/>
+            </HorizontalStackLayout>
 
             <Button x:Name="SaveButton"
                     Text="Save Product"

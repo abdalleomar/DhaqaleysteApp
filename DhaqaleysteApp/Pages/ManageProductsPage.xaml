@@ -6,71 +6,83 @@
     Title="Manage Products"
     BackgroundColor="#F5F6FA">
 
-    <Grid RowDefinitions="Auto,*" Padding="20">
+    <Grid RowDefinitions="Auto,Auto,*" Padding="15,10">
 
-        <Label Text="Manage Products"
-               FontSize="28"
-               FontAttributes="Bold"
-               TextColor="#4F46E5"/>
+        <Grid ColumnDefinitions="*,Auto">
+            <Label Text="Manage Products"
+                   FontSize="26"
+                   FontAttributes="Bold"
+                   TextColor="#4F46E5"
+                   VerticalOptions="Center"/>
+            <Button Grid.Column="1" Text="+ Add" Clicked="Add_Clicked"
+                    BackgroundColor="#4F46E5" TextColor="White"/>
+        </Grid>
 
-        <CollectionView Grid.Row="1"
-                        Margin="0,20,0,0"
-                        ItemsSource="{Binding Products}">
+        <SearchBar Grid.Row="1"
+                   x:Name="SearchBarProducts"
+                   Margin="0,8"
+                   Placeholder="Search products..."
+                   TextChanged="Search_TextChanged"/>
 
-            <CollectionView.EmptyView>
-                <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="10">
-                    <ActivityIndicator x:Name="LoadingIndicator" IsRunning="True" Color="#4F46E5"/>
-                    <Label x:Name="EmptyLabel"
-                           Text="No products to manage"
-                           IsVisible="False"
-                           HorizontalTextAlignment="Center"/>
-                    <Button x:Name="RetryButton"
-                            Text="Try again"
-                            IsVisible="False"
-                            Clicked="Retry_Clicked"/>
-                </VerticalStackLayout>
-            </CollectionView.EmptyView>
+        <RefreshView Grid.Row="2" x:Name="Refresh" Refreshing="Refresh_Refreshing">
+            <CollectionView ItemsSource="{Binding Products}"
+                            RemainingItemsThreshold="5"
+                            RemainingItemsThresholdReached="Products_RemainingItemsThresholdReached">
 
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <Border Stroke="#DDDDDD"
-                            StrokeThickness="1"
-                            BackgroundColor="White"
-                            Padding="15"
-                            Margin="0,0,0,12">
+                <CollectionView.EmptyView>
+                    <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="10">
+                        <ActivityIndicator x:Name="LoadingIndicator" IsRunning="True" Color="#4F46E5"/>
+                        <Label x:Name="EmptyLabel"
+                               Text="No products to manage"
+                               IsVisible="False"
+                               HorizontalTextAlignment="Center"/>
+                        <Button x:Name="RetryButton"
+                                Text="Try again"
+                                IsVisible="False"
+                                Clicked="Retry_Clicked"/>
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
 
-                        <VerticalStackLayout Spacing="6">
+                <CollectionView.Footer>
+                    <ActivityIndicator x:Name="LoadMoreIndicator" IsRunning="False" IsVisible="False" Margin="0,10" Color="#4F46E5"/>
+                </CollectionView.Footer>
 
-                            <Label Text="{Binding ProductName}"
-                                   FontSize="20"
-                                   FontAttributes="Bold"/>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Stroke="#DDDDDD"
+                                StrokeThickness="1"
+                                BackgroundColor="White"
+                                Padding="12"
+                                Margin="0,0,0,10">
 
-                            <Label Text="{Binding Price, StringFormat='Price: ${0:0.00}'}"
-                                   TextColor="Green"
-                                   FontSize="18"/>
+                            <Grid ColumnDefinitions="72,*" ColumnSpacing="12" RowDefinitions="Auto,Auto">
+                                <Image Source="{Binding ImageUrl}"
+                                       WidthRequest="72" HeightRequest="72"
+                                       Aspect="AspectFill"
+                                       BackgroundColor="#EEEEEE"
+                                       VerticalOptions="Start"/>
 
-                            <Label Text="{Binding Quantity, StringFormat='Qty: {0}'}"/>
+                                <VerticalStackLayout Grid.Column="1" Spacing="3">
+                                    <Label Text="{Binding ProductName}" FontSize="17" FontAttributes="Bold" TextColor="#111827"/>
+                                    <Label Text="{Binding CategoryName}" FontSize="13" TextColor="#4F46E5"/>
+                                    <Label Text="{Binding PriceText}" TextColor="#047857" FontAttributes="Bold"/>
+                                    <Label Text="{Binding StockText}" FontSize="13" TextColor="#4B5563"/>
+                                </VerticalStackLayout>
 
-                            <HorizontalStackLayout Spacing="10">
-                                <Button Text="Edit"
-        Clicked="EditProduct_Clicked"
-        BackgroundColor="#4F46E5"
-        TextColor="White"/>
-
-                                <Button Text="Delete"
-                                        Clicked="Delete_Clicked"
-                                        BackgroundColor="Red"
-                                        TextColor="White"/>
-                            </HorizontalStackLayout>
-
-                        </VerticalStackLayout>
-
-                    </Border>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-
-        </CollectionView>
-
+                                <FlexLayout Grid.Row="1" Grid.ColumnSpan="2" Wrap="Wrap" Margin="0,8,0,0">
+                                    <Button Text="Edit" Clicked="Edit_Clicked" Margin="0,0,8,6"
+                                            BackgroundColor="#4F46E5" TextColor="White"/>
+                                    <Button Text="{Binding AvailabilityActionText}" Clicked="ToggleAvailable_Clicked" Margin="0,0,8,6"/>
+                                    <Button Text="{Binding FeaturedActionText}" Clicked="ToggleFeatured_Clicked" Margin="0,0,8,6"/>
+                                    <Button Text="Delete" Clicked="Delete_Clicked" Margin="0,0,8,6"
+                                            BackgroundColor="#B91C1C" TextColor="White"/>
+                                </FlexLayout>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
     </Grid>
 
 </ContentPage>

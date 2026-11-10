@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="DhaqaleysteApp.Pages.CategoriesPage"
+    Title="Categories"
+    BackgroundColor="#F5F6FA">
+
+    <Grid RowDefinitions="Auto,Auto,*" Padding="15,10">
+        <Grid ColumnDefinitions="*,Auto">
+            <Label Text="Categories" FontSize="26" FontAttributes="Bold" TextColor="#4F46E5" VerticalOptions="Center"/>
+            <Button Grid.Column="1" Text="+ Add" Clicked="Add_Clicked" BackgroundColor="#4F46E5" TextColor="White"/>
+        </Grid>
+
+        <Label Grid.Row="1"
+               Text="Tap a category to edit, hide or delete it. Only empty categories can be deleted."
+               FontSize="13" TextColor="#6B7280" Margin="0,6,0,10"/>
+
+        <RefreshView Grid.Row="2" x:Name="Refresh" Refreshing="Refresh_Refreshing">
+            <CollectionView ItemsSource="{Binding Categories}" SelectionMode="None">
+                <CollectionView.EmptyView>
+                    <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="10">
+                        <ActivityIndicator x:Name="LoadingIndicator" IsRunning="True" Color="#4F46E5"/>
+                        <Label x:Name="EmptyLabel" Text="No categories yet. Tap + Add." IsVisible="False" HorizontalTextAlignment="Center"/>
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Stroke="#DDDDDD" StrokeThickness="1" BackgroundColor="White" Padding="14" Margin="0,0,0,8">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="Category_Tapped"/>
+                            </Border.GestureRecognizers>
+                            <VerticalStackLayout Spacing="2">
+                                <Label Text="{Binding DisplayName}" FontSize="17" FontAttributes="Bold" TextColor="#111827"/>
+                                <Label Text="{Binding NameSo, StringFormat='Somali: {0}'}" FontSize="13" TextColor="#4B5563"/>
+                                <Label Text="{Binding StaffSummary}" FontSize="13" TextColor="#6B7280"/>
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+    </Grid>
+</ContentPage>

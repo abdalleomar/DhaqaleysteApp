@@ -1,129 +1,122 @@
-﻿using System.Text.Json.Serialization;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
+using System.Text.Json.Serialization;
 
-namespace DhaqaleysteApp.Models
+namespace DhaqaleysteApp.Models;
+
+/// <summary>
+/// A product as returned by the API. List calls fill the summary fields; the details call also
+/// fills <see cref="Description"/>, <see cref="Contact"/> and <see cref="Media"/>.
+/// </summary>
+public class Product : BindableModel
 {
-    public class Product : INotifyPropertyChanged
+    private string _productName = "";
+    private decimal _price;
+    private int _quantity;
+    private bool _isAvailable = true;
+    private bool _isFeatured;
+    private string _imageUrl = "";
+
+    public int ProductId { get; set; }
+
+    public string ProductName
     {
-        public event PropertyChangedEventHandler? PropertyChanged;
-
-        private string _productName = "";
-        private string _description = "";
-        private decimal _price;
-        private int _quantity;
-        private string _contact = "";
-        private string _location = "";
-        private string _category = "";
-        private string _imagePath = "";
-        private string _imageUrl = "";
-
-        public int ProductId { get; set; }
-
-        public string ProductName
-        {
-            get => _productName;
-            set { _productName = value; OnPropertyChanged(); }
-        }
-
-        public string Description
-        {
-            get => _description;
-            set { _description = value; OnPropertyChanged(); }
-        }
-
-        public decimal Price
-        {
-            get => _price;
-            set { _price = value; OnPropertyChanged(); }
-        }
-
-        public int Quantity
-        {
-            get => _quantity;
-            set { _quantity = value; OnPropertyChanged(); }
-        }
-
-        public string Contact
-        {
-            get => _contact;
-            set { _contact = value; OnPropertyChanged(); }
-        }
-        public string VideoPath { get; set; } = "";
-        public string Location
-        {
-            get => _location;
-            set { _location = value; OnPropertyChanged(); }
-        }
-
-        public string Category
-        {
-            get => _category;
-            set { _category = value; OnPropertyChanged(); }
-        }
-
-        public string ImagePath
-        {
-            get => _imagePath;
-            set { _imagePath = value; OnPropertyChanged(); }
-        }
-
-        /// <summary>Full URL of <see cref="ImagePath"/>, filled in by ApiService. Bind images to this.</summary>
-        [JsonIgnore]
-        public string ImageUrl
-        {
-            get => _imageUrl;
-            set { _imageUrl = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasImage)); }
-        }
-
-        /// <summary>Full URL of <see cref="VideoPath"/>, filled in by ApiService.</summary>
-        [JsonIgnore]
-        public string VideoUrl { get; set; } = "";
-
-        [JsonIgnore]
-        public bool HasVideo => !string.IsNullOrWhiteSpace(VideoUrl);
-
-        private void OnPropertyChanged([CallerMemberName] string propertyName = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-
-
-        [JsonIgnore]
-        public bool HasImage => !string.IsNullOrWhiteSpace(ImageUrl);
-
-        /// <summary>A copy used for editing, so the list is unchanged until the server accepts the edit.</summary>
-        public Product Clone() => new()
-        {
-            ProductId = ProductId,
-            ProductName = ProductName,
-            Description = Description,
-            Price = Price,
-            Quantity = Quantity,
-            Contact = Contact,
-            Location = Location,
-            Category = Category,
-            ImagePath = ImagePath,
-            VideoPath = VideoPath,
-            ImageUrl = ImageUrl,
-            VideoUrl = VideoUrl
-        };
-
-        /// <summary>Copies values from an edited copy back onto this instance (updates bound UI).</summary>
-        public void CopyFrom(Product other)
-        {
-            ProductName = other.ProductName;
-            Description = other.Description;
-            Price = other.Price;
-            Quantity = other.Quantity;
-            Contact = other.Contact;
-            Location = other.Location;
-            Category = other.Category;
-            ImagePath = other.ImagePath;
-            VideoPath = other.VideoPath;
-            ImageUrl = other.ImageUrl;
-            VideoUrl = other.VideoUrl;
-        }
+        get => _productName;
+        set => Set(ref _productName, value);
     }
+
+    public string ShortDescription { get; set; } = "";
+    public string Description { get; set; } = "";
+
+    public decimal Price
+    {
+        get => _price;
+        set => Set(ref _price, value, alsoChanged: new[] { nameof(PriceText) });
+    }
+
+    public int Quantity
+    {
+        get => _quantity;
+        set => Set(ref _quantity, value, alsoChanged: new[] { nameof(InStock), nameof(StockText), nameof(IsOutOfStock) });
+    }
+
+    public bool IsAvailable
+    {
+        get => _isAvailable;
+        set => Set(ref _isAvailable, value, alsoChanged: new[] { nameof(InStock), nameof(StockText), nameof(IsOutOfStock), nameof(AvailabilityActionText) });
+    }
+
+    public bool IsFeatured
+    {
+        get => _isFeatured;
+        set => Set(ref _isFeatured, value, alsoChanged: new[] { nameof(FeaturedActionText) });
+    }
+
+    public string Location { get; set; } = "";
+    public string Contact { get; set; } = "";
+    public int? CategoryId { get; set; }
+    public string CategoryName { get; set; } = "";
+    public string CategoryNameSo { get; set; } = "";
+    public int ImageCount { get; set; }
+    public bool HasVideo { get; set; }
+    public int ViewCount { get; set; }
+    public DateTime CreatedAtUtc { get; set; }
+
+    /// <summary>Main photo. The API sends a server path; ApiService turns it into a full URL.</summary>
+    public string ImageUrl
+    {
+        get => _imageUrl;
+        set => Set(ref _imageUrl, value, alsoChanged: new[] { nameof(HasImage) });
+    }
+
+    public List<ProductMediaItem> Media { get; set; } = new();
+
+    // ---------- Display helpers ----------
+
+    [JsonIgnore] public bool InStock => IsAvailable && Quantity > 0;
+    [JsonIgnore] public bool IsOutOfStock => !InStock;
+    [JsonIgnore] public bool HasImage => !string.IsNullOrWhiteSpace(ImageUrl);
+    [JsonIgnore] public string PriceText => $"${Price:0.00}";
+    [JsonIgnore] public string StockText => !IsAvailable ? "Sold out" : Quantity > 0 ? $"In stock ({Quantity})" : "Out of stock";
+    [JsonIgnore] public string AvailabilityActionText => IsAvailable ? "Mark sold out" : "Mark available";
+    [JsonIgnore] public string FeaturedActionText => IsFeatured ? "Unfeature" : "Feature";
+
+    [JsonIgnore] public IEnumerable<ProductMediaItem> Images => Media.Where(m => m.IsImage);
+    [JsonIgnore] public IEnumerable<ProductMediaItem> Videos => Media.Where(m => m.IsVideo);
+
+    /// <summary>Copies list-visible fields from a fresher copy (e.g. after a status change).</summary>
+    public void CopyFrom(Product other)
+    {
+        ProductName = other.ProductName;
+        ShortDescription = other.ShortDescription;
+        Price = other.Price;
+        Quantity = other.Quantity;
+        IsAvailable = other.IsAvailable;
+        IsFeatured = other.IsFeatured;
+        Location = other.Location;
+        CategoryId = other.CategoryId;
+        CategoryName = other.CategoryName;
+        CategoryNameSo = other.CategoryNameSo;
+        ImageUrl = other.ImageUrl;
+    }
+}
+
+public class ProductMediaItem
+{
+    public const string ImageKind = "Image";
+    public const string VideoKind = "Video";
+
+    public int ProductMediaId { get; set; }
+
+    /// <summary>Image or Video.</summary>
+    public string Kind { get; set; } = ImageKind;
+
+    /// <summary>Server path as stored by the API (sent back unchanged when saving).</summary>
+    public string Url { get; set; } = "";
+
+    public int SortOrder { get; set; }
+
+    /// <summary>Full URL for display, filled in by ApiService.</summary>
+    [JsonIgnore] public string DisplayUrl { get; set; } = "";
+
+    [JsonIgnore] public bool IsImage => Kind == ImageKind;
+    [JsonIgnore] public bool IsVideo => Kind == VideoKind;
 }

@@ -37,8 +37,9 @@ namespace DhaqaleysteApi.Controllers
 
             var products = _db.Products.AsNoTracking();
 
-            // Customers never see products in hidden categories.
-            products = products.Where(p => p.CategoryId == null || p.Category!.IsActive);
+            // Customers never see products in hidden categories; staff can ask to include them.
+            if (!(query.IncludeHidden && IsStaff))
+                products = products.Where(p => p.CategoryId == null || p.Category!.IsActive);
 
             var search = query.Search?.Trim();
             if (!string.IsNullOrEmpty(search))

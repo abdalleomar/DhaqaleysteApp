@@ -207,6 +207,13 @@ public class CatalogTests : IClassFixture<ApiFactory>
         Assert.Equal(HttpStatusCode.NotFound, (await Anonymous().GetAsync($"/api/products/{product.ProductId}")).StatusCode);
         Assert.Equal(HttpStatusCode.OK, (await admin.GetAsync($"/api/products/{product.ProductId}")).StatusCode);
 
+        var sneaky = await Anonymous().GetFromJsonAsync<PagedResult<ProductSummaryDto>>(
+            $"/api/products?categoryId={hidden.CategoryId}&includeHidden=true");
+        Assert.Empty(sneaky!.Items);
+        var staffList = await admin.GetFromJsonAsync<PagedResult<ProductSummaryDto>>(
+            $"/api/products?categoryId={hidden.CategoryId}&includeHidden=true");
+        Assert.Single(staffList!.Items);
+
         var publicCategories = await Anonymous().GetFromJsonAsync<List<CategoryDto>>("/api/categories");
         Assert.DoesNotContain(publicCategories!, c => c.CategoryId == hidden.CategoryId);
         var allCategories = await admin.GetFromJsonAsync<List<CategoryDto>>("/api/categories/all");
@@ -276,6 +283,24 @@ public class CatalogTests : IClassFixture<ApiFactory>
 
         var anonymous = await Anonymous().PutAsJsonAsync("/api/company", settings);
         Assert.Equal(HttpStatusCode.Unauthorized, anonymous.StatusCode);
+    }
+
+    [Fact]
+    public async Task Company_settings_accept_blank_optional_fields()
+    {
+        // The app sends empty strings for fields the admin left blank.
+        var admin = await AdminAsync();
+        var response = await admin.PutAsJsonAsync("/api/company", new
+        {
+            companyName = "Blank Fields Co",
+            aboutEn = "", aboutSo = "", phone = "", whatsApp = "", email = "", address = "", city = "",
+            workingHours = "", mapUrl = "", logoUrl = "", facebookUrl = "", instagramUrl = "", tikTokUrl = "",
+            websiteUrl = "", currencyCode = "USD"
+        });
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var badEmail = await admin.PutAsJsonAsync("/api/company", new { companyName = "Bad Email Co", email = "not-an-email" });
+        Assert.Equal(HttpStatusCode.BadRequest, badEmail.StatusCode);
     }
 
     [Fact]

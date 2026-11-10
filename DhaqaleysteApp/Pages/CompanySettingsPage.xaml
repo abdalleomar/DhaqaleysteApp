@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="DhaqaleysteApp.Pages.CompanySettingsPage"
+    Title="Company details">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="10">
+            <Label Text="Company details" FontSize="26" FontAttributes="Bold" TextColor="#4F46E5"/>
+            <Label Text="Customers see these in the app and use them to call or message you."
+                   FontSize="13" TextColor="#6B7280"/>
+
+            <Label Text="Logo" FontAttributes="Bold"/>
+            <HorizontalStackLayout Spacing="12">
+                <Image x:Name="LogoImage" WidthRequest="72" HeightRequest="72" Aspect="AspectFit" BackgroundColor="#EEEEEE"/>
+                <Button Text="Choose logo" Clicked="ChooseLogo_Clicked" VerticalOptions="Center"/>
+            </HorizontalStackLayout>
+
+            <Label Text="Company name *" FontAttributes="Bold"/>
+            <Entry x:Name="NameEntry" MaxLength="150"/>
+
+            <Label Text="Phone" FontAttributes="Bold"/>
+            <Entry x:Name="PhoneEntry" Keyboard="Telephone" Placeholder="+252 61 0000000" MaxLength="20"/>
+
+            <Label Text="WhatsApp (international format)" FontAttributes="Bold"/>
+            <Entry x:Name="WhatsAppEntry" Keyboard="Telephone" Placeholder="+252610000000" MaxLength="20"/>
+
+            <Label Text="Email" FontAttributes="Bold"/>
+            <Entry x:Name="EmailEntry" Keyboard="Email" MaxLength="256"/>
+
+            <Label Text="Address" FontAttributes="Bold"/>
+            <Entry x:Name="AddressEntry" MaxLength="300"/>
+
+            <Label Text="City" FontAttributes="Bold"/>
+            <Entry x:Name="CityEntry" MaxLength="100"/>
+
+            <Label Text="Working hours" FontAttributes="Bold"/>
+            <Entry x:Name="HoursEntry" Placeholder="Sat–Thu 8:00–20:00" MaxLength="200"/>
+
+            <Label Text="About (English)" FontAttributes="Bold"/>
+            <Editor x:Name="AboutEnEditor" HeightRequest="90" MaxLength="2000" AutoSize="TextChanges"/>
+
+            <Label Text="About (Somali)" FontAttributes="Bold"/>
+            <Editor x:Name="AboutSoEditor" HeightRequest="90" MaxLength="2000" AutoSize="TextChanges"/>
+
+            <Label Text="Links (must start with https://)" FontAttributes="Bold"/>
+            <Entry x:Name="MapEntry" Placeholder="Map link" Keyboard="Url" MaxLength="500"/>
+            <Entry x:Name="WebsiteEntry" Placeholder="Website" Keyboard="Url" MaxLength="500"/>
+            <Entry x:Name="FacebookEntry" Placeholder="Facebook" Keyboard="Url" MaxLength="500"/>
+            <Entry x:Name="InstagramEntry" Placeholder="Instagram" Keyboard="Url" MaxLength="500"/>
+            <Entry x:Name="TikTokEntry" Placeholder="TikTok" Keyboard="Url" MaxLength="500"/>
+
+            <Label x:Name="ErrorLabel" TextColor="#B91C1C" IsVisible="False"/>
+            <ActivityIndicator x:Name="Busy" IsRunning="False" IsVisible="False" Color="#4F46E5"/>
+
+            <Button x:Name="SaveButton" Text="Save" Clicked="Save_Clicked" BackgroundColor="#4F46E5" TextColor="White"/>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -35,7 +35,7 @@ namespace DhaqaleysteApi.Dtos
         [Required, EmailAddress, StringLength(256)]
         public string Email { get; set; } = "";
 
-        [Phone, StringLength(32)]
+        [OptionalPhone, StringLength(32)]
         public string? Phone { get; set; }
 
         [Required, StringLength(128, MinimumLength = PasswordRules.MinLength)]
@@ -54,7 +54,7 @@ namespace DhaqaleysteApi.Dtos
         [Required, EmailAddress, StringLength(256)]
         public string Email { get; set; } = "";
 
-        [Phone, StringLength(32)]
+        [OptionalPhone, StringLength(32)]
         public string? Phone { get; set; }
 
         [Required]

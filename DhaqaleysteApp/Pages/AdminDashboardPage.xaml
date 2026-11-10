@@ -3,55 +3,62 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     x:Class="DhaqaleysteApp.Pages.AdminDashboardPage"
-    Title="Dashboard">
+    Title="Dashboard"
+    BackgroundColor="#F5F6FA">
 
-    <ScrollView>
+    <RefreshView x:Name="Refresh" Refreshing="Refresh_Refreshing">
+        <ScrollView>
+            <VerticalStackLayout Padding="20" Spacing="16">
 
-        <VerticalStackLayout Padding="20" Spacing="20">
-
-            <VerticalStackLayout Spacing="4">
-                <Label Text="Dashboard"
-                       FontSize="28"
-                       FontAttributes="Bold"
-                       TextColor="#4F46E5"/>
-                <Label x:Name="WelcomeLabel"
-                       TextColor="#6B7280"/>
-            </VerticalStackLayout>
-
-            <Border Stroke="#DDDDDD"
-                    StrokeThickness="1"
-                    BackgroundColor="White">
-
-                <VerticalStackLayout Padding="15">
-                    <Label Text="📦 Total products"
-                           TextColor="#4B5563"/>
-                    <Label x:Name="ProductCountLabel"
-                           Text="…"
-                           FontSize="30"
-                           FontAttributes="Bold"
-                           TextColor="#111827"/>
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="Dashboard" FontSize="28" FontAttributes="Bold" TextColor="#4F46E5"/>
+                    <Label x:Name="WelcomeLabel" TextColor="#6B7280"/>
                 </VerticalStackLayout>
 
-            </Border>
+                <Label x:Name="ErrorLabel" TextColor="#B91C1C" IsVisible="False"/>
 
-            <Button Text="Add Product"
-                    HeightRequest="55"
-                    BackgroundColor="#4F46E5"
-                    TextColor="White"
-                    Clicked="AddProduct_Clicked"/>
+                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="12" RowSpacing="12">
+                    <Border BackgroundColor="White" Stroke="#E5E7EB" Padding="14">
+                        <VerticalStackLayout>
+                            <Label Text="📦 Products" TextColor="#4B5563"/>
+                            <Label x:Name="TotalLabel" Text="…" FontSize="28" FontAttributes="Bold" TextColor="#111827"/>
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Grid.Column="1" BackgroundColor="White" Stroke="#E5E7EB" Padding="14">
+                        <VerticalStackLayout>
+                            <Label Text="✅ In stock" TextColor="#4B5563"/>
+                            <Label x:Name="InStockLabel" Text="…" FontSize="28" FontAttributes="Bold" TextColor="#047857"/>
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Grid.Row="1" BackgroundColor="White" Stroke="#E5E7EB" Padding="14">
+                        <VerticalStackLayout>
+                            <Label Text="⛔ Out of stock" TextColor="#4B5563"/>
+                            <Label x:Name="OutOfStockLabel" Text="…" FontSize="28" FontAttributes="Bold" TextColor="#B91C1C"/>
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Grid.Row="1" Grid.Column="1" BackgroundColor="White" Stroke="#E5E7EB" Padding="14">
+                        <VerticalStackLayout>
+                            <Label Text="⭐ Featured" TextColor="#4B5563"/>
+                            <Label x:Name="FeaturedLabel" Text="…" FontSize="28" FontAttributes="Bold" TextColor="#111827"/>
+                        </VerticalStackLayout>
+                    </Border>
+                </Grid>
 
-            <Button Text="Manage Products"
-                    HeightRequest="55"
-                    Clicked="ManageProducts_Clicked"/>
+                <Border x:Name="LowStockCard" BackgroundColor="White" Stroke="#E5E7EB" Padding="14" IsVisible="False">
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Running low" FontAttributes="Bold" TextColor="#111827"/>
+                        <VerticalStackLayout x:Name="LowStockList" Spacing="2"/>
+                    </VerticalStackLayout>
+                </Border>
 
-            <Button Text="Sign out"
-                    HeightRequest="55"
-                    BackgroundColor="#B91C1C"
-                    TextColor="White"
-                    Clicked="Logout_Clicked"/>
+                <Button Text="Add Product" HeightRequest="52" BackgroundColor="#4F46E5" TextColor="White" Clicked="AddProduct_Clicked"/>
+                <Button Text="Manage Products" HeightRequest="52" Clicked="ManageProducts_Clicked"/>
+                <Button Text="Categories" HeightRequest="52" Clicked="Categories_Clicked"/>
+                <Button x:Name="CompanyButton" Text="Company details" HeightRequest="52" Clicked="Company_Clicked" IsVisible="False"/>
+                <Button Text="Sign out" HeightRequest="52" BackgroundColor="#B91C1C" TextColor="White" Clicked="Logout_Clicked"/>
 
-        </VerticalStackLayout>
-
-    </ScrollView>
+            </VerticalStackLayout>
+        </ScrollView>
+    </RefreshView>
 
 </ContentPage>

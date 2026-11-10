@@ -6,15 +6,21 @@ namespace DhaqaleysteApp.Pages;
 
 public partial class HomePage : ContentPage
 {
+    private const int PageSize = 20;
+
     private readonly ApiService _api = ServiceHelper.Get<ApiService>();
     private readonly SessionService _session = ServiceHelper.Get<SessionService>();
 
-    private List<Product> _allProducts = new();
     private CancellationTokenSource? _searchDelay;
-    private bool _isLoading;
+    private CancellationTokenSource? _loadCts;
+    private int _page;
+    private bool _hasMore;
+    private bool _isLoadingMore;
     private bool _loadedOnce;
+    private int? _categoryId;
 
     public ObservableCollection<Product> Products { get; } = new();
+    public ObservableCollection<Category> Categories { get; } = new();
 
     public HomePage()
     {
@@ -28,45 +34,96 @@ public partial class HomePage : ContentPage
 
         StaffButton.Text = await _session.IsSignedInAsync() ? "Dashboard" : "Staff";
 
-        // Reload when coming back, so staff changes show up, but never run two loads at once.
-        await LoadProductsAsync(showSpinner: !_loadedOnce);
+        // Reload when coming back so staff changes show up; keep showing the old list while it loads.
+        _ = LoadCategoriesAsync();
+        await ReloadAsync(showSpinner: !_loadedOnce);
     }
 
-    private async Task LoadProductsAsync(bool showSpinner)
+    private async Task LoadCategoriesAsync()
     {
-        if (_isLoading)
+        var result = await _api.GetCategoriesAsync();
+        if (!result.Success)
             return;
 
-        _isLoading = true;
+        Categories.Clear();
+        var all = Category.All();
+        all.IsSelected = _categoryId == null;
+        Categories.Add(all);
+        foreach (var category in result.Data!.Where(c => c.ProductCount > 0))
+        {
+            category.IsSelected = category.CategoryId == _categoryId;
+            Categories.Add(category);
+        }
+    }
+
+    /// <summary>Loads the first page for the current search and category. Cancels any load in progress.</summary>
+    private async Task ReloadAsync(bool showSpinner)
+    {
+        _loadCts?.Cancel();
+        var cts = _loadCts = new CancellationTokenSource();
+
+        if (showSpinner && Products.Count == 0)
+            ShowState(loading: true);
+
+        var result = await _api.GetProductsAsync(BuildQuery(page: 1), cts.Token);
+        if (cts.IsCancellationRequested)
+            return; // a newer search replaced this one
+
+        ProductsRefresh.IsRefreshing = false;
+
+        if (result.Success)
+        {
+            _loadedOnce = true;
+            _page = 1;
+            _hasMore = result.Data!.HasMore;
+            Products.Clear();
+            foreach (var item in result.Data.Items)
+                Products.Add(item);
+            ShowState(loading: false);
+        }
+        else if (Products.Count == 0)
+        {
+            ShowState(loading: false, error: result.Error);
+        }
+        else
+        {
+            await DisplayAlert("Could not refresh", result.Error, "OK");
+        }
+    }
+
+    private async Task LoadMoreAsync()
+    {
+        if (!_hasMore || _isLoadingMore || _loadCts == null)
+            return;
+
+        _isLoadingMore = true;
+        LoadMoreIndicator.IsVisible = LoadMoreIndicator.IsRunning = true;
+        var cts = _loadCts;
         try
         {
-            if (showSpinner && Products.Count == 0)
-                ShowState(loading: true);
+            var result = await _api.GetProductsAsync(BuildQuery(page: _page + 1), cts.Token);
+            if (cts.IsCancellationRequested || !result.Success)
+                return; // scrolling again retries
 
-            var result = await _api.GetProductsAsync();
-            if (result.Success)
-            {
-                _loadedOnce = true;
-                _allProducts = result.Data!;
-                ApplyFilter();
-                ShowState(loading: false);
-            }
-            else if (Products.Count == 0)
-            {
-                ShowState(loading: false, error: result.Error);
-            }
-            else
-            {
-                // Keep showing the products we already have.
-                await DisplayAlert("Could not refresh", result.Error, "OK");
-            }
+            _page++;
+            _hasMore = result.Data!.HasMore;
+            foreach (var item in result.Data.Items.Where(n => Products.All(p => p.ProductId != n.ProductId)))
+                Products.Add(item);
         }
         finally
         {
-            _isLoading = false;
-            ProductsRefresh.IsRefreshing = false;
+            _isLoadingMore = false;
+            LoadMoreIndicator.IsVisible = LoadMoreIndicator.IsRunning = false;
         }
     }
+
+    private ProductQuery BuildQuery(int page) => new()
+    {
+        Search = SearchBarProducts.Text,
+        CategoryId = _categoryId,
+        Page = page,
+        PageSize = PageSize
+    };
 
     private void ShowState(bool loading, string? error = null)
     {
@@ -82,11 +139,11 @@ public partial class HomePage : ContentPage
             EmptyTitle.Text = "Could not load products";
             EmptyMessage.Text = error;
         }
-        else if (!string.IsNullOrWhiteSpace(SearchBarProducts.Text))
+        else if (!string.IsNullOrWhiteSpace(SearchBarProducts.Text) || _categoryId != null)
         {
             EmptyIcon.Text = "🔍";
             EmptyTitle.Text = "No matching products";
-            EmptyMessage.Text = "Try a different search.";
+            EmptyMessage.Text = "Try a different search or category.";
         }
         else
         {
@@ -96,47 +153,45 @@ public partial class HomePage : ContentPage
         }
     }
 
-    private void ApplyFilter()
-    {
-        var search = SearchBarProducts.Text?.Trim() ?? "";
-
-        var filtered = string.IsNullOrEmpty(search)
-            ? _allProducts
-            : _allProducts.Where(x =>
-                Contains(x.ProductName, search) ||
-                Contains(x.Description, search) ||
-                Contains(x.Category, search) ||
-                Contains(x.Location, search)).ToList();
-
-        Products.Clear();
-        foreach (var item in filtered)
-            Products.Add(item);
-    }
-
-    private static bool Contains(string? value, string search) =>
-        value?.Contains(search, StringComparison.CurrentCultureIgnoreCase) == true;
-
     private async void SearchBarProducts_TextChanged(object sender, TextChangedEventArgs e)
     {
-        // Debounce: filter the products we already have once typing pauses. No network call.
+        // Debounce: search on the server once typing pauses.
         _searchDelay?.Cancel();
-        _searchDelay = new CancellationTokenSource();
+        var delay = _searchDelay = new CancellationTokenSource();
         try
         {
-            await Task.Delay(250, _searchDelay.Token);
-            ApplyFilter();
-            ShowState(loading: false);
+            await Task.Delay(400, delay.Token);
+            await ReloadAsync(showSpinner: true);
         }
         catch (TaskCanceledException)
         {
         }
     }
 
-    private async void ProductsRefresh_Refreshing(object sender, EventArgs e) =>
-        await LoadProductsAsync(showSpinner: false);
+    private async void Category_Tapped(object? sender, TappedEventArgs e)
+    {
+        if (sender is not BindableObject { BindingContext: Category tapped })
+            return;
+
+        _categoryId = tapped.CategoryId == 0 ? null : tapped.CategoryId;
+        foreach (var category in Categories)
+            category.IsSelected = category.CategoryId == tapped.CategoryId;
+
+        Products.Clear();
+        await ReloadAsync(showSpinner: true);
+    }
+
+    private async void Products_RemainingItemsThresholdReached(object? sender, EventArgs e) =>
+        await LoadMoreAsync();
+
+    private async void ProductsRefresh_Refreshing(object? sender, EventArgs e)
+    {
+        _ = LoadCategoriesAsync();
+        await ReloadAsync(showSpinner: false);
+    }
 
     private async void Retry_Clicked(object sender, EventArgs e) =>
-        await LoadProductsAsync(showSpinner: true);
+        await ReloadAsync(showSpinner: true);
 
     private async void Staff_Clicked(object sender, EventArgs e)
     {

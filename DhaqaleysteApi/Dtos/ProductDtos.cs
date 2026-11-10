@@ -43,6 +43,9 @@ namespace DhaqaleysteApi.Dtos
 
         public bool? Featured { get; set; }
 
+        /// <summary>Staff only: also list products in hidden categories. Ignored for customers.</summary>
+        public bool IncludeHidden { get; set; }
+
         /// <summary>newest (default), price_asc, price_desc, name, popular.</summary>
         public string? Sort { get; set; }
 

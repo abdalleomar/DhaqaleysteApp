@@ -59,7 +59,7 @@ namespace DhaqaleysteApi.Dtos
         [RegularExpression(@"^\+?[0-9 ]{6,20}$", ErrorMessage = "WhatsApp must be a number in international format, e.g. +252615000000.")]
         public string? WhatsApp { get; set; }
 
-        [EmailAddress, StringLength(256)] public string? Email { get; set; }
+        [OptionalEmail, StringLength(256)] public string? Email { get; set; }
         [StringLength(300)] public string? Address { get; set; }
         [StringLength(100)] public string? City { get; set; }
         [StringLength(200)] public string? WorkingHours { get; set; }

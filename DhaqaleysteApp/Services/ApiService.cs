@@ -40,21 +40,61 @@ public class ApiService
 
     // ---------- Products (public) ----------
 
-    public async Task<ApiResult<List<Product>>> GetProductsAsync(CancellationToken ct = default)
+    public async Task<ApiResult<PagedResult<Product>>> GetProductsAsync(ProductQuery query, CancellationToken ct = default)
     {
-        var result = await SendAsync<List<Product>>(() => new HttpRequestMessage(HttpMethod.Get, "api/products"), ct);
+        var result = await SendAsync<PagedResult<Product>>(() => new HttpRequestMessage(HttpMethod.Get, $"api/products?{query.ToQueryString()}"), ct);
         if (result.Success)
-            result.Data!.ForEach(PrepareProduct);
+            result.Data!.Items.ForEach(PrepareProduct);
         return result;
+    }
+
+    public async Task<ApiResult<Product>> GetProductAsync(int productId, CancellationToken ct = default)
+    {
+        var result = await SendAsync<Product>(() => new HttpRequestMessage(HttpMethod.Get, $"api/products/{productId}"), ct);
+        if (result.Success)
+            PrepareProduct(result.Data!);
+        return result;
+    }
+
+    /// <summary>Counts a customer opening a product. Failures are ignored.</summary>
+    public Task RecordViewAsync(int productId) =>
+        SendAsync(() => new HttpRequestMessage(HttpMethod.Post, $"api/products/{productId}/view"));
+
+    public Task<ApiResult<List<Category>>> GetCategoriesAsync(bool includeHidden = false, CancellationToken ct = default) =>
+        SendAsync<List<Category>>(() => new HttpRequestMessage(HttpMethod.Get, includeHidden ? "api/categories/all" : "api/categories"), ct);
+
+    public async Task<ApiResult<CompanySettings>> GetCompanyAsync(CancellationToken ct = default)
+    {
+        var result = await SendAsync<CompanySettings>(() => new HttpRequestMessage(HttpMethod.Get, "api/company"), ct);
+        if (result.Success)
+            _company = result.Data;
+        return result;
+    }
+
+    private CompanySettings? _company;
+
+    /// <summary>Company details from the last successful load (cached for Call/WhatsApp buttons).</summary>
+    public async Task<CompanySettings?> GetCachedCompanyAsync()
+    {
+        if (_company != null)
+            return _company;
+        var result = await GetCompanyAsync();
+        return result.Success ? result.Data : null;
     }
 
     // ---------- Products (staff) ----------
 
-    public Task<ApiResult<Product>> AddProductAsync(Product product) =>
-        SendAsync<Product>(() => new HttpRequestMessage(HttpMethod.Post, "api/products") { Content = JsonContent.Create(ToRequest(product)) });
+    public Task<ApiResult<Product>> AddProductAsync(ProductForm form) =>
+        SendPreparedAsync(() => new HttpRequestMessage(HttpMethod.Post, "api/products") { Content = JsonContent.Create(form) });
 
-    public Task<ApiResult<Product>> UpdateProductAsync(Product product) =>
-        SendAsync<Product>(() => new HttpRequestMessage(HttpMethod.Put, $"api/products/{product.ProductId}") { Content = JsonContent.Create(ToRequest(product)) });
+    public Task<ApiResult<Product>> UpdateProductAsync(int productId, ProductForm form) =>
+        SendPreparedAsync(() => new HttpRequestMessage(HttpMethod.Put, $"api/products/{productId}") { Content = JsonContent.Create(form) });
+
+    public Task<ApiResult<Product>> UpdateStatusAsync(int productId, bool? isAvailable = null, bool? isFeatured = null, int? quantity = null) =>
+        SendPreparedAsync(() => new HttpRequestMessage(HttpMethod.Patch, $"api/products/{productId}/status")
+        {
+            Content = JsonContent.Create(new { isAvailable, isFeatured, quantity })
+        });
 
     public Task<ApiResult> DeleteProductAsync(int productId) =>
         SendAsync(() => new HttpRequestMessage(HttpMethod.Delete, $"api/products/{productId}"));
@@ -62,6 +102,30 @@ public class ApiService
     public Task<ApiResult<string>> UploadImageAsync(string filePath) => UploadAsync("api/upload/image", filePath);
 
     public Task<ApiResult<string>> UploadVideoAsync(string filePath) => UploadAsync("api/upload/video", filePath);
+
+    public Task<ApiResult<CatalogStats>> GetStatsAsync(CancellationToken ct = default) =>
+        SendAsync<CatalogStats>(() => new HttpRequestMessage(HttpMethod.Get, "api/stats"), ct);
+
+    // ---------- Categories and company (staff/admin) ----------
+
+    public Task<ApiResult<Category>> SaveCategoryAsync(Category category)
+    {
+        var body = new { name = category.Name, nameSo = category.NameSo, icon = category.Icon, sortOrder = category.SortOrder, isActive = category.IsActive };
+        return category.CategoryId == 0
+            ? SendAsync<Category>(() => new HttpRequestMessage(HttpMethod.Post, "api/categories") { Content = JsonContent.Create(body) })
+            : SendAsync<Category>(() => new HttpRequestMessage(HttpMethod.Put, $"api/categories/{category.CategoryId}") { Content = JsonContent.Create(body) });
+    }
+
+    public Task<ApiResult> DeleteCategoryAsync(int categoryId) =>
+        SendAsync(() => new HttpRequestMessage(HttpMethod.Delete, $"api/categories/{categoryId}"));
+
+    public async Task<ApiResult<CompanySettings>> UpdateCompanyAsync(CompanySettings settings)
+    {
+        var result = await SendAsync<CompanySettings>(() => new HttpRequestMessage(HttpMethod.Put, "api/company") { Content = JsonContent.Create(settings) });
+        if (result.Success)
+            _company = result.Data;
+        return result;
+    }
 
     // ---------- Staff sign-in ----------
 
@@ -95,22 +159,18 @@ public class ApiService
 
     private void PrepareProduct(Product product)
     {
-        product.ImageUrl = ResolveMediaUrl(product.ImagePath);
-        product.VideoUrl = ResolveMediaUrl(product.VideoPath);
+        product.ImageUrl = ResolveMediaUrl(product.ImageUrl);
+        foreach (var media in product.Media)
+            media.DisplayUrl = ResolveMediaUrl(media.Url);
     }
 
-    private static object ToRequest(Product p) => new
+    private async Task<ApiResult<Product>> SendPreparedAsync(Func<HttpRequestMessage> build)
     {
-        productName = p.ProductName,
-        description = p.Description,
-        price = p.Price,
-        quantity = p.Quantity,
-        contact = p.Contact,
-        location = p.Location,
-        category = p.Category,
-        imagePath = p.ImagePath,
-        videoPath = p.VideoPath
-    };
+        var result = await SendAsync<Product>(build);
+        if (result.Success)
+            PrepareProduct(result.Data!);
+        return result;
+    }
 
     private async Task<ApiResult<string>> UploadAsync(string url, string filePath)
     {

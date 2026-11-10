@@ -3,46 +3,107 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     x:Class="DhaqaleysteApp.Pages.ProductDetailsPage"
-    Title="Product Details">
+    Title="Product"
+    BackgroundColor="White">
 
-    <ScrollView>
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Share" Clicked="Share_Clicked"/>
+    </ContentPage.ToolbarItems>
 
-        <VerticalStackLayout Padding="20" Spacing="15">
+    <Grid RowDefinitions="*,Auto">
 
-            <Image x:Name="ProductImage"
-                   HeightRequest="250"
-                   Aspect="AspectFill"
-                   BackgroundColor="#EEEEEE"/>
-            
-            <Button x:Name="PlayVideoButton"
-        Text="Play Product Video"
-        Clicked="PlayVideo_Clicked"
-        BackgroundColor="#4F46E5"
-        TextColor="White"
-        IsVisible="False"/>
+        <ScrollView>
+            <VerticalStackLayout Spacing="14" Padding="0,0,0,20">
 
-            <Label x:Name="ProductNameLabel"
-                   FontSize="28"
-                   FontAttributes="Bold"/>
+                <!-- Gallery -->
+                <Grid HeightRequest="300" BackgroundColor="#F3F4F6">
+                    <CarouselView x:Name="Gallery"
+                                  IndicatorView="GalleryIndicator"
+                                  Loop="False">
+                        <CarouselView.ItemTemplate>
+                            <DataTemplate>
+                                <Image Source="{Binding DisplayUrl}" Aspect="AspectFill"/>
+                            </DataTemplate>
+                        </CarouselView.ItemTemplate>
+                        <CarouselView.EmptyView>
+                            <Label Text="📦" FontSize="80" HorizontalOptions="Center" VerticalOptions="Center"/>
+                        </CarouselView.EmptyView>
+                    </CarouselView>
+                    <IndicatorView x:Name="GalleryIndicator"
+                                   VerticalOptions="End"
+                                   HorizontalOptions="Center"
+                                   Margin="0,0,0,10"
+                                   IndicatorColor="#D1D5DB"
+                                   SelectedIndicatorColor="#4F46E5"/>
+                </Grid>
 
-            <Label x:Name="PriceLabel"
-                   FontSize="24"
-                   TextColor="Green"/>
+                <VerticalStackLayout Padding="20,0" Spacing="10">
 
-            <Label x:Name="QuantityLabel"/>
+                    <Label x:Name="CategoryLabel" TextColor="#4F46E5" FontSize="14"/>
 
-            <Label x:Name="LocationLabel"/>
+                    <Label x:Name="ProductNameLabel"
+                           FontSize="26"
+                           FontAttributes="Bold"
+                           TextColor="#111827"/>
 
-            <Label x:Name="ContactLabel"/>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label x:Name="PriceLabel"
+                               FontSize="26"
+                               FontAttributes="Bold"
+                               TextColor="#047857"/>
+                        <Border x:Name="StockBadge"
+                                Grid.Column="1"
+                                Padding="10,4"
+                                StrokeShape="RoundRectangle 10"
+                                StrokeThickness="0"
+                                VerticalOptions="Center">
+                            <Label x:Name="StockLabel" FontSize="13"/>
+                        </Border>
+                    </Grid>
 
-            <Label Text="Description"
-                   FontSize="18"
-                   FontAttributes="Bold"/>
+                    <Label x:Name="LocationLabel" TextColor="#4B5563"/>
 
-            <Label x:Name="DescriptionLabel"/>
+                    <ActivityIndicator x:Name="Busy" IsRunning="True" Color="#4F46E5"/>
 
-        </VerticalStackLayout>
+                    <Label x:Name="ErrorLabel" TextColor="#B91C1C" IsVisible="False"/>
 
-    </ScrollView>
+                    <Label x:Name="DescriptionTitle"
+                           Text="Description"
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           TextColor="#111827"
+                           IsVisible="False"/>
+                    <Label x:Name="DescriptionLabel" TextColor="#374151" LineHeight="1.3"/>
+
+                    <VerticalStackLayout x:Name="VideosSection" Spacing="8" IsVisible="False">
+                        <Label Text="Videos" FontSize="18" FontAttributes="Bold" TextColor="#111827"/>
+                        <VerticalStackLayout x:Name="VideoButtons" Spacing="8"/>
+                    </VerticalStackLayout>
+
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Contact bar -->
+        <Grid Grid.Row="1"
+              x:Name="ContactBar"
+              ColumnDefinitions="*,*"
+              ColumnSpacing="12"
+              Padding="20,12"
+              BackgroundColor="White"
+              IsVisible="False">
+            <Button x:Name="CallButton"
+                    Text="📞 Call"
+                    BackgroundColor="#4F46E5"
+                    TextColor="White"
+                    Clicked="Call_Clicked"/>
+            <Button x:Name="WhatsAppButton"
+                    Grid.Column="1"
+                    Text="💬 WhatsApp"
+                    BackgroundColor="#16A34A"
+                    TextColor="White"
+                    Clicked="WhatsApp_Clicked"/>
+        </Grid>
+    </Grid>
 
 </ContentPage>
