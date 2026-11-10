@@ -11,6 +11,17 @@ public partial class CategoriesViewModel : BaseViewModel
     private readonly ApiService _api;
     private readonly NavigationService _navigation;
     private bool _loadedOnce;
+    private int _loadedVersion = -1;
+    private DateTime _loadedAtUtc;
+
+    /// <summary>
+    /// Reload when staff changed the catalogue, when nothing is shown yet, or when the data is a few
+    /// minutes old. Otherwise switching tabs stays instant.
+    /// </summary>
+    private bool NeedsReload =>
+        !_loadedOnce || IsEmpty || HasError ||
+        _loadedVersion != CatalogEvents.Version ||
+        DateTime.UtcNow - _loadedAtUtc > TimeSpan.FromMinutes(2);
 
     public CategoriesViewModel(ApiService api, NavigationService navigation)
     {
@@ -26,8 +37,8 @@ public partial class CategoriesViewModel : BaseViewModel
 
     public async Task OnAppearingAsync()
     {
-        if (!_loadedOnce)
-            await LoadAsync(showSpinner: true);
+        if (NeedsReload)
+            await LoadAsync(showSpinner: !_loadedOnce);
     }
 
     [RelayCommand]
@@ -55,6 +66,8 @@ public partial class CategoriesViewModel : BaseViewModel
 
         ClearError();
         _loadedOnce = true;
+        _loadedVersion = CatalogEvents.Version;
+        _loadedAtUtc = DateTime.UtcNow;
         Categories.Clear();
         foreach (var category in result.Data!.Where(c => c.ProductCount > 0))
             Categories.Add(category);

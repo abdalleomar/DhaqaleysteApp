@@ -101,7 +101,7 @@ public class ApiService
         });
 
     public Task<ApiResult> DeleteProductAsync(int productId) =>
-        SendAsync(() => new HttpRequestMessage(HttpMethod.Delete, $"api/products/{productId}"));
+        MarkChanged(SendAsync(() => new HttpRequestMessage(HttpMethod.Delete, $"api/products/{productId}")));
 
     public Task<ApiResult<string>> UploadImageAsync(string filePath) => UploadAsync("api/upload/image", filePath);
 
@@ -115,19 +115,30 @@ public class ApiService
     public Task<ApiResult<Category>> SaveCategoryAsync(Category category)
     {
         var body = new { name = category.Name, nameSo = category.NameSo, icon = category.Icon, sortOrder = category.SortOrder, isActive = category.IsActive };
-        return category.CategoryId == 0
+        return MarkChanged(category.CategoryId == 0
             ? SendAsync<Category>(() => new HttpRequestMessage(HttpMethod.Post, "api/categories") { Content = JsonContent.Create(body) })
-            : SendAsync<Category>(() => new HttpRequestMessage(HttpMethod.Put, $"api/categories/{category.CategoryId}") { Content = JsonContent.Create(body) });
+            : SendAsync<Category>(() => new HttpRequestMessage(HttpMethod.Put, $"api/categories/{category.CategoryId}") { Content = JsonContent.Create(body) }));
     }
 
     public Task<ApiResult> DeleteCategoryAsync(int categoryId) =>
-        SendAsync(() => new HttpRequestMessage(HttpMethod.Delete, $"api/categories/{categoryId}"));
+        MarkChanged(SendAsync(() => new HttpRequestMessage(HttpMethod.Delete, $"api/categories/{categoryId}")));
+
+    private static async Task<T> MarkChanged<T>(Task<T> call) where T : ApiResult
+    {
+        var result = await call;
+        if (result.Success)
+            CatalogEvents.Changed();
+        return result;
+    }
 
     public async Task<ApiResult<CompanySettings>> UpdateCompanyAsync(CompanySettings settings)
     {
         var result = await SendAsync<CompanySettings>(() => new HttpRequestMessage(HttpMethod.Put, "api/company") { Content = JsonContent.Create(settings) });
         if (result.Success)
+        {
             _company = result.Data;
+            CatalogEvents.Changed();
+        }
         return result;
     }
 
@@ -172,7 +183,10 @@ public class ApiService
     {
         var result = await SendAsync<Product>(build);
         if (result.Success)
+        {
             PrepareProduct(result.Data!);
+            CatalogEvents.Changed();
+        }
         return result;
     }
 

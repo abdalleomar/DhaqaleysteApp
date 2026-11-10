@@ -19,6 +19,17 @@ public partial class HomeViewModel : BaseViewModel
     private bool _hasMore;
     private bool _isLoadingMore;
     private bool _loadedOnce;
+    private int _loadedVersion = -1;
+    private DateTime _loadedAtUtc;
+
+    /// <summary>
+    /// Reload when staff changed the catalogue, when nothing is shown yet, or when the data is a few
+    /// minutes old. Otherwise switching tabs stays instant.
+    /// </summary>
+    private bool NeedsReload =>
+        !_loadedOnce || IsEmpty || HasError ||
+        _loadedVersion != CatalogEvents.Version ||
+        DateTime.UtcNow - _loadedAtUtc > TimeSpan.FromMinutes(2);
 
     public HomeViewModel(ApiService api, LocalStore store, NavigationService navigation)
     {
@@ -42,8 +53,8 @@ public partial class HomeViewModel : BaseViewModel
     public async Task OnAppearingAsync()
     {
         await LoadRecentAsync();
-        if (!_loadedOnce)
-            await LoadAsync(showSpinner: true);
+        if (NeedsReload)
+            await LoadAsync(showSpinner: !_loadedOnce);
     }
 
     [RelayCommand]
@@ -83,6 +94,8 @@ public partial class HomeViewModel : BaseViewModel
 
             ClearError();
             _loadedOnce = true;
+            _loadedVersion = CatalogEvents.Version;
+            _loadedAtUtc = DateTime.UtcNow;
 
             if (companyTask.Result.Success && !string.IsNullOrWhiteSpace(companyTask.Result.Data!.CompanyName))
                 CompanyName = companyTask.Result.Data.CompanyName;
