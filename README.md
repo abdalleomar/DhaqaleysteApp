@@ -60,7 +60,9 @@ Secrets are never committed. In development they live in .NET user-secrets on yo
    dotnet ef database update
    ```
 
-   Upgrading from the first version: existing user accounts are kept but deactivated, because their passwords were stored in plain text. Old customer accounts become `Legacy` (no permissions). Products are not changed.
+   Upgrading from the first version:
+   - Existing user accounts are kept but deactivated, because their passwords were stored in plain text. Old customer accounts become `Legacy` (no permissions).
+   - Each product's free-text category becomes a real category (same names), and its image and video move to the new media table. Old `https://localhost:7192/...` links are converted so they work from any server. No product data is lost.
 
 5. **Run**: `dotnet run --launch-profile http` (listens on `http://localhost:5092`).
 
@@ -80,13 +82,24 @@ Set these as environment variables on the server (never in `appsettings.json`):
 
 | Endpoint | Access |
 |---|---|
-| `GET /api/products`, `GET /api/products/{id}` | Public |
-| `POST/PUT/DELETE /api/products...` | Staff |
+| `GET /api/products?search=&categoryId=&minPrice=&maxPrice=&inStock=&featured=&sort=&page=&pageSize=` | Public. Paged (max 50 per page). `sort`: `newest`, `price_asc`, `price_desc`, `name`, `popular` |
+| `GET /api/products/{id}` | Public. Full details with all images and videos |
+| `POST /api/products/{id}/view` | Public. Counts a view (used for "popular") |
+| `POST /api/products`, `PUT /api/products/{id}` | Staff |
+| `PATCH /api/products/{id}/status` | Staff. Quick sold-out / featured / quantity change |
+| `DELETE /api/products/{id}` | Staff. Hides the product; it stays in the database |
+| `GET /api/categories` | Public (active categories) |
+| `GET /api/categories/all`, `POST/PUT/DELETE /api/categories...` | Staff. Only empty categories can be deleted |
+| `GET /api/company` | Public. Company name, phone, WhatsApp, address, links |
+| `PUT /api/company` | Admin |
+| `GET /api/stats` | Staff. Dashboard numbers |
 | `POST /api/upload/image`, `POST /api/upload/video` | Staff |
 | `POST /api/auth/login`, `/refresh`, `/logout` | Public (rate limited) |
 | `GET /api/auth/me`, `POST /api/auth/change-password` | Staff |
 | `GET/POST/PUT /api/staff`, `POST /api/staff/{id}/reset-password` | Admin |
 | `GET /health` | Public |
+
+A product has up to 10 images and 3 videos. The first image is the main photo.
 
 ## Running the tests
 

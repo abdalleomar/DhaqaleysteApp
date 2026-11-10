@@ -19,18 +19,23 @@ public static class TestHelpers
         return client;
     }
 
-    public static object ValidProduct(string name = "Test Product") => new
+    public static object ValidProduct(string name = "Test Product", int? categoryId = null, decimal price = 12.5m,
+        int quantity = 3, bool isAvailable = true, bool isFeatured = false, object[]? media = null) => new
     {
         productName = name,
         description = "A product",
-        price = 12.5m,
-        quantity = 3,
+        price,
+        quantity,
         contact = "615000000",
         location = "Mogadishu",
-        category = "Phones",
-        imagePath = "",
-        videoPath = ""
+        categoryId,
+        isAvailable,
+        isFeatured,
+        media = media ?? Array.Empty<object>()
     };
+
+    public static object Image(string url) => new { kind = "Image", url };
+    public static object Video(string url) => new { kind = "Video", url };
 
     public static readonly byte[] PngBytes =
     {

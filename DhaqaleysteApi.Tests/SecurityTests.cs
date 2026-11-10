@@ -50,7 +50,7 @@ public class SecurityTests : IClassFixture<ApiFactory>
     {
         var response = await Anonymous().PostAsJsonAsync("/api/users/register",
             new { fullName = "x", email = "x@x.com", password = "Password1", role = "ADMIN" });
-        Assert.Contains(response.StatusCode, new[] { HttpStatusCode.NotFound, HttpStatusCode.Unauthorized });
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
 
     // ---------- Product write protection ----------
@@ -76,11 +76,11 @@ public class SecurityTests : IClassFixture<ApiFactory>
 
         var created = await client.PostAsJsonAsync("/api/products", TestHelpers.ValidProduct("Phone"));
         Assert.Equal(HttpStatusCode.Created, created.StatusCode);
-        var product = (await created.Content.ReadFromJsonAsync<ProductDto>())!;
+        var product = (await created.Content.ReadFromJsonAsync<ProductDetailDto>())!;
 
         var updated = await client.PutAsJsonAsync($"/api/products/{product.ProductId}", TestHelpers.ValidProduct("Phone v2"));
         Assert.Equal(HttpStatusCode.OK, updated.StatusCode);
-        Assert.Equal("Phone v2", (await updated.Content.ReadFromJsonAsync<ProductDto>())!.ProductName);
+        Assert.Equal("Phone v2", (await updated.Content.ReadFromJsonAsync<ProductDetailDto>())!.ProductName);
 
         Assert.Equal(HttpStatusCode.NoContent, (await client.DeleteAsync($"/api/products/{product.ProductId}")).StatusCode);
         Assert.Equal(HttpStatusCode.NotFound, (await Anonymous().GetAsync($"/api/products/{product.ProductId}")).StatusCode);
@@ -106,14 +106,8 @@ public class SecurityTests : IClassFixture<ApiFactory>
     public async Task Products_cannot_point_at_external_media()
     {
         var admin = await AdminAsync();
-        var product = new
-        {
-            productName = "Bad image",
-            price = 1m,
-            quantity = 1,
-            imagePath = "https://evil.example/tracker.png"
-        };
-        var response = await admin.PostAsJsonAsync("/api/products", product);
+        var response = await admin.PostAsJsonAsync("/api/products",
+            TestHelpers.ValidProduct("Bad image", media: new[] { TestHelpers.Image("https://evil.example/tracker.png") }));
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
@@ -265,7 +259,8 @@ public class SecurityTests : IClassFixture<ApiFactory>
         Assert.Equal("nosniff", file.Headers.GetValues("X-Content-Type-Options").Single());
 
         // The uploaded path can be used on a product.
-        var product = await admin.PostAsJsonAsync("/api/products", new { productName = "With image", price = 1m, quantity = 1, imagePath = url });
+        var product = await admin.PostAsJsonAsync("/api/products",
+            TestHelpers.ValidProduct("With image", media: new[] { TestHelpers.Image(url) }));
         Assert.Equal(HttpStatusCode.Created, product.StatusCode);
     }
 

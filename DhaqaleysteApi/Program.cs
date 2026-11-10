@@ -167,12 +167,17 @@ app.UseStaticFiles(new StaticFileOptions
 if (Directory.Exists(app.Environment.WebRootPath))
     app.UseStaticFiles(new StaticFileOptions { ContentTypeProvider = mediaTypes });
 
+// Routing runs after static files, so a real media file is served before the 404 fallback route is chosen.
+app.UseRouting();
 app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 app.MapGet("/health", () => Results.Ok(new { status = "ok" })).AllowAnonymous();
+
+// Unknown URLs (including missing media files) are 404, not "please sign in".
+app.MapFallback("{*path}", () => Results.Problem(statusCode: StatusCodes.Status404NotFound, title: "Not Found")).AllowAnonymous();
 
 try
 {

@@ -102,12 +102,37 @@ namespace DhaqaleysteApi.Services
             return new FileStorageResult { Success = true, Url = $"{PublicPrefix}/{folder}/{fileName}" };
         }
 
-        /// <summary>True when a stored product path points at our own media folder (or is empty).</summary>
-        public static bool IsOwnMediaPath(string? path) =>
-            string.IsNullOrWhiteSpace(path) ||
-            (path.StartsWith(PublicPrefix + "/images/", StringComparison.Ordinal) ||
-             path.StartsWith(PublicPrefix + "/videos/", StringComparison.Ordinal)) &&
-            !path.Contains("..") && !path.Contains('\\');
+        /// <summary>True when the URL points at a file uploaded to our own media folder.</summary>
+        public static bool IsOwnMediaPath(string? path, MediaKind kind)
+        {
+            if (string.IsNullOrWhiteSpace(path) || path.Contains("..") || path.Contains('\\') || path.Contains("//", StringComparison.Ordinal))
+                return false;
+
+            var folder = kind == MediaKind.Image ? "/images/" : "/videos/";
+            return path.StartsWith(PublicPrefix + folder, StringComparison.Ordinal);
+        }
+
+        /// <summary>Deletes an uploaded file that is no longer used. Ignores anything outside our media folder.</summary>
+        public void TryDelete(string? url)
+        {
+            if (string.IsNullOrWhiteSpace(url) || !url.StartsWith(PublicPrefix + "/", StringComparison.Ordinal) || url.Contains(".."))
+                return;
+
+            try
+            {
+                var relative = url[(PublicPrefix.Length + 1)..].Replace('/', Path.DirectorySeparatorChar);
+                var fullPath = Path.GetFullPath(Path.Combine(RootPath, relative));
+                if (fullPath.StartsWith(RootPath + Path.DirectorySeparatorChar, StringComparison.Ordinal) && File.Exists(fullPath))
+                {
+                    File.Delete(fullPath);
+                    _logger.LogInformation("Deleted unused media {Url}", url);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Could not delete media {Url}", url);
+            }
+        }
 
         private static bool SignatureMatches(string extension, ReadOnlySpan<byte> h)
         {
