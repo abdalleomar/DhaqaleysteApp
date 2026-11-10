@@ -51,6 +51,14 @@ namespace DhaqaleysteApi.Controllers
                     (p.Category != null && (p.Category.Name.Contains(search) || p.Category.NameSo.Contains(search))));
             }
 
+            if (!string.IsNullOrEmpty(query.Ids))
+            {
+                var ids = query.Ids.Split(',').Select(int.Parse).Distinct().ToList();
+                if (ids.Count > 50)
+                    return ValidationError(nameof(query.Ids), "At most 50 ids can be requested at once.");
+                products = products.Where(p => ids.Contains(p.ProductId));
+            }
+
             if (query.CategoryId != null)
                 products = products.Where(p => p.CategoryId == query.CategoryId);
             if (query.MinPrice != null)

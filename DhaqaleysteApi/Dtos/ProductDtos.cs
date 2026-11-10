@@ -43,6 +43,11 @@ namespace DhaqaleysteApi.Dtos
 
         public bool? Featured { get; set; }
 
+        /// <summary>Comma-separated product ids (max 50), e.g. for a customer's saved favourites.</summary>
+        [StringLength(600)]
+        [RegularExpression(@"^\d+(,\d+)*$", ErrorMessage = "Ids must be a comma-separated list of numbers.")]
+        public string? Ids { get; set; }
+
         /// <summary>Staff only: also list products in hidden categories. Ignored for customers.</summary>
         public bool IncludeHidden { get; set; }
 

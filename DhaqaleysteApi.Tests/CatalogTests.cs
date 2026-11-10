@@ -84,6 +84,24 @@ public class CatalogTests : IClassFixture<ApiFactory>
     }
 
     [Fact]
+    public async Task Products_can_be_fetched_by_ids_for_favourites()
+    {
+        var admin = await AdminAsync();
+        var a = await CreateProductAsync(admin, TestHelpers.ValidProduct("Fav A"));
+        var b = await CreateProductAsync(admin, TestHelpers.ValidProduct("Fav B"));
+        var deleted = await CreateProductAsync(admin, TestHelpers.ValidProduct("Fav deleted"));
+        await admin.DeleteAsync($"/api/products/{deleted.ProductId}");
+
+        var result = await Anonymous().GetFromJsonAsync<PagedResult<ProductSummaryDto>>(
+            $"/api/products?ids={a.ProductId},{b.ProductId},{deleted.ProductId}&pageSize=50");
+        Assert.Equal(new[] { a.ProductId, b.ProductId }.OrderBy(x => x), result!.Items.Select(p => p.ProductId).OrderBy(x => x));
+
+        Assert.Equal(HttpStatusCode.BadRequest, (await Anonymous().GetAsync("/api/products?ids=1;DROP")).StatusCode);
+        var tooMany = string.Join(",", Enumerable.Range(1, 51));
+        Assert.Equal(HttpStatusCode.BadRequest, (await Anonymous().GetAsync($"/api/products?ids={tooMany}")).StatusCode);
+    }
+
+    [Fact]
     public async Task Search_treats_wildcards_as_text()
     {
         var response = await Anonymous().GetFromJsonAsync<PagedResult<ProductSummaryDto>>("/api/products?search=%25%25%25");
