@@ -59,7 +59,7 @@
                          Icon="{Binding StateIcon}"
                          Title="{Binding StateTitle}"
                          Message="{Binding StateMessage}"
-                         ActionText="{loc:Translate TryAgain}"
+                         ActionText="{Binding StateActionText}"
                          ActionCommand="{Binding RetryCommand}" />
     </Grid>
 </ContentPage>

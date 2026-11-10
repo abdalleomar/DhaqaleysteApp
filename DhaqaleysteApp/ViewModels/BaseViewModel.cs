@@ -38,6 +38,9 @@ public abstract partial class BaseViewModel : ObservableObject
     public string StateMessage => HasError ? ErrorMessage : EmptyMessage;
     public string StateIcon => HasError ? (IsOffline ? "" : "") : EmptyIcon;
 
+    /// <summary>"Try again" only when something failed; an empty list has nothing to retry.</summary>
+    public string StateActionText => HasError ? Loc.T("TryAgain") : "";
+
     protected virtual string EmptyTitle => Loc.T("NoProductsTitle");
     protected virtual string EmptyMessage => Loc.T("NoProductsMessage");
     protected virtual string EmptyIcon => "";
@@ -61,5 +64,6 @@ public abstract partial class BaseViewModel : ObservableObject
         OnPropertyChanged(nameof(StateTitle));
         OnPropertyChanged(nameof(StateMessage));
         OnPropertyChanged(nameof(StateIcon));
+        OnPropertyChanged(nameof(StateActionText));
     }
 }
