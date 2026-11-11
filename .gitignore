@@ -365,3 +365,7 @@ FodyWeavers.xsd
 DhaqaleysteApi/uploads/
 DhaqaleysteApi/wwwroot/images/
 DhaqaleysteApi/wwwroot/videos/
+
+# Android signing keys: keep them safe and NEVER commit them
+*.keystore
+*.jks

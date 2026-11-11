@@ -7,6 +7,7 @@ using DhaqaleysteApi.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
@@ -123,6 +124,16 @@ var app = builder.Build();
 
 // ---------- Pipeline ----------
 
+// Behind a reverse proxy, tunnel or load balancer, use the visitor's real address and https scheme.
+// Turn on ONLY when the API cannot be reached directly (otherwise anyone could fake their address).
+if (config.GetValue("ForwardedHeaders:Enabled", false))
+{
+    var forwarded = new ForwardedHeadersOptions { ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto };
+    forwarded.KnownNetworks.Clear();
+    forwarded.KnownProxies.Clear();
+    app.UseForwardedHeaders(forwarded);
+}
+
 app.UseExceptionHandler(errorApp => errorApp.Run(async context =>
 {
     var error = context.Features.Get<IExceptionHandlerFeature>()?.Error;
@@ -177,6 +188,13 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.MapGet("/health", () => Results.Ok(new { status = "ok" })).AllowAnonymous();
+
+// Privacy policy for Google Play and the app (English and Somali).
+app.MapGet("/privacy", async (AppDbContext db) =>
+{
+    var company = await db.CompanySettings.AsNoTracking().FirstOrDefaultAsync() ?? new CompanySettings();
+    return Results.Content(PrivacyPolicyPage.Render(company), "text/html; charset=utf-8");
+}).AllowAnonymous();
 
 // Unknown URLs (including missing media files) are 404, not "please sign in".
 app.MapFallback("{*path}", () => Results.Problem(statusCode: StatusCodes.Status404NotFound, title: "Not Found")).AllowAnonymous();

@@ -334,6 +334,19 @@ public class CatalogTests : IClassFixture<ApiFactory>
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
 
+    // ---------- Privacy policy ----------
+
+    [Fact]
+    public async Task Privacy_policy_is_public_in_both_languages()
+    {
+        var response = await Anonymous().GetAsync("/privacy");
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal("text/html", response.Content.Headers.ContentType?.MediaType);
+        var html = await response.Content.ReadAsStringAsync();
+        Assert.Contains("Privacy policy", html);
+        Assert.Contains("lang=\"so\"", html);
+    }
+
     // ---------- Stats and views ----------
 
     [Fact]

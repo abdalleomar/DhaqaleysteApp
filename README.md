@@ -26,6 +26,10 @@ Customers open the app and browse the company's products without signing in. Com
 
 C# · .NET 9 · .NET MAUI · ASP.NET Core Web API · Entity Framework Core · SQL Server · XAML
 
+## Release
+
+Testing on phones (APK), hosting, and publishing on Google Play: see **[docs/RELEASE.md](docs/RELEASE.md)**. The privacy policy page is served by the API at `/privacy`.
+
 ## Projects
 
 | Folder | What it is |
