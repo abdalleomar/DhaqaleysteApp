@@ -1,64 +1,115 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage
-    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    x:Class="DhaqaleysteApp.Pages.AdminDashboardPage"
-    Title="Dashboard"
-    BackgroundColor="{DynamicResource PageBackgroundColor}">
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DhaqaleysteApp.Pages.AdminDashboardPage"
+             Title="Dashboard"
+             Shell.NavBarIsVisible="False">
 
     <RefreshView x:Name="Refresh" Refreshing="Refresh_Refreshing">
         <ScrollView>
-            <VerticalStackLayout Padding="20" Spacing="16">
+            <VerticalStackLayout Padding="20,16,20,24" Spacing="16">
 
-                <VerticalStackLayout Spacing="4">
-                    <Label Text="Dashboard" FontSize="28" FontAttributes="Bold" TextColor="{DynamicResource PrimaryColor}"/>
-                    <Label x:Name="WelcomeLabel" TextColor="{DynamicResource TextTertiaryColor}"/>
-                </VerticalStackLayout>
-
-                <Label x:Name="ErrorLabel" TextColor="{DynamicResource DangerColor}" IsVisible="False"/>
-
-                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="12" RowSpacing="12">
-                    <Border BackgroundColor="{DynamicResource SurfaceColor}" Stroke="{DynamicResource BorderColor}" Padding="14">
-                        <VerticalStackLayout>
-                            <Label Text="📦 Products" TextColor="{DynamicResource TextSecondaryColor}"/>
-                            <Label x:Name="TotalLabel" Text="…" FontSize="28" FontAttributes="Bold" TextColor="{DynamicResource TextPrimaryColor}"/>
-                        </VerticalStackLayout>
+                <Grid ColumnDefinitions="44,*,Auto">
+                    <Border Style="{StaticResource FloatingCircle}" Stroke="{DynamicResource BorderColor}" StrokeThickness="1"
+                            SemanticProperties.Description="Back">
+                        <Border.GestureRecognizers><TapGestureRecognizer Tapped="Back_Tapped" /></Border.GestureRecognizers>
+                        <Label Text="{StaticResource IconBack}" Style="{StaticResource Icon}" FontSize="26" />
                     </Border>
-                    <Border Grid.Column="1" BackgroundColor="{DynamicResource SurfaceColor}" Stroke="{DynamicResource BorderColor}" Padding="14">
-                        <VerticalStackLayout>
-                            <Label Text="✅ In stock" TextColor="{DynamicResource TextSecondaryColor}"/>
-                            <Label x:Name="InStockLabel" Text="…" FontSize="28" FontAttributes="Bold" TextColor="{DynamicResource SuccessColor}"/>
-                        </VerticalStackLayout>
-                    </Border>
-                    <Border Grid.Row="1" BackgroundColor="{DynamicResource SurfaceColor}" Stroke="{DynamicResource BorderColor}" Padding="14">
-                        <VerticalStackLayout>
-                            <Label Text="⛔ Out of stock" TextColor="{DynamicResource TextSecondaryColor}"/>
-                            <Label x:Name="OutOfStockLabel" Text="…" FontSize="28" FontAttributes="Bold" TextColor="{DynamicResource DangerColor}"/>
-                        </VerticalStackLayout>
-                    </Border>
-                    <Border Grid.Row="1" Grid.Column="1" BackgroundColor="{DynamicResource SurfaceColor}" Stroke="{DynamicResource BorderColor}" Padding="14">
-                        <VerticalStackLayout>
-                            <Label Text="⭐ Featured" TextColor="{DynamicResource TextSecondaryColor}"/>
-                            <Label x:Name="FeaturedLabel" Text="…" FontSize="28" FontAttributes="Bold" TextColor="{DynamicResource TextPrimaryColor}"/>
-                        </VerticalStackLayout>
+                    <Border Grid.Column="2" StrokeThickness="0" StrokeShape="RoundRectangle 15" HeightRequest="30" Padding="12,0"
+                            BackgroundColor="{DynamicResource InkColor}" VerticalOptions="Center">
+                        <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                            <Label Text="{StaticResource IconLock}" Style="{StaticResource Icon}" FontSize="14" TextColor="{DynamicResource OnInkColor}" />
+                            <Label x:Name="RoleLabel" FontSize="12" FontFamily="BodySemibold" VerticalOptions="Center" TextColor="{DynamicResource OnInkColor}" />
+                        </HorizontalStackLayout>
                     </Border>
                 </Grid>
 
-                <Border x:Name="LowStockCard" BackgroundColor="{DynamicResource SurfaceColor}" Stroke="{DynamicResource BorderColor}" Padding="14" IsVisible="False">
-                    <VerticalStackLayout Spacing="4">
-                        <Label Text="Running low" FontAttributes="Bold" TextColor="{DynamicResource TextPrimaryColor}"/>
-                        <VerticalStackLayout x:Name="LowStockList" Spacing="2"/>
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="Dashboard" Style="{StaticResource TitleText}" />
+                    <Label x:Name="WelcomeLabel" FontSize="15" TextColor="{DynamicResource TextTertiaryColor}" />
+                </VerticalStackLayout>
+
+                <Label x:Name="ErrorLabel" Style="{StaticResource ErrorText}" IsVisible="False" />
+
+                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="12" RowSpacing="12">
+                <Border Grid.Column="0" Grid.Row="0" StrokeThickness="0" StrokeShape="RoundRectangle 18" Padding="16"
+                        BackgroundColor="{DynamicResource PrimaryColor}">
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="Products" FontSize="13" TextColor="{DynamicResource PrimaryMutedTextColor}" />
+                        <Label x:Name="TotalLabel" Text="…" FontFamily="HeadingHeavy" FontSize="30" TextColor="{DynamicResource OnPrimaryColor}" />
+                    </VerticalStackLayout>
+                </Border>
+                <Border Grid.Column="1" Grid.Row="0" Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="In stock" FontSize="13" TextColor="{DynamicResource TextTertiaryColor}" />
+                        <Label x:Name="InStockLabel" Text="…" FontFamily="HeadingHeavy" FontSize="30" TextColor="{DynamicResource SuccessColor}" />
+                    </VerticalStackLayout>
+                </Border>
+                <Border Grid.Column="0" Grid.Row="1" Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="Sold out" FontSize="13" TextColor="{DynamicResource TextTertiaryColor}" />
+                        <Label x:Name="OutOfStockLabel" Text="…" FontFamily="HeadingHeavy" FontSize="30" TextColor="{DynamicResource DangerColor}" />
+                    </VerticalStackLayout>
+                </Border>
+                <Border Grid.Column="1" Grid.Row="1" Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="Featured" FontSize="13" TextColor="{DynamicResource TextTertiaryColor}" />
+                        <Label x:Name="FeaturedLabel" Text="…" FontFamily="HeadingHeavy" FontSize="30" TextColor="{DynamicResource AccentColor}" />
+                    </VerticalStackLayout>
+                </Border>
+                </Grid>
+
+                <Button Text="Add product" Style="{StaticResource InkButton}" HeightRequest="54" Clicked="AddProduct_Clicked">
+                    <Button.ImageSource>
+                        <FontImageSource FontFamily="Icons" Glyph="{StaticResource IconPlus}" Size="20" Color="{DynamicResource OnInkColor}" />
+                    </Button.ImageSource>
+                </Button>
+
+                <Border Style="{StaticResource Card}" Padding="0" StrokeShape="RoundRectangle 20">
+                    <VerticalStackLayout>
+                    <Grid ColumnDefinitions="36,*,Auto" ColumnSpacing="14" Padding="16,0" HeightRequest="60">
+                        <Grid.GestureRecognizers><TapGestureRecognizer Tapped="ManageProducts_Clicked" /></Grid.GestureRecognizers>
+                        <Border Style="{StaticResource IconSquare}" WidthRequest="36" HeightRequest="36" StrokeShape="RoundRectangle 10">
+                            <Label Text="{StaticResource IconInventory}" Style="{StaticResource Icon}" FontSize="18" TextColor="{DynamicResource PrimaryColor}" />
+                        </Border>
+                        <Label Grid.Column="1" Text="Manage products" FontFamily="BodySemibold" FontSize="15" VerticalOptions="Center" />
+                        <Label Grid.Column="2" Text="{StaticResource IconChevron}" Style="{StaticResource Icon}" FontSize="20" TextColor="{DynamicResource TextTertiaryColor}" />
+                    </Grid>
+                    <BoxView Style="{StaticResource Divider}" />
+                    <Grid ColumnDefinitions="36,*,Auto" ColumnSpacing="14" Padding="16,0" HeightRequest="60">
+                        <Grid.GestureRecognizers><TapGestureRecognizer Tapped="Categories_Clicked" /></Grid.GestureRecognizers>
+                        <Border Style="{StaticResource IconSquare}" WidthRequest="36" HeightRequest="36" StrokeShape="RoundRectangle 10">
+                            <Label Text="{StaticResource IconCategories}" Style="{StaticResource Icon}" FontSize="18" TextColor="{DynamicResource PrimaryColor}" />
+                        </Border>
+                        <Label Grid.Column="1" Text="Categories" FontFamily="BodySemibold" FontSize="15" VerticalOptions="Center" />
+                        <Label Grid.Column="2" Text="{StaticResource IconChevron}" Style="{StaticResource Icon}" FontSize="20" TextColor="{DynamicResource TextTertiaryColor}" />
+                    </Grid>
+                    <BoxView Style="{StaticResource Divider}" />
+                    <VerticalStackLayout x:Name="CompanyRow" IsVisible="False">
+                        <BoxView Style="{StaticResource Divider}" />
+                    <Grid ColumnDefinitions="36,*,Auto" ColumnSpacing="14" Padding="16,0" HeightRequest="60">
+                        <Grid.GestureRecognizers><TapGestureRecognizer Tapped="Company_Clicked" /></Grid.GestureRecognizers>
+                        <Border Style="{StaticResource IconSquare}" WidthRequest="36" HeightRequest="36" StrokeShape="RoundRectangle 10">
+                            <Label Text="{StaticResource IconStore}" Style="{StaticResource Icon}" FontSize="18" TextColor="{DynamicResource PrimaryColor}" />
+                        </Border>
+                        <Label Grid.Column="1" Text="Company details" FontFamily="BodySemibold" FontSize="15" VerticalOptions="Center" />
+                        <Label Grid.Column="2" Text="{StaticResource IconChevron}" Style="{StaticResource Icon}" FontSize="20" TextColor="{DynamicResource TextTertiaryColor}" />
+                    </Grid>
+                    </VerticalStackLayout>
                     </VerticalStackLayout>
                 </Border>
 
-                <Button Text="Add Product" HeightRequest="52" BackgroundColor="{DynamicResource PrimaryColor}" TextColor="{DynamicResource OnPrimaryColor}" Clicked="AddProduct_Clicked"/>
-                <Button Text="Manage Products" HeightRequest="52" Clicked="ManageProducts_Clicked"/>
-                <Button Text="Categories" HeightRequest="52" Clicked="Categories_Clicked"/>
-                <Button x:Name="CompanyButton" Text="Company details" HeightRequest="52" Clicked="Company_Clicked" IsVisible="False"/>
-                <Button Text="Sign out" HeightRequest="52" BackgroundColor="{DynamicResource DangerColor}" TextColor="{DynamicResource OnPrimaryColor}" Clicked="Logout_Clicked"/>
+                <Border x:Name="LowStockCard" StrokeShape="RoundRectangle 20" StrokeThickness="1" Padding="16" IsVisible="False"
+                        BackgroundColor="{DynamicResource WarningCardColor}" Stroke="{DynamicResource WarningBorderColor}">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="Running low" FontFamily="Heading" FontSize="15" TextColor="{DynamicResource WarningTextColor}" />
+                        <VerticalStackLayout x:Name="LowStockList" Spacing="8" />
+                    </VerticalStackLayout>
+                </Border>
 
+                <Button Text="Sign out" Style="{StaticResource TextButton}" TextColor="{DynamicResource DangerColor}"
+                        HorizontalOptions="Center" Clicked="Logout_Clicked" />
             </VerticalStackLayout>
         </ScrollView>
     </RefreshView>
-
 </ContentPage>

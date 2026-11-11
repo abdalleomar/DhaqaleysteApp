@@ -3,27 +3,49 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
                     x:Class="DhaqaleysteApp.Resources.Styles.DarkTheme">
-    <Color x:Key="PrimaryColor">#6366F1</Color>
-    <Color x:Key="PrimaryPressedColor">#4F46E5</Color>
-    <Color x:Key="OnPrimaryColor">#FFFFFF</Color>
-    <Color x:Key="PrimarySoftColor">#1E1B4B</Color>
+    <Color x:Key="PrimaryColor">#2BB39A</Color>
+    <Color x:Key="PrimaryPressedColor">#239B85</Color>
+    <Color x:Key="OnPrimaryColor">#04241E</Color>
+    <Color x:Key="PrimarySoftColor">#12302A</Color>
+    <Color x:Key="PrimaryMutedTextColor">#6FD8C1</Color>
+    <Color x:Key="PrimaryDeepColor">#173B33</Color>
+
+    <Color x:Key="InkColor">#EEF1F4</Color>
+    <Color x:Key="OnInkColor">#0B0F14</Color>
+    <Color x:Key="InkRaisedColor">#D5DAE0</Color>
+    <Color x:Key="OnInkMutedColor">#3F4857</Color>
+
     <Color x:Key="AccentColor">#FBBF24</Color>
-    <Color x:Key="AccentSoftColor">#422006</Color>
+    <Color x:Key="AccentSoftColor">#3A2A0A</Color>
+    <Color x:Key="WarningCardColor">#2A2010</Color>
+    <Color x:Key="WarningBorderColor">#4A3714</Color>
+    <Color x:Key="WarningTextColor">#FCD58A</Color>
 
-    <Color x:Key="PageBackgroundColor">#0B0F19</Color>
-    <Color x:Key="SurfaceColor">#151B2B</Color>
-    <Color x:Key="SurfaceVariantColor">#1F2937</Color>
-    <Color x:Key="BorderColor">#2A3245</Color>
+    <Color x:Key="PageBackgroundColor">#0B0F14</Color>
+    <Color x:Key="SurfaceColor">#151B23</Color>
+    <Color x:Key="SurfaceVariantColor">#1C2530</Color>
+    <Color x:Key="SegmentBackgroundColor">#1C2530</Color>
+    <Color x:Key="BorderColor">#232B36</Color>
+    <Color x:Key="DividerColor">#232B36</Color>
+    <Color x:Key="PlaceholderIconColor">#5E6B78</Color>
 
-    <Color x:Key="TextPrimaryColor">#F3F4F6</Color>
-    <Color x:Key="TextSecondaryColor">#B4BCC8</Color>
-    <Color x:Key="TextTertiaryColor">#8B93A7</Color>
-    <Color x:Key="PlaceholderColor">#6B7280</Color>
+    <Color x:Key="TextPrimaryColor">#EEF1F4</Color>
+    <Color x:Key="TextSecondaryColor">#C3CAD3</Color>
+    <Color x:Key="TextTertiaryColor">#9AA5B1</Color>
+    <Color x:Key="PlaceholderColor">#7D8895</Color>
 
     <Color x:Key="SuccessColor">#34D399</Color>
-    <Color x:Key="SuccessSoftColor">#064E3B</Color>
+    <Color x:Key="SuccessSoftColor">#0E3B2E</Color>
+    <Color x:Key="OpenDotColor">#34D399</Color>
     <Color x:Key="DangerColor">#F87171</Color>
-    <Color x:Key="DangerSoftColor">#450A0A</Color>
-    <Color x:Key="WhatsAppColor">#16A34A</Color>
+    <Color x:Key="DangerSoftColor">#3A1414</Color>
+    <Color x:Key="WhatsAppColor">#12753F</Color>
     <Color x:Key="FavoriteColor">#FB7185</Color>
+
+    <Color x:Key="Tint1Bg">#12302A</Color><Color x:Key="Tint1Fg">#6FD8C1</Color>
+    <Color x:Key="Tint2Bg">#1E2246</Color><Color x:Key="Tint2Fg">#A5ADF5</Color>
+    <Color x:Key="Tint3Bg">#3A2A0A</Color><Color x:Key="Tint3Fg">#FCD58A</Color>
+    <Color x:Key="Tint4Bg">#3A1622</Color><Color x:Key="Tint4Fg">#F5A3B8</Color>
+    <Color x:Key="Tint5Bg">#1C2A30</Color><Color x:Key="Tint5Fg">#9CC6D2</Color>
+    <Color x:Key="Tint6Bg">#252A1A</Color><Color x:Key="Tint6Fg">#C8D39A</Color>
 </ResourceDictionary>

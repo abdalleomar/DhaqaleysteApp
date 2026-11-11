@@ -7,29 +7,92 @@
              xmlns:loc="clr-namespace:DhaqaleysteApp.Services.Localization"
              x:Class="DhaqaleysteApp.Pages.ProductListPage"
              x:DataType="vm:ProductListViewModel"
-             Title="{Binding Title}">
+             Title="{Binding Title}"
+             Shell.NavBarIsVisible="False">
 
-    <Grid RowDefinitions="Auto,Auto,*">
+    <Grid RowDefinitions="Auto,Auto,Auto,*,Auto">
 
-        <!-- Search -->
-        <Border Style="{StaticResource InputBox}" Margin="16,8,16,4" Padding="8,0">
-            <SearchBar x:Name="Search" Text="{Binding SearchText}" Placeholder="{loc:Translate SearchPlaceholder}" />
-        </Border>
-
-        <!-- Result count and filters -->
-        <Grid Grid.Row="1" ColumnDefinitions="*,Auto" Padding="16,4">
-            <Label Text="{Binding ResultsText}" Style="{StaticResource CaptionText}" VerticalOptions="Center" />
-            <Button Grid.Column="1" Text="{Binding FiltersText}" Style="{StaticResource SecondaryButton}"
-                    Command="{Binding OpenFiltersCommand}" Padding="14,6" MinimumHeightRequest="38" />
+        <!-- Back + search -->
+        <Grid ColumnDefinitions="44,*" ColumnSpacing="10" Padding="20,16,20,0">
+            <Border Style="{StaticResource FloatingCircle}" Stroke="{DynamicResource BorderColor}" StrokeThickness="1"
+                    SemanticProperties.Description="{loc:Translate Back}">
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding GoBackCommand}" />
+                </Border.GestureRecognizers>
+                <Label Text="{StaticResource IconBack}" Style="{StaticResource Icon}" FontSize="26" />
+            </Border>
+            <Border Grid.Column="1" Style="{StaticResource InputBox}" Stroke="{DynamicResource PrimaryColor}" StrokeThickness="1.5"
+                    HeightRequest="48" MinimumHeightRequest="48" Padding="14,0,8,0">
+                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+                    <Label Text="{StaticResource IconSearch}" Style="{StaticResource Icon}" FontSize="20" />
+                    <Entry x:Name="Search" Grid.Column="1" Text="{Binding SearchText}" Placeholder="{loc:Translate SearchPlaceholder}"
+                           ReturnType="Search" ClearButtonVisibility="Never" VerticalOptions="Center" />
+                    <Border Grid.Column="2" WidthRequest="22" HeightRequest="22" StrokeThickness="0" StrokeShape="RoundRectangle 11"
+                            BackgroundColor="{DynamicResource BorderColor}" IsVisible="{Binding HasSearchText}">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding ClearSearchCommand}" />
+                        </Border.GestureRecognizers>
+                        <Label Text="{StaticResource IconClose}" Style="{StaticResource Icon}" FontSize="13"
+                               TextColor="{DynamicResource TextTertiaryColor}" />
+                    </Border>
+                </Grid>
+            </Border>
         </Grid>
 
-        <RefreshView Grid.Row="2" IsRefreshing="{Binding IsRefreshing}" Command="{Binding RefreshCommand}"
+        <!-- Filters and active filter chips -->
+        <ScrollView Grid.Row="1" Orientation="Horizontal" HorizontalScrollBarVisibility="Never" Padding="20,14,0,0">
+            <HorizontalStackLayout Spacing="8">
+                <Border Style="{StaticResource InkChip}" Padding="14,0">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding OpenFiltersCommand}" />
+                    </Border.GestureRecognizers>
+                    <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                        <Label Text="{StaticResource IconFilter}" Style="{StaticResource Icon}" FontSize="16"
+                               TextColor="{DynamicResource OnInkColor}" />
+                        <Label Text="{Binding FiltersText}" FontSize="14" FontFamily="BodySemibold" VerticalOptions="Center"
+                               TextColor="{DynamicResource OnInkColor}" />
+                    </HorizontalStackLayout>
+                </Border>
+                <HorizontalStackLayout BindableLayout.ItemsSource="{Binding ActiveChips}" Spacing="8">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="vm:FilterChip">
+                            <Border Style="{StaticResource ActiveChip}">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding RemoveCommand}" />
+                                </Border.GestureRecognizers>
+                                <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                                    <Label Text="{Binding Text}" FontSize="14" FontFamily="BodySemibold" VerticalOptions="Center"
+                                           TextColor="{DynamicResource PrimaryColor}" />
+                                    <Label Text="{StaticResource IconClose}" Style="{StaticResource Icon}" FontSize="14"
+                                           TextColor="{DynamicResource PrimaryColor}" />
+                                </HorizontalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </HorizontalStackLayout>
+                <BoxView WidthRequest="12" Color="Transparent" />
+            </HorizontalStackLayout>
+        </ScrollView>
+
+        <!-- Result count + sort -->
+        <Grid Grid.Row="2" ColumnDefinitions="*,Auto" Padding="20,6,12,0">
+            <Label Text="{Binding ResultsText}" FontSize="14" TextColor="{DynamicResource TextTertiaryColor}" VerticalOptions="Center" />
+            <HorizontalStackLayout Grid.Column="1" Spacing="2" Padding="8,0" HeightRequest="44">
+                <HorizontalStackLayout.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding ChooseSortCommand}" />
+                </HorizontalStackLayout.GestureRecognizers>
+                <Label Text="{Binding SortText}" FontSize="14" FontFamily="BodySemibold" VerticalOptions="Center" />
+                <Label Text="{StaticResource IconChevronDown}" Style="{StaticResource Icon}" FontSize="18" />
+            </HorizontalStackLayout>
+        </Grid>
+
+        <RefreshView Grid.Row="3" IsRefreshing="{Binding IsRefreshing}" Command="{Binding RefreshCommand}"
                      IsVisible="{Binding ShowContent}">
             <CollectionView ItemsSource="{Binding Products}"
                             RemainingItemsThreshold="6"
                             RemainingItemsThresholdReachedCommand="{Binding LoadMoreCommand}"
                             SelectionMode="None"
-                            Margin="10,0">
+                            Margin="14,0">
                 <CollectionView.ItemsLayout>
                     <GridItemsLayout Orientation="Vertical" Span="2" />
                 </CollectionView.ItemsLayout>
@@ -53,7 +116,7 @@
             </CollectionView>
         </RefreshView>
 
-        <views:StateView Grid.Row="2"
+        <views:StateView Grid.Row="3"
                          IsVisible="{Binding ShowState}"
                          IsLoading="{Binding IsLoading}"
                          Icon="{Binding StateIcon}"
@@ -61,5 +124,7 @@
                          Message="{Binding StateMessage}"
                          ActionText="{Binding StateActionText}"
                          ActionCommand="{Binding RetryCommand}" />
+
+        <views:TabBarView Grid.Row="4" Current="home" />
     </Grid>
 </ContentPage>

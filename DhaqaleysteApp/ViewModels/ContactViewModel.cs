@@ -66,6 +66,20 @@ public partial class ContactViewModel : BaseViewModel
         }
     }
 
+    public bool ThemeIsAuto => _theme.Choice == ThemeChoice.System;
+    public bool ThemeIsLight => _theme.Choice == ThemeChoice.Light;
+    public bool ThemeIsDark => _theme.Choice == ThemeChoice.Dark;
+
+    [RelayCommand]
+    private void SetTheme(string choice)
+    {
+        _theme.SetChoice(choice switch { "light" => ThemeChoice.Light, "dark" => ThemeChoice.Dark, _ => ThemeChoice.System });
+        OnPropertyChanged(nameof(ThemeIsAuto));
+        OnPropertyChanged(nameof(ThemeIsLight));
+        OnPropertyChanged(nameof(ThemeIsDark));
+        OnPropertyChanged(nameof(ThemeIndex));
+    }
+
     public async Task OnAppearingAsync()
     {
         StaffText = await _session.IsSignedInAsync() ? Loc.T("StaffDashboard") : Loc.T("StaffSignIn");

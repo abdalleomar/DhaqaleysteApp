@@ -38,7 +38,7 @@ public partial class ProductDetailsViewModel : BaseViewModel
     [NotifyPropertyChangedFor(nameof(FavoriteIcon), nameof(FavoriteText))]
     private bool _isFavorite;
 
-    public string FavoriteIcon => IsFavorite ? "" : "";
+    public string FavoriteIcon => IsFavorite ? Icons.Favorite : Icons.FavoriteBorder;
     public string FavoriteText => IsFavorite ? Loc.T("RemoveFavorite") : Loc.T("AddFavorite");
 
     public string Description => string.IsNullOrWhiteSpace(Product.Description) ? Product.ShortDescription : Product.Description;
@@ -77,7 +77,7 @@ public partial class ProductDetailsViewModel : BaseViewModel
         Videos.Clear();
         var videos = Product.Videos.ToList();
         for (var i = 0; i < videos.Count; i++)
-            Videos.Add(new VideoItem(videos[i].DisplayUrl, videos.Count == 1 ? Loc.T("PlayVideo") : Loc.T("PlayVideoNumber", i + 1)));
+            Videos.Add(new VideoItem(videos[i].DisplayUrl, videos.Count == 1 ? Loc.T("WatchVideo") : Loc.T("WatchVideoNumber", i + 1)));
         HasVideos = Videos.Count > 0;
 
         _ = _api.RecordViewAsync(Product.ProductId);
@@ -113,6 +113,9 @@ public partial class ProductDetailsViewModel : BaseViewModel
         IsFavorite = await _store.ToggleFavoriteAsync(Product);
         try { HapticFeedback.Default.Perform(HapticFeedbackType.Click); } catch (Exception) { }
     }
+
+    [RelayCommand]
+    private Task GoBackAsync() => Shell.Current.Navigation.PopAsync();
 
     [RelayCommand]
     private Task CallAsync() => ContactLauncher.CallAsync(_phone);

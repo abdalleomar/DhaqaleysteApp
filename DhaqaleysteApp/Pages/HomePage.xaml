@@ -10,155 +10,217 @@
              Title="{loc:Translate TabHome}"
              Shell.NavBarIsVisible="False">
 
-    <RefreshView IsRefreshing="{Binding IsRefreshing}" Command="{Binding RefreshCommand}">
-        <CollectionView ItemsSource="{Binding NewArrivals}"
-                        RemainingItemsThreshold="6"
-                        RemainingItemsThresholdReachedCommand="{Binding LoadMoreCommand}"
-                        SelectionMode="None">
+    <Grid RowDefinitions="*,Auto">
+        <RefreshView IsRefreshing="{Binding IsRefreshing}" Command="{Binding RefreshCommand}">
+            <CollectionView ItemsSource="{Binding NewArrivals}"
+                            RemainingItemsThreshold="6"
+                            RemainingItemsThresholdReachedCommand="{Binding LoadMoreCommand}"
+                            SelectionMode="None"
+                            Margin="14,0">
 
-            <CollectionView.ItemsLayout>
-                <GridItemsLayout Orientation="Vertical" Span="2" />
-            </CollectionView.ItemsLayout>
+                <CollectionView.ItemsLayout>
+                    <GridItemsLayout Orientation="Vertical" Span="2" />
+                </CollectionView.ItemsLayout>
 
-            <CollectionView.Header>
-                <VerticalStackLayout Spacing="18" Padding="16,12,16,4">
+                <CollectionView.Header>
+                    <VerticalStackLayout Spacing="20" Padding="6,20,6,6">
 
-                    <!-- Brand header -->
-                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
-                        <Border WidthRequest="40" HeightRequest="40" StrokeThickness="0"
-                                StrokeShape="RoundRectangle 12" BackgroundColor="{DynamicResource PrimaryColor}">
-                            <Label Text="{StaticResource IconStore}" Style="{StaticResource Icon}"
-                                   TextColor="{DynamicResource OnPrimaryColor}" />
-                        </Border>
-                        <Label Grid.Column="1" Text="{Binding CompanyName}" Style="{StaticResource HeadlineText}"
-                               VerticalOptions="Center" />
-                    </Grid>
+                        <!-- Brand bar -->
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                            <Border WidthRequest="40" HeightRequest="40" StrokeThickness="0" StrokeShape="RoundRectangle 12"
+                                    BackgroundColor="{DynamicResource PrimaryColor}">
+                                <Label Text="{StaticResource IconStore}" Style="{StaticResource Icon}"
+                                       TextColor="{DynamicResource OnPrimaryColor}" />
+                            </Border>
+                            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                                <Label Text="{Binding CompanyName}" FontFamily="HeadingHeavy" FontSize="18" />
+                                <Label Text="{Binding CompanyCity}" FontSize="12" TextColor="{DynamicResource TextTertiaryColor}"
+                                       IsVisible="{Binding HasCity}" />
+                            </VerticalStackLayout>
 
-                    <!-- Search box: opens the search screen -->
-                    <Border Style="{StaticResource InputBox}" Padding="14,0" HeightRequest="48">
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding OpenSearchCommand}" />
-                        </Border.GestureRecognizers>
-                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
-                            <Label Text="{StaticResource IconSearch}" Style="{StaticResource Icon}" />
-                            <Label Grid.Column="1" Text="{loc:Translate SearchPlaceholder}" VerticalOptions="Center"
-                                   TextColor="{DynamicResource PlaceholderColor}" />
-                        </Grid>
-                    </Border>
-
-                    <!-- Categories -->
-                    <CollectionView ItemsSource="{Binding Categories}" IsVisible="{Binding HasCategories}"
-                                    HeightRequest="40" SelectionMode="None">
-                        <CollectionView.ItemsLayout>
-                            <LinearItemsLayout Orientation="Horizontal" ItemSpacing="8" />
-                        </CollectionView.ItemsLayout>
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate x:DataType="models:Category">
-                                <Border Style="{StaticResource Chip}" VerticalOptions="Center">
-                                    <Border.GestureRecognizers>
-                                        <TapGestureRecognizer
-                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HomeViewModel}}, Path=OpenCategoryCommand, x:DataType=vm:HomeViewModel}"
-                                            CommandParameter="{Binding .}" />
-                                    </Border.GestureRecognizers>
-                                    <Label Text="{Binding DisplayName}" FontSize="14" FontFamily="OpenSansSemibold" />
-                                </Border>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
-
-                    <!-- Featured -->
-                    <VerticalStackLayout Spacing="10" IsVisible="{Binding HasFeatured}">
-                        <Grid ColumnDefinitions="*,Auto">
-                            <Label Text="{loc:Translate Featured}" Style="{StaticResource SectionTitleText}" VerticalOptions="Center" />
-                            <Button Grid.Column="1" Text="{loc:Translate SeeAll}" Style="{StaticResource TextButton}"
-                                    Command="{Binding SeeAllFeaturedCommand}" />
-                        </Grid>
-                        <CollectionView ItemsSource="{Binding Featured}" HeightRequest="262" SelectionMode="None">
-                            <CollectionView.ItemsLayout>
-                                <LinearItemsLayout Orientation="Horizontal" ItemSpacing="12" />
-                            </CollectionView.ItemsLayout>
-                            <CollectionView.ItemTemplate>
-                                <DataTemplate x:DataType="models:Product">
-                                    <views:ProductCard WidthRequest="170">
-                                        <views:ProductCard.GestureRecognizers>
-                                            <TapGestureRecognizer
-                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HomeViewModel}}, Path=OpenProductCommand, x:DataType=vm:HomeViewModel}"
-                                                CommandParameter="{Binding .}" />
-                                        </views:ProductCard.GestureRecognizers>
-                                    </views:ProductCard>
-                                </DataTemplate>
-                            </CollectionView.ItemTemplate>
-                        </CollectionView>
-                    </VerticalStackLayout>
-
-                    <!-- Recently viewed (saved on this phone) -->
-                    <VerticalStackLayout Spacing="10" IsVisible="{Binding HasRecent}">
-                        <Label Text="{loc:Translate RecentlyViewed}" Style="{StaticResource SectionTitleText}" />
-                        <CollectionView ItemsSource="{Binding Recent}" HeightRequest="96" SelectionMode="None">
-                            <CollectionView.ItemsLayout>
-                                <LinearItemsLayout Orientation="Horizontal" ItemSpacing="10" />
-                            </CollectionView.ItemsLayout>
-                            <CollectionView.ItemTemplate>
-                                <DataTemplate x:DataType="models:Product">
-                                    <Border Style="{StaticResource Card}" Padding="0" WidthRequest="220" HeightRequest="90">
-                                        <Border.GestureRecognizers>
-                                            <TapGestureRecognizer
-                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HomeViewModel}}, Path=OpenProductCommand, x:DataType=vm:HomeViewModel}"
-                                                CommandParameter="{Binding .}" />
-                                        </Border.GestureRecognizers>
-                                        <Grid ColumnDefinitions="90,*">
-                                            <Grid BackgroundColor="{DynamicResource SurfaceVariantColor}">
-                                                <Label Text="{StaticResource IconStore}" Style="{StaticResource Icon}"
-                                                       TextColor="{DynamicResource TextTertiaryColor}" />
-                                                <Image Source="{Binding ImageUrl}" Aspect="AspectFill" IsVisible="{Binding HasImage}" />
-                                            </Grid>
-                                            <VerticalStackLayout Grid.Column="1" Padding="10,8" Spacing="2" VerticalOptions="Center">
-                                                <Label Text="{Binding ProductName}" FontFamily="OpenSansSemibold" FontSize="14"
-                                                       MaxLines="2" LineBreakMode="TailTruncation" />
-                                                <Label Text="{Binding PriceText}" Style="{StaticResource PriceText}" FontSize="14" />
-                                            </VerticalStackLayout>
-                                        </Grid>
+                            <!-- EN | SO switch -->
+                            <Border Grid.Column="2" HeightRequest="36" Padding="3" StrokeShape="RoundRectangle 18" StrokeThickness="1"
+                                    Stroke="{DynamicResource BorderColor}" BackgroundColor="{DynamicResource SurfaceColor}"
+                                    VerticalOptions="Center" SemanticProperties.Description="{loc:Translate Language}">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding ToggleLanguageCommand}" />
+                                </Border.GestureRecognizers>
+                                <HorizontalStackLayout>
+                                    <Border StrokeThickness="0" StrokeShape="RoundRectangle 14" Padding="10,0" HeightRequest="28">
+                                        <Border.Triggers>
+                                            <DataTrigger TargetType="Border" Binding="{Binding IsEnglish}" Value="True">
+                                                <Setter Property="BackgroundColor" Value="{DynamicResource InkColor}" />
+                                            </DataTrigger>
+                                        </Border.Triggers>
+                                        <Label Text="EN" FontSize="12" FontFamily="BodySemibold" VerticalOptions="Center"
+                                               TextColor="{DynamicResource TextTertiaryColor}">
+                                            <Label.Triggers>
+                                                <DataTrigger TargetType="Label" Binding="{Binding IsEnglish}" Value="True">
+                                                    <Setter Property="TextColor" Value="{DynamicResource OnInkColor}" />
+                                                </DataTrigger>
+                                            </Label.Triggers>
+                                        </Label>
                                     </Border>
-                                </DataTemplate>
-                            </CollectionView.ItemTemplate>
-                        </CollectionView>
+                                    <Border StrokeThickness="0" StrokeShape="RoundRectangle 14" Padding="10,0" HeightRequest="28">
+                                        <Border.Triggers>
+                                            <DataTrigger TargetType="Border" Binding="{Binding IsSomali}" Value="True">
+                                                <Setter Property="BackgroundColor" Value="{DynamicResource InkColor}" />
+                                            </DataTrigger>
+                                        </Border.Triggers>
+                                        <Label Text="SO" FontSize="12" FontFamily="BodySemibold" VerticalOptions="Center"
+                                               TextColor="{DynamicResource TextTertiaryColor}">
+                                            <Label.Triggers>
+                                                <DataTrigger TargetType="Label" Binding="{Binding IsSomali}" Value="True">
+                                                    <Setter Property="TextColor" Value="{DynamicResource OnInkColor}" />
+                                                </DataTrigger>
+                                            </Label.Triggers>
+                                        </Label>
+                                    </Border>
+                                </HorizontalStackLayout>
+                            </Border>
+                        </Grid>
+
+                        <Label Text="{loc:Translate HomeHeadline}" Style="{StaticResource HeadlineText}" Margin="0,4,0,0" />
+
+                        <!-- Search + filters -->
+                        <Grid ColumnDefinitions="*,52" ColumnSpacing="10">
+                            <Border Style="{StaticResource InputBox}" HeightRequest="52" Padding="16,0">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding OpenSearchCommand}" />
+                                </Border.GestureRecognizers>
+                                <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+                                    <Label Text="{StaticResource IconSearch}" Style="{StaticResource Icon}" FontSize="20" />
+                                    <Label Text="{loc:Translate SearchPlaceholder}" VerticalOptions="Center"
+                                           TextColor="{DynamicResource PlaceholderColor}" />
+                                </HorizontalStackLayout>
+                            </Border>
+                            <Border Grid.Column="1" HeightRequest="52" StrokeThickness="0" StrokeShape="RoundRectangle 16"
+                                    BackgroundColor="{DynamicResource PrimaryColor}" SemanticProperties.Description="{loc:Translate Filters}">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding OpenSearchCommand}" />
+                                </Border.GestureRecognizers>
+                                <Label Text="{StaticResource IconFilter}" Style="{StaticResource Icon}"
+                                       TextColor="{DynamicResource OnPrimaryColor}" />
+                            </Border>
+                        </Grid>
+
+                        <!-- Categories -->
+                        <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never" IsVisible="{Binding HasCategories}"
+                                    Margin="0,0,-20,0">
+                            <HorizontalStackLayout Spacing="8">
+                                <Border Style="{StaticResource InkChip}">
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding SeeAllProductsCommand}" />
+                                    </Border.GestureRecognizers>
+                                    <Label Text="{loc:Translate All}" FontSize="14" FontFamily="BodySemibold" VerticalOptions="Center"
+                                           TextColor="{DynamicResource OnInkColor}" />
+                                </Border>
+                                <HorizontalStackLayout BindableLayout.ItemsSource="{Binding Categories}" Spacing="8">
+                                    <BindableLayout.ItemTemplate>
+                                        <DataTemplate x:DataType="models:Category">
+                                            <Border Style="{StaticResource Chip}">
+                                                <Border.GestureRecognizers>
+                                                    <TapGestureRecognizer
+                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HomeViewModel}}, Path=OpenCategoryCommand, x:DataType=vm:HomeViewModel}"
+                                                        CommandParameter="{Binding .}" />
+                                                </Border.GestureRecognizers>
+                                                <Label Text="{Binding LocalName}" FontSize="14" FontFamily="BodyMedium" VerticalOptions="Center" />
+                                            </Border>
+                                        </DataTemplate>
+                                    </BindableLayout.ItemTemplate>
+                                </HorizontalStackLayout>
+                            </HorizontalStackLayout>
+                        </ScrollView>
+
+                        <!-- Highlight banner -->
+                        <Border HeightRequest="148" StrokeThickness="0" StrokeShape="RoundRectangle 20" Padding="0"
+                                BackgroundColor="{DynamicResource BannerColor}" IsVisible="{Binding HasHighlight}">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding OpenProductCommand}" CommandParameter="{Binding Highlight}" />
+                            </Border.GestureRecognizers>
+                            <Grid ColumnDefinitions="*,132">
+                                <VerticalStackLayout Spacing="6" Padding="20,0,8,0" VerticalOptions="Center">
+                                    <Label Text="{loc:Translate HighlightKicker}" FontSize="12" FontFamily="BodySemibold" CharacterSpacing="0.6"
+                                           TextTransform="Uppercase" TextColor="{DynamicResource BannerKickerColor}" />
+                                    <Label Text="{Binding Highlight.ProductName}" FontFamily="Heading" FontSize="20" LineHeight="1.1"
+                                           MaxLines="2" LineBreakMode="TailTruncation" TextColor="{DynamicResource OnBannerColor}" />
+                                    <Border HorizontalOptions="Start" HeightRequest="34" Padding="14,0" Margin="0,6,0,0" StrokeThickness="0"
+                                            StrokeShape="RoundRectangle 17" BackgroundColor="{DynamicResource BannerButtonColor}">
+                                        <Label Text="{Binding HighlightButtonText}" FontSize="13" FontFamily="BodySemibold"
+                                               VerticalOptions="Center" TextColor="{DynamicResource OnBannerButtonColor}" />
+                                    </Border>
+                                </VerticalStackLayout>
+                                <Grid Grid.Column="1" BackgroundColor="{DynamicResource BannerImageColor}">
+                                    <Label Text="{StaticResource IconInventory}" Style="{StaticResource Icon}" FontSize="48"
+                                           TextColor="{DynamicResource BannerKickerColor}" />
+                                    <Image Source="{Binding Highlight.ImageUrl}" Aspect="AspectFill" IsVisible="{Binding Highlight.HasImage}" />
+                                </Grid>
+                            </Grid>
+                        </Border>
+
+                        <!-- Featured -->
+                        <VerticalStackLayout Spacing="12" IsVisible="{Binding HasFeatured}">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Label Text="{loc:Translate Featured}" Style="{StaticResource SectionTitleText}" VerticalOptions="Center" />
+                                <Button Grid.Column="1" Text="{loc:Translate SeeAll}" Style="{StaticResource TextButton}"
+                                        Command="{Binding SeeAllFeaturedCommand}" />
+                            </Grid>
+                            <CollectionView ItemsSource="{Binding Featured}" HeightRequest="250" SelectionMode="None" Margin="0,0,-20,0">
+                                <CollectionView.ItemsLayout>
+                                    <LinearItemsLayout Orientation="Horizontal" ItemSpacing="12" />
+                                </CollectionView.ItemsLayout>
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate x:DataType="models:Product">
+                                        <views:ProductCard WidthRequest="164" ShowFeaturedBadge="False">
+                                            <views:ProductCard.GestureRecognizers>
+                                                <TapGestureRecognizer
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HomeViewModel}}, Path=OpenProductCommand, x:DataType=vm:HomeViewModel}"
+                                                    CommandParameter="{Binding .}" />
+                                            </views:ProductCard.GestureRecognizers>
+                                        </views:ProductCard>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                        </VerticalStackLayout>
+
+                        <!-- New arrivals title (the grid below is the main list) -->
+                        <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding ShowContent}">
+                            <Label Text="{loc:Translate NewArrivals}" Style="{StaticResource SectionTitleText}" VerticalOptions="Center" />
+                            <Button Grid.Column="1" Text="{loc:Translate SeeAll}" Style="{StaticResource TextButton}"
+                                    Command="{Binding SeeAllProductsCommand}" />
+                        </Grid>
+
+                        <views:StateView IsVisible="{Binding ShowState}"
+                                         IsLoading="{Binding IsLoading}"
+                                         Icon="{Binding StateIcon}"
+                                         Title="{Binding StateTitle}"
+                                         Message="{Binding StateMessage}"
+                                         ActionText="{Binding StateActionText}"
+                                         ActionCommand="{Binding RetryCommand}" />
                     </VerticalStackLayout>
+                </CollectionView.Header>
 
-                    <!-- New arrivals title (the grid below is the main list) -->
-                    <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding ShowContent}">
-                        <Label Text="{loc:Translate NewArrivals}" Style="{StaticResource SectionTitleText}" VerticalOptions="Center" />
-                        <Button Grid.Column="1" Text="{loc:Translate SeeAll}" Style="{StaticResource TextButton}"
-                                Command="{Binding SeeAllProductsCommand}" />
-                    </Grid>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Product">
+                        <Grid Padding="6">
+                            <views:ProductCard>
+                                <views:ProductCard.GestureRecognizers>
+                                    <TapGestureRecognizer
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HomeViewModel}}, Path=OpenProductCommand, x:DataType=vm:HomeViewModel}"
+                                        CommandParameter="{Binding .}" />
+                                </views:ProductCard.GestureRecognizers>
+                            </views:ProductCard>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
 
-                    <views:StateView IsVisible="{Binding ShowState}"
-                                     IsLoading="{Binding IsLoading}"
-                                     Icon="{Binding StateIcon}"
-                                     Title="{Binding StateTitle}"
-                                     Message="{Binding StateMessage}"
-                                     ActionText="{Binding StateActionText}"
-                                     ActionCommand="{Binding RetryCommand}" />
-                </VerticalStackLayout>
-            </CollectionView.Header>
+                <CollectionView.Footer>
+                    <ActivityIndicator IsRunning="{Binding IsLoadingMoreVisible}" IsVisible="{Binding IsLoadingMoreVisible}"
+                                       Margin="0,12,0,24" />
+                </CollectionView.Footer>
+            </CollectionView>
+        </RefreshView>
 
-            <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="models:Product">
-                    <Grid Padding="6">
-                        <views:ProductCard>
-                            <views:ProductCard.GestureRecognizers>
-                                <TapGestureRecognizer
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HomeViewModel}}, Path=OpenProductCommand, x:DataType=vm:HomeViewModel}"
-                                    CommandParameter="{Binding .}" />
-                            </views:ProductCard.GestureRecognizers>
-                        </views:ProductCard>
-                    </Grid>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-
-            <CollectionView.Footer>
-                <ActivityIndicator IsRunning="{Binding IsLoadingMoreVisible}" IsVisible="{Binding IsLoadingMoreVisible}"
-                                   Margin="0,12,0,24" />
-            </CollectionView.Footer>
-        </CollectionView>
-    </RefreshView>
+        <views:TabBarView Grid.Row="1" Current="home" />
+    </Grid>
 </ContentPage>

@@ -22,13 +22,17 @@ public partial class FavoritesViewModel : BaseViewModel
     }
 
     public ObservableCollection<Product> Favorites { get; } = new();
+    public ObservableCollection<Product> Recent { get; } = new();
+
+    [ObservableProperty] private bool _hasRecent;
+    [ObservableProperty] private string _savedText = "";
 
     /// <summary>Shown when the server could not be reached and saved details are displayed.</summary>
     [ObservableProperty] private bool _showingSavedDetails;
 
     protected override string EmptyTitle => Loc.T("FavoritesEmptyTitle");
     protected override string EmptyMessage => Loc.T("FavoritesEmptyMessage");
-    protected override string EmptyIcon => "";
+    protected override string EmptyIcon => Icons.FavoriteBorder;
 
     public Task OnAppearingAsync() => LoadAsync();
 
@@ -41,6 +45,12 @@ public partial class FavoritesViewModel : BaseViewModel
 
     private async Task LoadAsync()
     {
+        var recent = await _store.GetRecentAsync();
+        Recent.Clear();
+        foreach (var item in recent.Take(10))
+            Recent.Add(item.ToProduct());
+        HasRecent = Recent.Count > 0;
+
         // Show what is saved on the phone straight away.
         var saved = await _store.GetFavoritesAsync();
         Replace(saved.Select(s => s.ToProduct()));
@@ -71,10 +81,26 @@ public partial class FavoritesViewModel : BaseViewModel
     [RelayCommand]
     private Task BrowseAsync() => _navigation.GoToTabAsync("home");
 
+    [RelayCommand]
+    private async Task RemoveFavoriteAsync(Product product)
+    {
+        await _store.ToggleFavoriteAsync(product);
+        Favorites.Remove(product);
+        UpdateCount();
+        IsEmpty = Favorites.Count == 0;
+        NotifyStateText();
+    }
+
     private void Replace(IEnumerable<Product> items)
     {
         Favorites.Clear();
         foreach (var item in items)
+        {
+            item.IsFavorite = true;
             Favorites.Add(item);
+        }
+        UpdateCount();
     }
+
+    private void UpdateCount() => SavedText = Favorites.Count == 0 ? "" : Loc.T("SavedCount", Favorites.Count);
 }

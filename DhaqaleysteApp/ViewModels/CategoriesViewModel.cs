@@ -33,7 +33,7 @@ public partial class CategoriesViewModel : BaseViewModel
 
     protected override string EmptyTitle => Loc.T("NoCategoriesTitle");
     protected override string EmptyMessage => Loc.T("NoProductsMessage");
-    protected override string EmptyIcon => "";
+    protected override string EmptyIcon => Icons.Categories;
 
     public async Task OnAppearingAsync()
     {
@@ -69,8 +69,12 @@ public partial class CategoriesViewModel : BaseViewModel
         _loadedVersion = CatalogEvents.Version;
         _loadedAtUtc = DateTime.UtcNow;
         Categories.Clear();
+        var index = 0;
         foreach (var category in result.Data!.Where(c => c.ProductCount > 0))
+        {
+            category.TintIndex = index++ % 6;
             Categories.Add(category);
+        }
         IsEmpty = Categories.Count == 0;
         NotifyStateText();
     }

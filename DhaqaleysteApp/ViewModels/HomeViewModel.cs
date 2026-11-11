@@ -41,21 +41,37 @@ public partial class HomeViewModel : BaseViewModel
     public ObservableCollection<Product> Featured { get; } = new();
     public ObservableCollection<Product> NewArrivals { get; } = new();
     public ObservableCollection<Category> Categories { get; } = new();
-    public ObservableCollection<Product> Recent { get; } = new();
 
     [ObservableProperty] private string _companyName = "Dhaqaleyste";
+    [ObservableProperty] private string _companyCity = "";
     [ObservableProperty] private bool _hasFeatured;
     [ObservableProperty] private bool _hasCategories;
-    [ObservableProperty] private bool _hasRecent;
+
+    /// <summary>The first featured product, shown as the big banner.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasHighlight), nameof(HighlightButtonText))]
+    private Product? _highlight;
+
+    public bool HasHighlight => Highlight != null;
+    public string HighlightButtonText => Highlight == null ? "" : $"{Loc.T("View")} · {Highlight.PriceText}";
+    public bool HasCity => CompanyCity.Length > 0;
+    public bool IsEnglish => Loc.Language == AppLanguage.English;
+    public bool IsSomali => Loc.Language == AppLanguage.Somali;
+
+    partial void OnCompanyCityChanged(string value) => OnPropertyChanged(nameof(HasCity));
     [ObservableProperty] private bool _isLoadingMoreVisible;
 
     /// <summary>Called every time the page appears.</summary>
     public async Task OnAppearingAsync()
     {
-        await LoadRecentAsync();
         if (NeedsReload)
             await LoadAsync(showSpinner: !_loadedOnce);
+        else
+            await MarkFavoritesAsync(); // a heart may have changed on another screen
     }
+
+    private Task MarkFavoritesAsync() =>
+        _store.MarkFavoritesAsync(Featured.Concat(NewArrivals).Concat(Highlight != null ? new[] { Highlight } : Array.Empty<Product>()));
 
     [RelayCommand]
     private async Task RefreshAsync()
@@ -97,20 +113,28 @@ public partial class HomeViewModel : BaseViewModel
             _loadedVersion = CatalogEvents.Version;
             _loadedAtUtc = DateTime.UtcNow;
 
-            if (companyTask.Result.Success && !string.IsNullOrWhiteSpace(companyTask.Result.Data!.CompanyName))
-                CompanyName = companyTask.Result.Data.CompanyName;
+            if (companyTask.Result.Success)
+            {
+                var company = companyTask.Result.Data!;
+                if (!string.IsNullOrWhiteSpace(company.CompanyName))
+                    CompanyName = company.CompanyName;
+                CompanyCity = company.City?.Trim() ?? "";
+            }
 
             Replace(Categories, categoriesTask.Result.Success
                 ? categoriesTask.Result.Data!.Where(c => c.ProductCount > 0)
                 : Enumerable.Empty<Category>());
             HasCategories = Categories.Count > 0;
 
-            Replace(Featured, featuredTask.Result.Success ? featuredTask.Result.Data!.Items : Enumerable.Empty<Product>());
+            var featured = featuredTask.Result.Success ? featuredTask.Result.Data!.Items : new List<Product>();
+            Highlight = featured.FirstOrDefault();
+            Replace(Featured, featured.Skip(1));
             HasFeatured = Featured.Count > 0;
 
             _page = 1;
             _hasMore = newest.Data!.HasMore;
             Replace(NewArrivals, newest.Data.Items);
+            await MarkFavoritesAsync();
             IsEmpty = NewArrivals.Count == 0;
             NotifyStateText();
         }
@@ -136,7 +160,9 @@ public partial class HomeViewModel : BaseViewModel
 
             _page++;
             _hasMore = result.Data!.HasMore;
-            foreach (var item in result.Data.Items.Where(n => NewArrivals.All(p => p.ProductId != n.ProductId)))
+            var added = result.Data.Items.Where(n => NewArrivals.All(p => p.ProductId != n.ProductId)).ToList();
+            await _store.MarkFavoritesAsync(added);
+            foreach (var item in added)
                 NewArrivals.Add(item);
         }
         finally
@@ -146,11 +172,11 @@ public partial class HomeViewModel : BaseViewModel
         }
     }
 
-    private async Task LoadRecentAsync()
+    [RelayCommand]
+    private void ToggleLanguage()
     {
-        var recent = await _store.GetRecentAsync();
-        Replace(Recent, recent.Take(10).Select(r => r.ToProduct()));
-        HasRecent = Recent.Count > 0;
+        Loc.SetLanguage(IsEnglish ? AppLanguage.Somali : AppLanguage.English);
+        App.RestartShell(selectTab: "home");
     }
 
     [RelayCommand]

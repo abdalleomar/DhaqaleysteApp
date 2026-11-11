@@ -16,6 +16,7 @@ public class Product : BindableModel
     private bool _isAvailable = true;
     private bool _isFeatured;
     private string _imageUrl = "";
+    private bool _isFavorite;
 
     public int ProductId { get; set; }
 
@@ -70,6 +71,14 @@ public class Product : BindableModel
     }
 
     public List<ProductMediaItem> Media { get; set; } = new();
+
+    /// <summary>Saved on this phone as a favourite (set by the screens, not sent by the API).</summary>
+    [JsonIgnore]
+    public bool IsFavorite
+    {
+        get => _isFavorite;
+        set => Set(ref _isFavorite, value);
+    }
 
     // ---------- Display helpers ----------
 

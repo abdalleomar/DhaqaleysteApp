@@ -6,24 +6,18 @@
              xmlns:loc="clr-namespace:DhaqaleysteApp.Services.Localization"
              x:Class="DhaqaleysteApp.Pages.ProductDetailsPage"
              x:DataType="vm:ProductDetailsViewModel"
-             Title="{loc:Translate ProductTitle}">
-
-    <ContentPage.ToolbarItems>
-        <ToolbarItem Text="{loc:Translate Share}" Command="{Binding ShareCommand}">
-            <ToolbarItem.IconImageSource>
-                <FontImageSource FontFamily="Icons" Glyph="{StaticResource IconShare}" Color="{DynamicResource TextPrimaryColor}" Size="22" />
-            </ToolbarItem.IconImageSource>
-        </ToolbarItem>
-    </ContentPage.ToolbarItems>
+             Title="{loc:Translate ProductTitle}"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{DynamicResource SurfaceColor}">
 
     <Grid RowDefinitions="*,Auto">
         <ScrollView>
-            <VerticalStackLayout Spacing="16" Padding="0,0,0,24">
+            <VerticalStackLayout>
 
-                <!-- Gallery -->
-                <Grid HeightRequest="320" BackgroundColor="{DynamicResource SurfaceVariantColor}">
-                    <Label Text="{StaticResource IconStore}" Style="{StaticResource Icon}" FontSize="72"
-                           TextColor="{DynamicResource TextTertiaryColor}" />
+                <!-- Gallery with floating buttons -->
+                <Grid HeightRequest="380" BackgroundColor="{DynamicResource SurfaceVariantColor}">
+                    <Label Text="{StaticResource IconInventory}" Style="{StaticResource Icon}" FontSize="96"
+                           TextColor="{DynamicResource PlaceholderIconColor}" />
                     <CarouselView ItemsSource="{Binding Images}" IndicatorView="GalleryIndicator" Loop="False">
                         <CarouselView.ItemTemplate>
                             <DataTemplate x:DataType="models:ProductMediaItem">
@@ -32,86 +26,122 @@
                         </CarouselView.ItemTemplate>
                     </CarouselView>
                     <IndicatorView x:Name="GalleryIndicator" IsVisible="{Binding HasManyImages}"
-                                   VerticalOptions="End" HorizontalOptions="Center" Margin="0,0,0,12" />
+                                   VerticalOptions="End" HorizontalOptions="Center" Margin="0,0,0,40" />
 
-                    <!-- Favourite -->
-                    <Border WidthRequest="48" HeightRequest="48" StrokeThickness="0" StrokeShape="RoundRectangle 24"
-                            BackgroundColor="{DynamicResource SurfaceColor}" HorizontalOptions="End" VerticalOptions="Start"
-                            Margin="12" SemanticProperties.Description="{Binding FavoriteText}">
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding ToggleFavoriteCommand}" />
-                        </Border.GestureRecognizers>
-                        <Label Text="{Binding FavoriteIcon}" Style="{StaticResource Icon}" FontSize="26"
-                               TextColor="{DynamicResource FavoriteColor}" />
-                    </Border>
-                </Grid>
-
-                <VerticalStackLayout Padding="20,0" Spacing="10">
-                    <Label Text="{Binding Product.CategoryDisplayName}" Style="{StaticResource LinkText}" FontSize="14"
-                           IsVisible="{Binding Product.HasCategory}" />
-                    <Label Text="{Binding Product.ProductName}" Style="{StaticResource TitleText}" />
-
-                    <Grid ColumnDefinitions="*,Auto">
-                        <Label Text="{Binding Product.PriceText}" Style="{StaticResource PriceText}" FontSize="26" />
-                        <Border Grid.Column="1" Style="{StaticResource Badge}" VerticalOptions="Center" Padding="10,5">
-                            <Border.Triggers>
-                                <DataTrigger TargetType="Border" Binding="{Binding Product.InStock}" Value="True">
-                                    <Setter Property="BackgroundColor" Value="{DynamicResource SuccessSoftColor}" />
-                                </DataTrigger>
-                                <DataTrigger TargetType="Border" Binding="{Binding Product.InStock}" Value="False">
-                                    <Setter Property="BackgroundColor" Value="{DynamicResource DangerSoftColor}" />
-                                </DataTrigger>
-                            </Border.Triggers>
-                            <Label Text="{Binding Product.StockText}" FontSize="13" FontFamily="OpenSansSemibold">
-                                <Label.Triggers>
-                                    <DataTrigger TargetType="Label" Binding="{Binding Product.InStock}" Value="True">
-                                        <Setter Property="TextColor" Value="{DynamicResource SuccessColor}" />
-                                    </DataTrigger>
-                                    <DataTrigger TargetType="Label" Binding="{Binding Product.InStock}" Value="False">
-                                        <Setter Property="TextColor" Value="{DynamicResource DangerColor}" />
-                                    </DataTrigger>
-                                </Label.Triggers>
-                            </Label>
+                    <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="10" Padding="16,16,16,0" VerticalOptions="Start">
+                        <Border Style="{StaticResource FloatingCircle}" SemanticProperties.Description="{loc:Translate Back}">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding GoBackCommand}" />
+                            </Border.GestureRecognizers>
+                            <Label Text="{StaticResource IconBack}" Style="{StaticResource Icon}" FontSize="26" />
+                        </Border>
+                        <Border Grid.Column="2" Style="{StaticResource FloatingCircle}" SemanticProperties.Description="{loc:Translate Share}">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding ShareCommand}" />
+                            </Border.GestureRecognizers>
+                            <Label Text="{StaticResource IconShare}" Style="{StaticResource Icon}" FontSize="20" />
+                        </Border>
+                        <Border Grid.Column="3" Style="{StaticResource FloatingCircle}" SemanticProperties.Description="{Binding FavoriteText}">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding ToggleFavoriteCommand}" />
+                            </Border.GestureRecognizers>
+                            <Label Text="{Binding FavoriteIcon}" Style="{StaticResource Icon}" FontSize="22"
+                                   TextColor="{DynamicResource FavoriteColor}" />
                         </Border>
                     </Grid>
+                </Grid>
 
-                    <HorizontalStackLayout Spacing="6" IsVisible="{Binding Product.Location, Converter={StaticResource NotEmpty}}">
-                        <Label Text="{StaticResource IconLocation}" Style="{StaticResource Icon}" FontSize="18" />
-                        <Label Text="{Binding Product.Location}" Style="{StaticResource BodyText}" VerticalOptions="Center" />
-                    </HorizontalStackLayout>
+                <!-- Details sheet -->
+                <Border Margin="0,-24,0,0" StrokeThickness="0" StrokeShape="RoundRectangle 28,28,0,0"
+                        BackgroundColor="{DynamicResource SurfaceColor}" Padding="20,24,20,24">
+                    <VerticalStackLayout Spacing="14">
 
-                    <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}" />
-                    <Label Text="{Binding ErrorMessage}" Style="{StaticResource ErrorText}" IsVisible="{Binding HasError}" />
+                        <Grid ColumnDefinitions="Auto,*,Auto">
+                            <Border Style="{StaticResource Badge}" BackgroundColor="{DynamicResource PrimarySoftColor}" HeightRequest="28"
+                                    Padding="12,0" StrokeShape="RoundRectangle 14" IsVisible="{Binding Product.HasCategory}">
+                                <Label Text="{Binding Product.CategoryDisplayName}" FontSize="12" FontFamily="BodySemibold"
+                                       VerticalOptions="Center" TextColor="{DynamicResource PrimaryColor}" />
+                            </Border>
+                            <HorizontalStackLayout Grid.Column="2" Spacing="4" VerticalOptions="Center">
+                                <Label Text="{StaticResource IconCheck}" Style="{StaticResource Icon}" FontSize="16"
+                                       TextColor="{DynamicResource SuccessColor}" IsVisible="{Binding Product.InStock}" />
+                                <Label Text="{Binding Product.StockText}" FontSize="13" FontFamily="BodySemibold" VerticalOptions="Center"
+                                       TextColor="{DynamicResource SuccessColor}">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding Product.InStock}" Value="False">
+                                            <Setter Property="TextColor" Value="{DynamicResource DangerColor}" />
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                            </HorizontalStackLayout>
+                        </Grid>
 
-                    <BoxView Style="{StaticResource Divider}" Margin="0,6" />
+                        <Label Text="{Binding Product.ProductName}" FontFamily="Heading" FontSize="24" LineHeight="1.2" CharacterSpacing="-0.3" />
+                        <Label Text="{Binding Product.PriceText}" FontFamily="HeadingHeavy" FontSize="28" TextColor="{DynamicResource PrimaryColor}" />
 
-                    <VerticalStackLayout Spacing="6" IsVisible="{Binding HasDescription}">
-                        <Label Text="{loc:Translate Description}" Style="{StaticResource SectionTitleText}" />
-                        <Label Text="{Binding Description}" Style="{StaticResource BodyText}" />
-                    </VerticalStackLayout>
+                        <HorizontalStackLayout Spacing="8" IsVisible="{Binding Product.Location, Converter={StaticResource NotEmpty}}">
+                            <Label Text="{StaticResource IconLocation}" Style="{StaticResource Icon}" FontSize="18"
+                                   TextColor="{DynamicResource TextTertiaryColor}" />
+                            <Label Text="{Binding Product.Location}" FontSize="14" VerticalOptions="Center"
+                                   TextColor="{DynamicResource TextTertiaryColor}" />
+                        </HorizontalStackLayout>
 
-                    <VerticalStackLayout Spacing="8" IsVisible="{Binding HasVideos}">
-                        <Label Text="{loc:Translate Videos}" Style="{StaticResource SectionTitleText}" />
-                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding Videos}" Spacing="8">
+                        <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}" />
+                        <Label Text="{Binding ErrorMessage}" Style="{StaticResource ErrorText}" IsVisible="{Binding HasError}" />
+
+                        <BoxView Style="{StaticResource Divider}" />
+
+                        <VerticalStackLayout Spacing="6" IsVisible="{Binding HasDescription}">
+                            <Label Text="{loc:Translate Description}" FontFamily="Heading" FontSize="16" />
+                            <Label Text="{Binding Description}" FontSize="15" LineHeight="1.45" TextColor="{DynamicResource TextSecondaryColor}" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding Videos}" Spacing="10" IsVisible="{Binding HasVideos}">
                             <BindableLayout.ItemTemplate>
                                 <DataTemplate x:DataType="vm:VideoItem">
-                                    <Button Text="{Binding Label}" Style="{StaticResource SecondaryButton}"
-                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ProductDetailsViewModel}}, Path=PlayVideoCommand, x:DataType=vm:ProductDetailsViewModel}"
-                                            CommandParameter="{Binding .}" />
+                                    <Border HeightRequest="56" Padding="10,0,14,0" StrokeShape="RoundRectangle 16" StrokeThickness="1"
+                                            Stroke="{DynamicResource BorderColor}" BackgroundColor="{DynamicResource PageBackgroundColor}">
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ProductDetailsViewModel}}, Path=PlayVideoCommand, x:DataType=vm:ProductDetailsViewModel}"
+                                                CommandParameter="{Binding .}" />
+                                        </Border.GestureRecognizers>
+                                        <Grid ColumnDefinitions="36,*,Auto" ColumnSpacing="12">
+                                            <Border WidthRequest="36" HeightRequest="36" StrokeThickness="0" StrokeShape="RoundRectangle 18"
+                                                    BackgroundColor="{DynamicResource InkColor}">
+                                                <Label Text="{StaticResource IconPlay}" Style="{StaticResource Icon}" FontSize="18"
+                                                       TextColor="{DynamicResource OnInkColor}" />
+                                            </Border>
+                                            <Label Grid.Column="1" Text="{Binding Label}" FontFamily="BodySemibold" FontSize="15" VerticalOptions="Center" />
+                                            <Label Grid.Column="2" Text="{StaticResource IconChevron}" Style="{StaticResource Icon}" FontSize="20"
+                                                   TextColor="{DynamicResource TextTertiaryColor}" />
+                                        </Grid>
+                                    </Border>
                                 </DataTemplate>
                             </BindableLayout.ItemTemplate>
                         </VerticalStackLayout>
                     </VerticalStackLayout>
-                </VerticalStackLayout>
+                </Border>
             </VerticalStackLayout>
         </ScrollView>
 
         <!-- Contact bar -->
-        <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="12" Padding="16,12"
-              BackgroundColor="{DynamicResource SurfaceColor}" IsVisible="{Binding HasContact}">
-            <Button Text="{loc:Translate Call}" Command="{Binding CallCommand}" IsVisible="{Binding CanCall}" />
-            <Button Grid.Column="1" Text="{loc:Translate WhatsApp}" Style="{StaticResource WhatsAppButton}"
-                    Command="{Binding WhatsAppCommand}" IsVisible="{Binding CanWhatsApp}" />
+        <Grid Grid.Row="1" BackgroundColor="{DynamicResource SurfaceColor}" IsVisible="{Binding HasContact}" RowDefinitions="1,Auto">
+            <BoxView Style="{StaticResource Divider}" />
+            <Grid Grid.Row="1" ColumnDefinitions="*,1.6*" ColumnSpacing="12" Padding="20,14,20,18">
+                <Button Text="{loc:Translate Call}" Style="{StaticResource OutlineButton}" HeightRequest="54"
+                        Command="{Binding CallCommand}" IsVisible="{Binding CanCall}">
+                    <Button.ImageSource>
+                        <FontImageSource FontFamily="Icons" Glyph="{StaticResource IconCall}" Size="20" Color="{DynamicResource TextPrimaryColor}" />
+                    </Button.ImageSource>
+                </Button>
+                <Button Grid.Column="1" Text="{loc:Translate OrderOnWhatsApp}" Style="{StaticResource WhatsAppButton}" HeightRequest="54"
+                        Command="{Binding WhatsAppCommand}" IsVisible="{Binding CanWhatsApp}">
+                    <Button.ImageSource>
+                        <FontImageSource FontFamily="Icons" Glyph="{StaticResource IconWhatsApp}" Size="20" Color="White" />
+                    </Button.ImageSource>
+                </Button>
+            </Grid>
         </Grid>
     </Grid>
 </ContentPage>

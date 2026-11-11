@@ -7,44 +7,46 @@
              x:Class="DhaqaleysteApp.Views.ProductCard"
              x:DataType="models:Product">
 
-    <Border Style="{StaticResource Card}" Padding="0" StrokeShape="RoundRectangle 16">
-        <Grid RowDefinitions="Auto,Auto">
+    <Border Style="{StaticResource Card}" Padding="0">
+        <Grid RowDefinitions="140,Auto">
 
-            <!-- Photo with badges -->
-            <Grid HeightRequest="150" BackgroundColor="{DynamicResource SurfaceVariantColor}">
-                <Label Text="{StaticResource IconStore}" Style="{StaticResource Icon}" FontSize="44"
-                       TextColor="{DynamicResource TextTertiaryColor}" />
+            <!-- Photo -->
+            <Grid BackgroundColor="{DynamicResource SurfaceVariantColor}">
+                <Label Text="{StaticResource IconInventory}" Style="{StaticResource Icon}" FontSize="42"
+                       TextColor="{DynamicResource PlaceholderIconColor}" />
                 <Image Source="{Binding ImageUrl}" Aspect="AspectFill" IsVisible="{Binding HasImage}" />
 
-                <Border Style="{StaticResource Badge}"
-                        BackgroundColor="{DynamicResource AccentSoftColor}"
-                        HorizontalOptions="Start" VerticalOptions="Start" Margin="8"
-                        IsVisible="{Binding IsFeatured}">
-                    <HorizontalStackLayout Spacing="2">
-                        <Label Text="{StaticResource IconStar}" Style="{StaticResource Icon}" FontSize="13"
+                <Border x:Name="FeaturedBadge" Style="{StaticResource Badge}" BackgroundColor="{DynamicResource AccentSoftColor}"
+                        HorizontalOptions="Start" VerticalOptions="Start" Margin="10" HeightRequest="24" Padding="8,0">
+                    <HorizontalStackLayout Spacing="4" VerticalOptions="Center">
+                        <Label Text="{StaticResource IconStar}" Style="{StaticResource Icon}" FontSize="12"
                                TextColor="{DynamicResource AccentColor}" />
-                        <Label Text="{loc:Translate FeaturedBadge}" FontSize="11" FontFamily="OpenSansSemibold"
-                               TextColor="{DynamicResource AccentColor}" />
+                        <Label Text="{loc:Translate FeaturedBadge}" FontSize="11" FontFamily="BodySemibold"
+                               TextColor="{DynamicResource AccentColor}" VerticalOptions="Center" />
                     </HorizontalStackLayout>
                 </Border>
 
-                <Border Style="{StaticResource Badge}"
-                        BackgroundColor="{DynamicResource DangerSoftColor}"
-                        HorizontalOptions="End" VerticalOptions="End" Margin="8"
+                <Border Style="{StaticResource FloatingCircle}" WidthRequest="32" HeightRequest="32" StrokeShape="RoundRectangle 16"
+                        HorizontalOptions="End" VerticalOptions="Start" Margin="10" IsVisible="{Binding IsFavorite}">
+                    <Label Text="{StaticResource IconFavorite}" Style="{StaticResource Icon}" FontSize="18"
+                           TextColor="{DynamicResource FavoriteColor}" />
+                </Border>
+
+                <Border Style="{StaticResource Badge}" BackgroundColor="{DynamicResource DangerSoftColor}"
+                        HorizontalOptions="End" VerticalOptions="End" Margin="10" HeightRequest="24" Padding="8,0"
                         IsVisible="{Binding IsOutOfStock}">
-                    <Label Text="{Binding StockText}" FontSize="11" FontFamily="OpenSansSemibold"
-                           TextColor="{DynamicResource DangerColor}" />
+                    <Label Text="{Binding StockText}" FontSize="11" FontFamily="BodySemibold"
+                           TextColor="{DynamicResource DangerColor}" VerticalOptions="Center" />
                 </Border>
             </Grid>
 
             <!-- Text -->
             <VerticalStackLayout Grid.Row="1" Padding="12,10,12,12" Spacing="2">
-                <Label Text="{Binding CategoryDisplayName}" Style="{StaticResource CaptionText}"
-                       FontSize="12" MaxLines="1" LineBreakMode="TailTruncation"
-                       IsVisible="{Binding HasCategory}" />
-                <Label Text="{Binding ProductName}" FontFamily="OpenSansSemibold" FontSize="15"
-                       MaxLines="2" LineBreakMode="TailTruncation" HeightRequest="42" />
-                <Label Text="{Binding PriceText}" Style="{StaticResource PriceText}" />
+                <Label Text="{Binding CategoryDisplayName}" FontSize="12" TextColor="{DynamicResource TextTertiaryColor}"
+                       MaxLines="1" LineBreakMode="TailTruncation" IsVisible="{Binding HasCategory}" />
+                <Label Text="{Binding ProductName}" FontFamily="BodySemibold" FontSize="14" LineHeight="1.15"
+                       MaxLines="2" LineBreakMode="TailTruncation" />
+                <Label Text="{Binding PriceText}" Style="{StaticResource PriceText}" Margin="0,4,0,0" />
             </VerticalStackLayout>
         </Grid>
     </Border>

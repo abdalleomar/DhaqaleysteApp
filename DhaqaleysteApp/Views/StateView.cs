@@ -17,7 +17,7 @@ public class StateView : ContentView
 
     private readonly ActivityIndicator _spinner = new() { IsRunning = true, HorizontalOptions = LayoutOptions.Center };
     private readonly Label _icon = new() { FontSize = 56, HorizontalOptions = LayoutOptions.Center };
-    private readonly Label _title = new() { FontSize = 18, FontFamily = "OpenSansSemibold", HorizontalTextAlignment = TextAlignment.Center };
+    private readonly Label _title = new() { FontSize = 18, FontFamily = "BodySemibold", HorizontalTextAlignment = TextAlignment.Center };
     private readonly Label _message = new() { FontSize = 14, HorizontalTextAlignment = TextAlignment.Center };
     private readonly Button _action = new() { HorizontalOptions = LayoutOptions.Center, Margin = new Thickness(0, 8, 0, 0) };
 

@@ -7,37 +7,115 @@
              xmlns:loc="clr-namespace:DhaqaleysteApp.Services.Localization"
              x:Class="DhaqaleysteApp.Pages.CategoriesPage"
              x:DataType="vm:CategoriesViewModel"
-             Title="{loc:Translate TabCategories}">
+             Title="{loc:Translate TabCategories}"
+             Shell.NavBarIsVisible="False">
 
-    <Grid>
-        <RefreshView IsRefreshing="{Binding IsRefreshing}" Command="{Binding RefreshCommand}" IsVisible="{Binding ShowContent}">
-            <CollectionView ItemsSource="{Binding Categories}" SelectionMode="None" Margin="10,6">
+    <Grid RowDefinitions="*,Auto">
+        <RefreshView IsRefreshing="{Binding IsRefreshing}" Command="{Binding RefreshCommand}">
+            <CollectionView ItemsSource="{Binding Categories}" SelectionMode="None" Margin="14,0">
                 <CollectionView.ItemsLayout>
                     <GridItemsLayout Orientation="Vertical" Span="2" />
                 </CollectionView.ItemsLayout>
 
                 <CollectionView.Header>
-                    <Button Text="{loc:Translate AllProducts}" Style="{StaticResource SecondaryButton}"
-                            Command="{Binding SeeAllCommand}" Margin="6,6,6,8" />
+                    <VerticalStackLayout Spacing="16" Padding="6,20,6,6">
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="{loc:Translate TabCategories}" Style="{StaticResource TitleText}" />
+                            <Label Text="{loc:Translate CategoriesSubtitle}" FontSize="15" TextColor="{DynamicResource TextTertiaryColor}" />
+                        </VerticalStackLayout>
+
+                        <!-- All products -->
+                        <Border HeightRequest="72" Padding="16,0" StrokeThickness="0" StrokeShape="RoundRectangle 18"
+                                BackgroundColor="{DynamicResource InkColor}" IsVisible="{Binding ShowContent}">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding SeeAllCommand}" />
+                            </Border.GestureRecognizers>
+                            <Grid ColumnDefinitions="44,*,Auto" ColumnSpacing="14">
+                                <Border WidthRequest="44" HeightRequest="44" StrokeThickness="0" StrokeShape="RoundRectangle 14"
+                                        BackgroundColor="{DynamicResource InkRaisedColor}">
+                                    <Label Text="{StaticResource IconStore}" Style="{StaticResource Icon}" TextColor="{DynamicResource OnInkColor}" />
+                                </Border>
+                                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                                    <Label Text="{loc:Translate AllProducts}" FontFamily="BodySemibold" FontSize="16" TextColor="{DynamicResource OnInkColor}" />
+                                    <Label Text="{loc:Translate SortNewest}" FontSize="13" TextColor="{DynamicResource OnInkMutedColor}" />
+                                </VerticalStackLayout>
+                                <Label Grid.Column="2" Text="{StaticResource IconChevron}" Style="{StaticResource Icon}" TextColor="{DynamicResource OnInkColor}" />
+                            </Grid>
+                        </Border>
+
+                        <views:StateView IsVisible="{Binding ShowState}"
+                                         IsLoading="{Binding IsLoading}"
+                                         Icon="{Binding StateIcon}"
+                                         Title="{Binding StateTitle}"
+                                         Message="{Binding StateMessage}"
+                                         ActionText="{Binding StateActionText}"
+                                         ActionCommand="{Binding RetryCommand}" />
+                    </VerticalStackLayout>
                 </CollectionView.Header>
 
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="models:Category">
                         <Grid Padding="6">
-                            <Border Style="{StaticResource Card}" HeightRequest="128">
+                            <Border Style="{StaticResource Card}">
                                 <Border.GestureRecognizers>
                                     <TapGestureRecognizer
                                         Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CategoriesViewModel}}, Path=OpenCategoryCommand, x:DataType=vm:CategoriesViewModel}"
                                         CommandParameter="{Binding .}" />
                                 </Border.GestureRecognizers>
-                                <VerticalStackLayout Spacing="6" VerticalOptions="Center">
+                                <VerticalStackLayout Spacing="10">
                                     <Border WidthRequest="48" HeightRequest="48" StrokeThickness="0" StrokeShape="RoundRectangle 14"
-                                            BackgroundColor="{DynamicResource PrimarySoftColor}" HorizontalOptions="Start">
-                                        <Label Text="{Binding IconOrDefault}" FontSize="24" HorizontalOptions="Center" VerticalOptions="Center" />
+                                            HorizontalOptions="Start">
+                                        <Border.Triggers>
+                                            <DataTrigger TargetType="Border" Binding="{Binding TintIndex}" Value="0">
+                                                <Setter Property="BackgroundColor" Value="{DynamicResource Tint1Bg}" />
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Border" Binding="{Binding TintIndex}" Value="1">
+                                                <Setter Property="BackgroundColor" Value="{DynamicResource Tint2Bg}" />
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Border" Binding="{Binding TintIndex}" Value="2">
+                                                <Setter Property="BackgroundColor" Value="{DynamicResource Tint3Bg}" />
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Border" Binding="{Binding TintIndex}" Value="3">
+                                                <Setter Property="BackgroundColor" Value="{DynamicResource Tint4Bg}" />
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Border" Binding="{Binding TintIndex}" Value="4">
+                                                <Setter Property="BackgroundColor" Value="{DynamicResource Tint5Bg}" />
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Border" Binding="{Binding TintIndex}" Value="5">
+                                                <Setter Property="BackgroundColor" Value="{DynamicResource Tint6Bg}" />
+                                            </DataTrigger>
+                                        </Border.Triggers>
+                                        <Grid>
+                                            <Label Text="{Binding Icon}" FontSize="24" HorizontalOptions="Center" VerticalOptions="Center"
+                                                   IsVisible="{Binding HasIcon}" />
+                                            <Label Text="{StaticResource IconStore}" Style="{StaticResource Icon}" FontSize="24"
+                                                   IsVisible="{Binding HasNoIcon}">
+                                                <Label.Triggers>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding TintIndex}" Value="0">
+                                                        <Setter Property="TextColor" Value="{DynamicResource Tint1Fg}" />
+                                                    </DataTrigger>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding TintIndex}" Value="1">
+                                                        <Setter Property="TextColor" Value="{DynamicResource Tint2Fg}" />
+                                                    </DataTrigger>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding TintIndex}" Value="2">
+                                                        <Setter Property="TextColor" Value="{DynamicResource Tint3Fg}" />
+                                                    </DataTrigger>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding TintIndex}" Value="3">
+                                                        <Setter Property="TextColor" Value="{DynamicResource Tint4Fg}" />
+                                                    </DataTrigger>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding TintIndex}" Value="4">
+                                                        <Setter Property="TextColor" Value="{DynamicResource Tint5Fg}" />
+                                                    </DataTrigger>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding TintIndex}" Value="5">
+                                                        <Setter Property="TextColor" Value="{DynamicResource Tint6Fg}" />
+                                                    </DataTrigger>
+                                                </Label.Triggers>
+                                            </Label>
+                                        </Grid>
                                     </Border>
-                                    <Label Text="{Binding LocalName}" FontFamily="OpenSansSemibold" FontSize="16"
+                                    <Label Text="{Binding LocalName}" FontFamily="BodySemibold" FontSize="16"
                                            MaxLines="1" LineBreakMode="TailTruncation" />
-                                    <Label Text="{Binding ProductCountText}" Style="{StaticResource CaptionText}" />
+                                    <Label Text="{Binding ProductCountText}" FontSize="13" TextColor="{DynamicResource TextTertiaryColor}" />
                                 </VerticalStackLayout>
                             </Border>
                         </Grid>
@@ -46,12 +124,6 @@
             </CollectionView>
         </RefreshView>
 
-        <views:StateView IsVisible="{Binding ShowState}"
-                         IsLoading="{Binding IsLoading}"
-                         Icon="{Binding StateIcon}"
-                         Title="{Binding StateTitle}"
-                         Message="{Binding StateMessage}"
-                         ActionText="{Binding StateActionText}"
-                         ActionCommand="{Binding RetryCommand}" />
+        <views:TabBarView Grid.Row="1" Current="categories" />
     </Grid>
 </ContentPage>

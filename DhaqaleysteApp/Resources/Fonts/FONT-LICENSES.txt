@@ -1,0 +1,9 @@
+Fonts bundled with the Dhaqaleyste app
+
+Inter (Inter-*.ttf)                       SIL Open Font License 1.1 — https://openfontlicense.org
+Plus Jakarta Sans (PlusJakartaSans-*.ttf) SIL Open Font License 1.1 — https://openfontlicense.org
+  Both obtained from the @expo-google-fonts npm packages (version 0.4.2).
+
+Material Design Icons (MaterialDesignIcons.ttf)
+  Pictogrammers Free License: icons Apache License 2.0, font SIL OFL 1.1 — https://pictogrammers.com/docs/general/license/
+  Obtained from the @mdi/font npm package (version 7.4.47).

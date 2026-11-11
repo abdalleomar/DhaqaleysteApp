@@ -66,6 +66,17 @@ public class LocalStore
 
     public async Task<IReadOnlyList<ProductSnapshot>> GetRecentAsync() => (await LoadAsync()).Recent.ToList();
 
+    public async Task<HashSet<int>> GetFavoriteIdsAsync() =>
+        (await LoadAsync()).Favorites.Select(f => f.ProductId).ToHashSet();
+
+    /// <summary>Marks which of these products are saved as favourites (for the heart on cards).</summary>
+    public async Task MarkFavoritesAsync(IEnumerable<Product> products)
+    {
+        var ids = await GetFavoriteIdsAsync();
+        foreach (var product in products)
+            product.IsFavorite = ids.Contains(product.ProductId);
+    }
+
     public async Task<bool> IsFavoriteAsync(int productId) => (await LoadAsync()).Favorites.Any(f => f.ProductId == productId);
 
     /// <summary>Adds or removes a favourite. Returns true when the product is now a favourite.</summary>

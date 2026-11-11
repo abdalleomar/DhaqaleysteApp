@@ -72,6 +72,11 @@ public class Category : BindableModel
     public string LocalName => Loc.Pick(Name, NameSo);
     public string ProductCountText => Loc.T("ProductsCount", ProductCount);
     public string IconOrDefault => string.IsNullOrWhiteSpace(Icon) ? "🛍️" : Icon;
+    public bool HasIcon => !string.IsNullOrWhiteSpace(Icon);
+    public bool HasNoIcon => !HasIcon;
+
+    /// <summary>Which of the six tile tints (0–5) the customer Categories screen uses.</summary>
+    public int TintIndex { get; set; }
     public string StaffSummary => $"{ProductCount} product(s){(IsActive ? "" : " · hidden from customers")}";
 
     /// <summary>The "All" chip.</summary>

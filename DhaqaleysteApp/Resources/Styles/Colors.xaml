@@ -2,38 +2,37 @@
 <!-- Values that do not change with the theme. Theme colours live in LightTheme.xaml / DarkTheme.xaml. -->
 <ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
-    <Color x:Key="Brand">#4F46E5</Color>
+    <Color x:Key="Brand">#0B6E5F</Color>
 
-    <x:Double x:Key="RadiusCard">16</x:Double>
-    <x:Double x:Key="RadiusControl">12</x:Double>
-    <Thickness x:Key="PagePadding">16,12</Thickness>
-
-    <!-- Material Icons code points (font alias "Icons"). -->
-    <x:String x:Key="IconHome">&#xE88A;</x:String>
-    <x:String x:Key="IconCategories">&#xE9B0;</x:String>
-    <x:String x:Key="IconFavorite">&#xE87D;</x:String>
-    <x:String x:Key="IconFavoriteBorder">&#xE87E;</x:String>
-    <x:String x:Key="IconStore">&#xEA12;</x:String>
-    <x:String x:Key="IconSearch">&#xE8B6;</x:String>
-    <x:String x:Key="IconFilter">&#xE429;</x:String>
-    <x:String x:Key="IconCall">&#xE0B0;</x:String>
-    <x:String x:Key="IconChat">&#xE0B7;</x:String>
-    <x:String x:Key="IconShare">&#xE80D;</x:String>
-    <x:String x:Key="IconLocation">&#xE0C8;</x:String>
-    <x:String x:Key="IconSchedule">&#xE8B5;</x:String>
-    <x:String x:Key="IconEmail">&#xE0BE;</x:String>
-    <x:String x:Key="IconMap">&#xE55B;</x:String>
-    <x:String x:Key="IconLanguage">&#xE894;</x:String>
-    <x:String x:Key="IconDarkMode">&#xE51C;</x:String>
-    <x:String x:Key="IconClose">&#xE5CD;</x:String>
-    <x:String x:Key="IconForward">&#xE5C8;</x:String>
-    <x:String x:Key="IconChevron">&#xE5CC;</x:String>
-    <x:String x:Key="IconInventory">&#xE1A1;</x:String>
-    <x:String x:Key="IconOffline">&#xE648;</x:String>
-    <x:String x:Key="IconStar">&#xE838;</x:String>
-    <x:String x:Key="IconLock">&#xE897;</x:String>
-    <x:String x:Key="IconSort">&#xE164;</x:String>
-    <x:String x:Key="IconInfo">&#xE88E;</x:String>
-    <x:String x:Key="IconPublic">&#xE80B;</x:String>
-    <x:String x:Key="IconPlay">&#xE1C4;</x:String>
+    <!-- Material Design Icons code points (font alias "Icons"). -->
+    <x:String x:Key="IconHome">&#xF06A1;</x:String>
+    <x:String x:Key="IconCategories">&#xF11D9;</x:String>
+    <x:String x:Key="IconFavorite">&#xF02D1;</x:String>
+    <x:String x:Key="IconFavoriteBorder">&#xF02D5;</x:String>
+    <x:String x:Key="IconContact">&#xF0EDE;</x:String>
+    <x:String x:Key="IconWhatsApp">&#xF05A3;</x:String>
+    <x:String x:Key="IconStore">&#xF10C1;</x:String>
+    <x:String x:Key="IconSearch">&#xF0349;</x:String>
+    <x:String x:Key="IconFilter">&#xF1542;</x:String>
+    <x:String x:Key="IconCall">&#xF0DF0;</x:String>
+    <x:String x:Key="IconShare">&#xF1514;</x:String>
+    <x:String x:Key="IconLocation">&#xF07D9;</x:String>
+    <x:String x:Key="IconSchedule">&#xF0150;</x:String>
+    <x:String x:Key="IconEmail">&#xF01F0;</x:String>
+    <x:String x:Key="IconLanguage">&#xF059F;</x:String>
+    <x:String x:Key="IconDarkMode">&#xF0594;</x:String>
+    <x:String x:Key="IconClose">&#xF0156;</x:String>
+    <x:String x:Key="IconChevron">&#xF0142;</x:String>
+    <x:String x:Key="IconBack">&#xF0141;</x:String>
+    <x:String x:Key="IconChevronDown">&#xF0140;</x:String>
+    <x:String x:Key="IconInventory">&#xF03D7;</x:String>
+    <x:String x:Key="IconPhone">&#xF011C;</x:String>
+    <x:String x:Key="IconCheck">&#xF012C;</x:String>
+    <x:String x:Key="IconStar">&#xF04CE;</x:String>
+    <x:String x:Key="IconLock">&#xF0341;</x:String>
+    <x:String x:Key="IconPlay">&#xF040A;</x:String>
+    <x:String x:Key="IconPlus">&#xF0415;</x:String>
+    <x:String x:Key="IconOffline">&#xF05AA;</x:String>
+    <x:String x:Key="IconInfo">&#xF02FD;</x:String>
+    <x:String x:Key="IconPublic">&#xF059F;</x:String>
 </ResourceDictionary>

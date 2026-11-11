@@ -4,9 +4,11 @@
        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
        xmlns:loc="clr-namespace:DhaqaleysteApp.Services.Localization"
        Title="Dhaqaleyste"
-       FlyoutBehavior="Disabled">
+       FlyoutBehavior="Disabled"
+       Shell.TabBarIsVisible="False">
 
-    <!-- Bottom navigation: Home · Categories · Favorites · Contact. Pages are created from DI in AppShell.xaml.cs. -->
+    <!-- Tabs: Home · Categories · Favorites · Contact. The platform tab bar is hidden; pages show Views/TabBarView.
+         Pages are created from DI in AppShell.xaml.cs. -->
     <TabBar x:Name="Tabs">
         <Tab x:Name="HomeTab" Route="home" Title="{loc:Translate TabHome}">
             <Tab.Icon>

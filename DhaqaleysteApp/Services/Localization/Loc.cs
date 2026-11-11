@@ -107,8 +107,6 @@ public static class Loc
         ["FeaturedBadge"] = ("Featured", "La xushay"),
         ["Description"] = ("Description", "Faahfaahin"),
         ["Videos"] = ("Videos", "Muuqaallo"),
-        ["PlayVideo"] = ("Play video", "Daar muuqaalka"),
-        ["PlayVideoNumber"] = ("Play video {0}", "Daar muuqaalka {0}"),
         ["Call"] = ("Call", "Wac"),
         ["WhatsApp"] = ("WhatsApp", "WhatsApp"),
         ["Share"] = ("Share", "La wadaag"),
@@ -148,6 +146,24 @@ public static class Loc
         ["Somali"] = ("Soomaali", "Soomaali"),
         ["NotAvailable"] = ("Not available", "Lama heli karo"),
         ["CannotOpen"] = ("This could not be opened on this device.", "Tan laguma furi karo qalabkan."),
+
+        // Redesign
+        ["HomeHeadline"] = ("What are you\nlooking for today?", "Maxaad raadinaysaa\nmaanta?"),
+        ["View"] = ("View", "Eeg"),
+        ["HighlightKicker"] = ("Featured", "La xushay"),
+        ["FiltersCount"] = ("Filters · {0}", "Shaandhee · {0}"),
+        ["PriceBetween"] = ("{0} – {1}", "{0} – {1}"),
+        ["PriceUnder"] = ("Under {0}", "Ka yar {0}"),
+        ["PriceOver"] = ("Over {0}", "Ka badan {0}"),
+        ["SavedCount"] = ("{0} saved", "{0} la kaydiyay"),
+        ["CategoriesSubtitle"] = ("Browse everything we sell", "Daawo wax kasta oo aan iibinno"),
+        ["OrderOnWhatsApp"] = ("Order on WhatsApp", "Ku dalbo WhatsApp"),
+        ["WatchVideo"] = ("Watch product video", "Daawo muuqaalka alaabta"),
+        ["WatchVideoNumber"] = ("Watch video {0}", "Daawo muuqaalka {0}"),
+        ["ThemeAuto"] = ("Auto", "Toos"),
+        ["Map"] = ("Map", "Khariidad"),
+        ["Back"] = ("Back", "Dib u noqo"),
+        ["SignedInAs"] = ("Signed in as {0}", "Waxaad ku gashay {0}"),
 
         // Errors shown to customers (ApiService)
         ["ErrNoInternet"] = ("No internet connection. Check your connection and try again.", "Internet ma jiro. Hubi xiriirkaaga oo isku day mar kale."),

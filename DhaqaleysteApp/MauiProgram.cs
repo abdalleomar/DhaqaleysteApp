@@ -14,9 +14,12 @@ namespace DhaqaleysteApp
                 .UseMauiApp<App>()
                 .ConfigureFonts(fonts =>
                 {
-                    fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-                    fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
-                    fonts.AddFont("MaterialIcons-Regular.ttf", "Icons");
+                    fonts.AddFont("Inter-Regular.ttf", "Body");
+                    fonts.AddFont("Inter-Medium.ttf", "BodyMedium");
+                    fonts.AddFont("Inter-SemiBold.ttf", "BodySemibold");
+                    fonts.AddFont("PlusJakartaSans-Bold.ttf", "Heading");
+                    fonts.AddFont("PlusJakartaSans-ExtraBold.ttf", "HeadingHeavy");
+                    fonts.AddFont("MaterialDesignIcons.ttf", "Icons");
                 });
 
 #if DEBUG

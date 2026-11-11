@@ -7,43 +7,115 @@
              xmlns:loc="clr-namespace:DhaqaleysteApp.Services.Localization"
              x:Class="DhaqaleysteApp.Pages.FavoritesPage"
              x:DataType="vm:FavoritesViewModel"
-             Title="{loc:Translate FavoritesTitle}">
+             Title="{loc:Translate FavoritesTitle}"
+             Shell.NavBarIsVisible="False">
 
-    <Grid RowDefinitions="Auto,*">
-        <Border Style="{StaticResource Badge}" BackgroundColor="{DynamicResource AccentSoftColor}" Margin="16,8,16,0"
-                Padding="12,8" IsVisible="{Binding ShowingSavedDetails}">
-            <Label Text="{loc:Translate FavoritesOffline}" FontSize="13" TextColor="{DynamicResource TextPrimaryColor}" />
-        </Border>
+    <Grid RowDefinitions="*,Auto">
+        <RefreshView IsRefreshing="{Binding IsRefreshing}" Command="{Binding RefreshCommand}">
+            <ScrollView>
+                <VerticalStackLayout Spacing="16" Padding="20,20,20,24">
 
-        <RefreshView Grid.Row="1" IsRefreshing="{Binding IsRefreshing}" Command="{Binding RefreshCommand}"
-                     IsVisible="{Binding ShowContent}">
-            <CollectionView ItemsSource="{Binding Favorites}" SelectionMode="None" Margin="10,6">
-                <CollectionView.ItemsLayout>
-                    <GridItemsLayout Orientation="Vertical" Span="2" />
-                </CollectionView.ItemsLayout>
-                <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="models:Product">
-                        <Grid Padding="6">
-                            <views:ProductCard>
-                                <views:ProductCard.GestureRecognizers>
-                                    <TapGestureRecognizer
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:FavoritesViewModel}}, Path=OpenProductCommand, x:DataType=vm:FavoritesViewModel}"
-                                        CommandParameter="{Binding .}" />
-                                </views:ProductCard.GestureRecognizers>
-                            </views:ProductCard>
-                        </Grid>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Text="{loc:Translate FavoritesTitle}" Style="{StaticResource TitleText}" />
+                        <Label Grid.Column="1" Text="{Binding SavedText}" FontSize="14" VerticalOptions="End" Margin="0,0,0,6"
+                               TextColor="{DynamicResource TextTertiaryColor}" />
+                    </Grid>
+
+                    <Border Style="{StaticResource Badge}" BackgroundColor="{DynamicResource AccentSoftColor}" Padding="12,8"
+                            IsVisible="{Binding ShowingSavedDetails}">
+                        <Label Text="{loc:Translate FavoritesOffline}" FontSize="13" />
+                    </Border>
+
+                    <!-- Saved products -->
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Favorites}" Spacing="10">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="models:Product">
+                                <Border Style="{StaticResource Card}" Padding="10">
+                                    <Grid ColumnDefinitions="*,44">
+                                        <Grid ColumnDefinitions="76,*" ColumnSpacing="14">
+                                            <Grid.GestureRecognizers>
+                                                <TapGestureRecognizer
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:FavoritesViewModel}}, Path=OpenProductCommand, x:DataType=vm:FavoritesViewModel}"
+                                                    CommandParameter="{Binding .}" />
+                                            </Grid.GestureRecognizers>
+                                            <Border WidthRequest="76" HeightRequest="76" StrokeThickness="0" StrokeShape="RoundRectangle 14"
+                                                    BackgroundColor="{DynamicResource SurfaceVariantColor}">
+                                                <Grid>
+                                                    <Label Text="{StaticResource IconInventory}" Style="{StaticResource Icon}" FontSize="30"
+                                                           TextColor="{DynamicResource PlaceholderIconColor}" />
+                                                    <Image Source="{Binding ImageUrl}" Aspect="AspectFill" IsVisible="{Binding HasImage}" />
+                                                </Grid>
+                                            </Border>
+                                            <VerticalStackLayout Grid.Column="1" Spacing="3" VerticalOptions="Center">
+                                                <Label Text="{Binding ProductName}" FontFamily="BodySemibold" FontSize="15"
+                                                       MaxLines="2" LineBreakMode="TailTruncation" />
+                                                <Label Text="{Binding StockText}" FontSize="13" FontFamily="BodySemibold"
+                                                       TextColor="{DynamicResource SuccessColor}" IsVisible="{Binding InStock}" />
+                                                <Border Style="{StaticResource Badge}" BackgroundColor="{DynamicResource DangerSoftColor}" HorizontalOptions="Start"
+                                                        HeightRequest="22" Padding="8,0" StrokeShape="RoundRectangle 11" IsVisible="{Binding IsOutOfStock}">
+                                                    <Label Text="{Binding StockText}" FontSize="12" FontFamily="BodySemibold" VerticalOptions="Center"
+                                                           TextColor="{DynamicResource DangerColor}" />
+                                                </Border>
+                                                <Label Text="{Binding PriceText}" Style="{StaticResource PriceText}" />
+                                            </VerticalStackLayout>
+                                        </Grid>
+                                        <Border Grid.Column="1" WidthRequest="44" HeightRequest="44" StrokeThickness="0" BackgroundColor="Transparent"
+                                                SemanticProperties.Description="{loc:Translate RemoveFavorite}">
+                                            <Border.GestureRecognizers>
+                                                <TapGestureRecognizer
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:FavoritesViewModel}}, Path=RemoveFavoriteCommand, x:DataType=vm:FavoritesViewModel}"
+                                                    CommandParameter="{Binding .}" />
+                                            </Border.GestureRecognizers>
+                                            <Label Text="{StaticResource IconFavorite}" Style="{StaticResource Icon}" FontSize="22"
+                                                   TextColor="{DynamicResource FavoriteColor}" />
+                                        </Border>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+
+                    <views:StateView IsVisible="{Binding ShowState}"
+                                     IsLoading="{Binding IsLoading}"
+                                     Icon="{Binding StateIcon}"
+                                     Title="{Binding StateTitle}"
+                                     Message="{Binding StateMessage}"
+                                     ActionText="{loc:Translate BrowseProducts}"
+                                     ActionCommand="{Binding BrowseCommand}" />
+
+                    <!-- Recently viewed (saved on this phone) -->
+                    <VerticalStackLayout Spacing="10" Margin="0,8,0,0" IsVisible="{Binding HasRecent}">
+                        <Label Text="{loc:Translate RecentlyViewed}" Style="{StaticResource SectionTitleText}" />
+                        <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never" Margin="0,0,-20,0">
+                            <HorizontalStackLayout BindableLayout.ItemsSource="{Binding Recent}" Spacing="10">
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate x:DataType="models:Product">
+                                        <VerticalStackLayout WidthRequest="120" Spacing="6">
+                                            <VerticalStackLayout.GestureRecognizers>
+                                                <TapGestureRecognizer
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:FavoritesViewModel}}, Path=OpenProductCommand, x:DataType=vm:FavoritesViewModel}"
+                                                    CommandParameter="{Binding .}" />
+                                            </VerticalStackLayout.GestureRecognizers>
+                                            <Border HeightRequest="96" StrokeThickness="0" StrokeShape="RoundRectangle 14"
+                                                    BackgroundColor="{DynamicResource SurfaceVariantColor}">
+                                                <Grid>
+                                                    <Label Text="{StaticResource IconInventory}" Style="{StaticResource Icon}" FontSize="28"
+                                                           TextColor="{DynamicResource PlaceholderIconColor}" />
+                                                    <Image Source="{Binding ImageUrl}" Aspect="AspectFill" IsVisible="{Binding HasImage}" />
+                                                </Grid>
+                                            </Border>
+                                            <Label Text="{Binding ProductName}" FontFamily="BodySemibold" FontSize="13" MaxLines="2" LineBreakMode="TailTruncation" />
+                                            <Label Text="{Binding PriceText}" FontFamily="Heading" FontSize="13" TextColor="{DynamicResource PrimaryColor}" />
+                                        </VerticalStackLayout>
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
+                            </HorizontalStackLayout>
+                        </ScrollView>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </ScrollView>
         </RefreshView>
 
-        <views:StateView Grid.Row="1"
-                         IsVisible="{Binding ShowState}"
-                         IsLoading="{Binding IsLoading}"
-                         Icon="{Binding StateIcon}"
-                         Title="{Binding StateTitle}"
-                         Message="{Binding StateMessage}"
-                         ActionText="{loc:Translate BrowseProducts}"
-                         ActionCommand="{Binding BrowseCommand}" />
+        <views:TabBarView Grid.Row="1" Current="favorites" />
     </Grid>
 </ContentPage>

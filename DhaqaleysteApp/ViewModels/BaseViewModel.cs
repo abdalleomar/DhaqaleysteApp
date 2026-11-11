@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using DhaqaleysteApp.Services;
 using DhaqaleysteApp.Services.Localization;
 
 namespace DhaqaleysteApp.ViewModels;
@@ -36,14 +37,14 @@ public abstract partial class BaseViewModel : ObservableObject
 
     public string StateTitle => HasError ? Loc.T("ErrorTitle") : EmptyTitle;
     public string StateMessage => HasError ? ErrorMessage : EmptyMessage;
-    public string StateIcon => HasError ? (IsOffline ? "" : "") : EmptyIcon;
+    public string StateIcon => HasError ? (IsOffline ? Icons.Offline : Icons.Info) : EmptyIcon;
 
     /// <summary>"Try again" only when something failed; an empty list has nothing to retry.</summary>
     public string StateActionText => HasError ? Loc.T("TryAgain") : "";
 
     protected virtual string EmptyTitle => Loc.T("NoProductsTitle");
     protected virtual string EmptyMessage => Loc.T("NoProductsMessage");
-    protected virtual string EmptyIcon => "";
+    protected virtual string EmptyIcon => Icons.Inventory;
 
     protected void SetError(string message, bool offline = false)
     {
