@@ -14,6 +14,8 @@ Customers open the app and browse the company's products without signing in. Com
 - Somali and English, light and dark appearance
 
 **Company staff (sign-in required, from the Contact tab)**
+- Staff create their own account with the **staff invite code** the admin shares, and reset a forgotten password themselves with a code sent to their email
+- Change password; admins remove/restore accounts, make admins, and make a new invite code (the old one stops working) or turn sign-up off
 - Secure staff sign-in (email or phone), Admin and Staff roles
 - Dashboard with stock statistics and low-stock list
 - Add, edit and delete products; up to 10 images and 3 videos each; sold out and featured switches
@@ -71,6 +73,15 @@ Secrets are never committed. In development they live in .NET user-secrets on yo
 
 5. **Run**: `dotnet run --launch-profile http` (listens on `http://localhost:5092`).
 
+6. **Forgot-password emails.** Without a mail server, in Development the email (with the code) is printed in the API window. To send real emails:
+
+   ```bash
+   dotnet user-secrets set "Email:SmtpHost" "smtp.gmail.com"
+   dotnet user-secrets set "Email:Username" "you@gmail.com"
+   dotnet user-secrets set "Email:Password" "<app password>"
+   dotnet user-secrets set "Email:FromAddress" "you@gmail.com"
+   ```
+
 ### Production configuration
 
 Set these as environment variables on the server (never in `appsettings.json`):
@@ -81,6 +92,7 @@ Set these as environment variables on the server (never in `appsettings.json`):
 | `Jwt__SigningKey` | Random secret, 32+ characters (the API refuses to start without it) |
 | `Bootstrap__AdminEmail`, `Bootstrap__AdminPassword` | Only for the first start |
 | `Storage__RootPath` | Folder for uploaded media (default `uploads` next to the API) |
+| `Email__SmtpHost`, `Email__SmtpPort`, `Email__Username`, `Email__Password`, `Email__FromAddress` | Mail server for forgot-password codes |
 | `AllowedHosts` | Your API domain, e.g. `api.example.com` |
 
 ## API overview
@@ -100,6 +112,9 @@ Set these as environment variables on the server (never in `appsettings.json`):
 | `GET /api/stats` | Staff. Dashboard numbers |
 | `POST /api/upload/image`, `POST /api/upload/video` | Staff |
 | `POST /api/auth/login`, `/refresh`, `/logout` | Public (rate limited) |
+| `POST /api/auth/register` | Public with the staff invite code (rate limited) |
+| `POST /api/auth/forgot-password`, `/reset-password` | Public (rate limited); emailed 6-digit code |
+| `GET/POST/DELETE /api/staff/invite-code` | Admin |
 | `GET /api/auth/me`, `POST /api/auth/change-password` | Staff |
 | `GET/POST/PUT /api/staff`, `POST /api/staff/{id}/reset-password` | Admin |
 | `GET /health` | Public |

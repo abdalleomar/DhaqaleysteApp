@@ -6,9 +6,10 @@ public partial class LoginPage : ContentPage
 {
     private readonly ApiService _api = ServiceHelper.Get<ApiService>();
 
-    public LoginPage()
+    public LoginPage(string? email = null)
     {
         InitializeComponent();
+        EmailEntry.Text = email;
     }
 
     private async void Login_Clicked(object? sender, EventArgs e)
@@ -18,7 +19,6 @@ public partial class LoginPage : ContentPage
 
         var emailOrPhone = EmailEntry.Text?.Trim() ?? "";
         var password = PasswordEntry.Text ?? "";
-
         if (emailOrPhone.Length == 0 || password.Length == 0)
         {
             ShowError("Enter your email or phone and your password.");
@@ -36,7 +36,7 @@ public partial class LoginPage : ContentPage
             }
 
             PasswordEntry.Text = "";
-            // Replace the sign-in page with the dashboard so "back" returns to the catalogue.
+            // Replace the sign-in page with the dashboard so "back" returns to where the customer was.
             Navigation.InsertPageBefore(new AdminDashboardPage(), this);
             await Navigation.PopAsync();
         }
@@ -45,6 +45,14 @@ public partial class LoginPage : ContentPage
             SetBusy(false);
         }
     }
+
+    private async void Forgot_Tapped(object? sender, TappedEventArgs e) =>
+        await Navigation.PushAsync(new ForgotPasswordPage(EmailEntry.Text?.Trim()));
+
+    private async void Register_Clicked(object? sender, EventArgs e) =>
+        await Navigation.PushAsync(new RegisterStaffPage());
+
+    private async void Back_Tapped(object? sender, TappedEventArgs e) => await Navigation.PopAsync();
 
     private void ShowError(string message)
     {

@@ -156,6 +156,48 @@ public class ApiService
         return result;
     }
 
+    /// <summary>A new staff member creates their account with the admin's invite code (signs them in).</summary>
+    public async Task<ApiResult<AuthResponse>> RegisterStaffAsync(string fullName, string email, string phone, string password, string inviteCode)
+    {
+        var result = await SendAsync<AuthResponse>(() => new HttpRequestMessage(HttpMethod.Post, "api/auth/register")
+        {
+            Content = JsonContent.Create(new { fullName, email, phone, password, inviteCode })
+        });
+        if (result.Success)
+            await _session.SaveAsync(result.Data!);
+        return result;
+    }
+
+    public Task<ApiResult> ForgotPasswordAsync(string email) =>
+        SendAsync(() => new HttpRequestMessage(HttpMethod.Post, "api/auth/forgot-password") { Content = JsonContent.Create(new { email }) });
+
+    public Task<ApiResult> ResetPasswordAsync(string email, string code, string newPassword) =>
+        SendAsync(() => new HttpRequestMessage(HttpMethod.Post, "api/auth/reset-password") { Content = JsonContent.Create(new { email, code, newPassword }) });
+
+    /// <summary>Changes the signed-in staff member's password. The server signs out all sessions, so sign in again after.</summary>
+    public Task<ApiResult> ChangePasswordAsync(string currentPassword, string newPassword) =>
+        SendAsync(() => new HttpRequestMessage(HttpMethod.Post, "api/auth/change-password") { Content = JsonContent.Create(new { currentPassword, newPassword }) });
+
+    // ---------- Staff accounts (admin) ----------
+
+    public Task<ApiResult<List<StaffUser>>> GetStaffAsync() =>
+        SendAsync<List<StaffUser>>(() => new HttpRequestMessage(HttpMethod.Get, "api/staff"));
+
+    public Task<ApiResult<StaffUser>> UpdateStaffAsync(StaffUser user, string role, bool isActive) =>
+        SendAsync<StaffUser>(() => new HttpRequestMessage(HttpMethod.Put, $"api/staff/{user.UserId}")
+        {
+            Content = JsonContent.Create(new { fullName = user.FullName, email = user.Email, phone = user.Phone, role, isActive })
+        });
+
+    public Task<ApiResult<InviteCode>> GetInviteCodeAsync() =>
+        SendAsync<InviteCode>(() => new HttpRequestMessage(HttpMethod.Get, "api/staff/invite-code"));
+
+    public Task<ApiResult<InviteCode>> NewInviteCodeAsync() =>
+        SendAsync<InviteCode>(() => new HttpRequestMessage(HttpMethod.Post, "api/staff/invite-code"));
+
+    public Task<ApiResult> DisableInviteCodeAsync() =>
+        SendAsync(() => new HttpRequestMessage(HttpMethod.Delete, "api/staff/invite-code"));
+
     public async Task LogoutAsync()
     {
         var refreshToken = await _session.GetRefreshTokenAsync();

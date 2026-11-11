@@ -85,6 +85,17 @@
                         <Label Grid.Column="2" Text="{StaticResource IconChevron}" Style="{StaticResource Icon}" FontSize="20" TextColor="{DynamicResource TextTertiaryColor}" />
                     </Grid>
                     <BoxView Style="{StaticResource Divider}" />
+                    <VerticalStackLayout x:Name="StaffRow" IsVisible="False">
+                        <BoxView Style="{StaticResource Divider}" />
+                    <Grid ColumnDefinitions="36,*,Auto" ColumnSpacing="14" Padding="16,0" HeightRequest="60">
+                        <Grid.GestureRecognizers><TapGestureRecognizer Tapped="StaffAccounts_Clicked" /></Grid.GestureRecognizers>
+                        <Border Style="{StaticResource IconSquare}" WidthRequest="36" HeightRequest="36" StrokeShape="RoundRectangle 10">
+                            <Label Text="{StaticResource IconContact}" Style="{StaticResource Icon}" FontSize="18" TextColor="{DynamicResource PrimaryColor}" />
+                        </Border>
+                        <Label Grid.Column="1" Text="Staff accounts" FontFamily="BodySemibold" FontSize="15" VerticalOptions="Center" />
+                        <Label Grid.Column="2" Text="{StaticResource IconChevron}" Style="{StaticResource Icon}" FontSize="20" TextColor="{DynamicResource TextTertiaryColor}" />
+                    </Grid>
+                    </VerticalStackLayout>
                     <VerticalStackLayout x:Name="CompanyRow" IsVisible="False">
                         <BoxView Style="{StaticResource Divider}" />
                     <Grid ColumnDefinitions="36,*,Auto" ColumnSpacing="14" Padding="16,0" HeightRequest="60">
@@ -96,6 +107,15 @@
                         <Label Grid.Column="2" Text="{StaticResource IconChevron}" Style="{StaticResource Icon}" FontSize="20" TextColor="{DynamicResource TextTertiaryColor}" />
                     </Grid>
                     </VerticalStackLayout>
+                        <BoxView Style="{StaticResource Divider}" />
+                    <Grid ColumnDefinitions="36,*,Auto" ColumnSpacing="14" Padding="16,0" HeightRequest="60">
+                        <Grid.GestureRecognizers><TapGestureRecognizer Tapped="ChangePassword_Clicked" /></Grid.GestureRecognizers>
+                        <Border Style="{StaticResource IconSquare}" WidthRequest="36" HeightRequest="36" StrokeShape="RoundRectangle 10">
+                            <Label Text="{StaticResource IconLock}" Style="{StaticResource Icon}" FontSize="18" TextColor="{DynamicResource PrimaryColor}" />
+                        </Border>
+                        <Label Grid.Column="1" Text="Change password" FontFamily="BodySemibold" FontSize="15" VerticalOptions="Center" />
+                        <Label Grid.Column="2" Text="{StaticResource IconChevron}" Style="{StaticResource Icon}" FontSize="20" TextColor="{DynamicResource TextTertiaryColor}" />
+                    </Grid>
                     </VerticalStackLayout>
                 </Border>
 

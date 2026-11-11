@@ -28,6 +28,7 @@ public partial class AdminDashboardPage : ContentPage
         WelcomeLabel.Text = $"Signed in as {name}";
         RoleLabel.Text = role;
         CompanyRow.IsVisible = role == "Admin";
+        StaffRow.IsVisible = role == "Admin";
 
         await LoadStatsAsync();
     }
@@ -72,6 +73,12 @@ public partial class AdminDashboardPage : ContentPage
     private async void Refresh_Refreshing(object? sender, EventArgs e) => await LoadStatsAsync();
 
     private async void Back_Tapped(object? sender, TappedEventArgs e) => await Navigation.PopAsync();
+
+    private async void StaffAccounts_Clicked(object? sender, EventArgs e) =>
+        await Navigation.PushAsync(new StaffAccountsPage());
+
+    private async void ChangePassword_Clicked(object? sender, EventArgs e) =>
+        await Navigation.PushAsync(new ChangePasswordPage());
 
     private async void AddProduct_Clicked(object sender, EventArgs e) =>
         await Navigation.PushAsync(new ProductFormPage());

@@ -29,6 +29,9 @@ public class SessionService
 
     public Task<string?> GetRefreshTokenAsync() => SecureStorage.GetAsync(RefreshTokenKey);
 
+    public async Task<int> GetUserIdAsync() =>
+        int.TryParse(await SecureStorage.GetAsync(UserIdKey), out var id) ? id : 0;
+
     public async Task<string> GetFullNameAsync() => await SecureStorage.GetAsync(FullNameKey) ?? "";
 
     public async Task<string> GetRoleAsync() => await SecureStorage.GetAsync(RoleKey) ?? "";

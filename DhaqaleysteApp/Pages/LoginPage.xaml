@@ -1,51 +1,59 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage
-    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    x:Class="DhaqaleysteApp.Pages.LoginPage"
-    Title="Staff sign in">
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DhaqaleysteApp.Pages.LoginPage"
+             Title="Staff sign in"
+             Shell.NavBarIsVisible="False">
 
     <ScrollView>
-        <VerticalStackLayout Padding="25" Spacing="15">
+        <VerticalStackLayout Padding="20,16,20,24" Spacing="16">
+            <Border Style="{StaticResource FloatingCircle}" Stroke="{DynamicResource BorderColor}" StrokeThickness="1"
+                    HorizontalOptions="Start" SemanticProperties.Description="Back">
+                <Border.GestureRecognizers><TapGestureRecognizer Tapped="Back_Tapped" /></Border.GestureRecognizers>
+                <Label Text="{StaticResource IconBack}" Style="{StaticResource Icon}" FontSize="26" />
+            </Border>
 
-            <Label Text="Staff sign in"
-                   FontSize="28"
-                   FontAttributes="Bold"
-                   TextColor="{DynamicResource PrimaryColor}"/>
+            <Border WidthRequest="56" HeightRequest="56" StrokeThickness="0" StrokeShape="RoundRectangle 16" HorizontalOptions="Start"
+                    BackgroundColor="{DynamicResource PrimaryColor}" Margin="0,8,0,0">
+                <Label Text="{StaticResource IconLock}" Style="{StaticResource Icon}" FontSize="26" TextColor="{DynamicResource OnPrimaryColor}" />
+            </Border>
 
-            <Label Text="For company staff only. Customers can browse products without signing in."
-                   FontSize="14"
-                   TextColor="{DynamicResource TextTertiaryColor}"/>
+            <VerticalStackLayout Spacing="4">
+                <Label Text="Staff sign in" Style="{StaticResource TitleText}" />
+                <Label Text="For company staff only. Customers can browse without an account."
+                       FontSize="15" TextColor="{DynamicResource TextTertiaryColor}" />
+            </VerticalStackLayout>
 
-            <Entry x:Name="EmailEntry"
-                   Placeholder="Email or phone"
-                   Keyboard="Email"
-                   IsSpellCheckEnabled="False"
-                   IsTextPredictionEnabled="False"
-                   ReturnType="Next"/>
+            <VerticalStackLayout Spacing="6">
+                <Label Text="Email or phone" Style="{StaticResource FieldLabel}" />
+                <Border Style="{StaticResource InputBox}">
+                    <Entry x:Name="EmailEntry" Keyboard="Email" IsSpellCheckEnabled="False" IsTextPredictionEnabled="False" ReturnType="Next" />
+                </Border>
+            </VerticalStackLayout>
 
-            <Entry x:Name="PasswordEntry"
-                   Placeholder="Password"
-                   IsPassword="True"
-                   ReturnType="Go"
-                   Completed="Login_Clicked"/>
+            <VerticalStackLayout Spacing="6">
+                <Grid ColumnDefinitions="*,Auto">
+                    <Label Text="Password" Style="{StaticResource FieldLabel}" VerticalOptions="End" />
+                    <Label Grid.Column="1" Text="Forgot password?" Style="{StaticResource LinkText}">
+                        <Label.GestureRecognizers><TapGestureRecognizer Tapped="Forgot_Tapped" /></Label.GestureRecognizers>
+                    </Label>
+                </Grid>
+                <Border Style="{StaticResource InputBox}">
+                    <Entry x:Name="PasswordEntry" IsPassword="True" ReturnType="Go" Completed="Login_Clicked" />
+                </Border>
+            </VerticalStackLayout>
 
-            <Label x:Name="ErrorLabel"
-                   TextColor="{DynamicResource DangerColor}"
-                   IsVisible="False"/>
+            <Label x:Name="ErrorLabel" Style="{StaticResource ErrorText}" IsVisible="False" />
 
-            <Button x:Name="LoginButton"
-                    Text="Sign in"
-                    Clicked="Login_Clicked"
-                    BackgroundColor="{DynamicResource PrimaryColor}"
-                    TextColor="{DynamicResource OnPrimaryColor}"/>
+            <Button x:Name="LoginButton" Text="Sign in" HeightRequest="54" Clicked="Login_Clicked" />
+            <ActivityIndicator x:Name="Busy" IsRunning="False" IsVisible="False" />
 
-            <ActivityIndicator x:Name="Busy"
-                               IsRunning="False"
-                               IsVisible="False"
-                               Color="{DynamicResource PrimaryColor}"/>
+            <BoxView Style="{StaticResource Divider}" Margin="0,4" />
 
+            <VerticalStackLayout Spacing="8">
+                <Label Text="New staff member?" FontSize="14" TextColor="{DynamicResource TextTertiaryColor}" HorizontalOptions="Center" />
+                <Button Text="Create your staff account" Style="{StaticResource OutlineButton}" Clicked="Register_Clicked" />
+            </VerticalStackLayout>
         </VerticalStackLayout>
     </ScrollView>
-
 </ContentPage>
