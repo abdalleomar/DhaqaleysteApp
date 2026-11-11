@@ -51,3 +51,50 @@ namespace DhaqaleysteApi.Dtos
         }
     }
 }
+
+namespace DhaqaleysteApi.Dtos
+{
+    public class RegisterStaffRequest
+    {
+        [Required, StringLength(150, MinimumLength = 2)]
+        public string FullName { get; set; } = "";
+
+        [Required, EmailAddress, StringLength(256)]
+        public string Email { get; set; } = "";
+
+        [OptionalPhone, StringLength(32)]
+        public string? Phone { get; set; }
+
+        [Required, StringLength(128, MinimumLength = PasswordRules.MinLength)]
+        public string Password { get; set; } = "";
+
+        /// <summary>The staff invite code the admin shared.</summary>
+        [Required, StringLength(32)]
+        public string InviteCode { get; set; } = "";
+    }
+
+    public class ForgotPasswordRequest
+    {
+        [Required, EmailAddress, StringLength(256)]
+        public string Email { get; set; } = "";
+    }
+
+    public class ResetPasswordWithCodeRequest
+    {
+        [Required, EmailAddress, StringLength(256)]
+        public string Email { get; set; } = "";
+
+        [Required, RegularExpression(@"^\s*\d{6}\s*$", ErrorMessage = "Enter the 6-digit code from the email.")]
+        public string Code { get; set; } = "";
+
+        [Required, StringLength(128, MinimumLength = PasswordRules.MinLength)]
+        public string NewPassword { get; set; } = "";
+    }
+
+    public class InviteCodeDto
+    {
+        /// <summary>Empty when staff sign-up is turned off.</summary>
+        public string Code { get; set; } = "";
+        public bool Enabled => Code.Length > 0;
+    }
+}

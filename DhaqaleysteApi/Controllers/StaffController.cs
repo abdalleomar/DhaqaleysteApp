@@ -96,6 +96,11 @@ namespace DhaqaleysteApi.Controllers
             if (conflict != null)
                 return conflict;
 
+            // Never leave the company without an active admin.
+            var losesAdmin = user.Role == Roles.Admin && user.IsActive && (request.Role != Roles.Admin || !request.IsActive);
+            if (losesAdmin && !await _db.Users.AnyAsync(x => x.UserId != id && x.Role == Roles.Admin && x.IsActive))
+                return ValidationError(nameof(request.Role), "This is the only active admin. Make someone else an admin first.");
+
             var permissionsChanged = user.Role != request.Role || user.IsActive != request.IsActive;
 
             user.FullName = request.FullName.Trim();
@@ -141,6 +146,44 @@ namespace DhaqaleysteApi.Controllers
 
             _logger.LogInformation("Admin {AdminId} reset the password of staff {UserId}", CurrentUserId, user.UserId);
             return NoContent();
+        }
+
+        /// <summary>The current staff invite code (empty when staff sign-up is off).</summary>
+        [HttpGet("invite-code")]
+        public async Task<InviteCodeDto> GetInviteCode() =>
+            new() { Code = (await _db.CompanySettings.AsNoTracking().FirstOrDefaultAsync())?.StaffInviteCode ?? "" };
+
+        /// <summary>Creates a new invite code. The old one stops working immediately.</summary>
+        [HttpPost("invite-code")]
+        public async Task<InviteCodeDto> NewInviteCode()
+        {
+            var company = await LoadCompanyAsync();
+            company.StaffInviteCode = StaffInviteCodes.Generate();
+            await _db.SaveChangesAsync();
+            _logger.LogInformation("Admin {AdminId} created a new staff invite code", CurrentUserId);
+            return new InviteCodeDto { Code = company.StaffInviteCode };
+        }
+
+        /// <summary>Turns staff sign-up off.</summary>
+        [HttpDelete("invite-code")]
+        public async Task<IActionResult> DisableInviteCode()
+        {
+            var company = await LoadCompanyAsync();
+            company.StaffInviteCode = "";
+            await _db.SaveChangesAsync();
+            _logger.LogInformation("Admin {AdminId} turned staff sign-up off", CurrentUserId);
+            return NoContent();
+        }
+
+        private async Task<CompanySettings> LoadCompanyAsync()
+        {
+            var company = await _db.CompanySettings.FirstOrDefaultAsync();
+            if (company == null)
+            {
+                company = new CompanySettings();
+                _db.CompanySettings.Add(company);
+            }
+            return company;
         }
 
         private static string NormalizeEmail(string email) => email.Trim().ToLowerInvariant();

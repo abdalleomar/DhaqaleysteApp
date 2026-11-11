@@ -46,6 +46,12 @@ namespace DhaqaleysteApi.Models
         /// <summary>ISO 4217 code used to display prices.</summary>
         public string CurrencyCode { get; set; } = "USD";
 
+        /// <summary>
+        /// Code new staff enter to create their own account. Empty = staff sign-up is turned off.
+        /// Only admins can see it (never part of the public company details).
+        /// </summary>
+        public string StaffInviteCode { get; set; } = "";
+
         public DateTime? UpdatedAtUtc { get; set; }
 
         public int? UpdatedByUserId { get; set; }

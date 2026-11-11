@@ -136,6 +136,11 @@ namespace DhaqaleysteApi.Migrations
                         .HasMaxLength(32)
                         .HasColumnType("nvarchar(32)");
 
+                    b.Property<string>("StaffInviteCode")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
+
                     b.Property<string>("TikTokUrl")
                         .IsRequired()
                         .HasMaxLength(500)
@@ -182,6 +187,7 @@ namespace DhaqaleysteApi.Migrations
                             LogoUrl = "",
                             MapUrl = "",
                             Phone = "",
+                            StaffInviteCode = "",
                             TikTokUrl = "",
                             WebsiteUrl = "",
                             WhatsApp = "",
@@ -392,6 +398,16 @@ namespace DhaqaleysteApi.Migrations
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PasswordResetAttempts")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PasswordResetCodeHash")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime?>("PasswordResetExpiresUtc")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Phone")
                         .IsRequired()

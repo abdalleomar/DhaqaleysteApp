@@ -28,6 +28,7 @@ if (string.IsNullOrWhiteSpace(connectionString))
 builder.Services.Configure<JwtOptions>(config.GetSection(JwtOptions.Section));
 builder.Services.Configure<StorageOptions>(config.GetSection(StorageOptions.Section));
 builder.Services.Configure<BootstrapOptions>(config.GetSection(BootstrapOptions.Section));
+builder.Services.Configure<EmailOptions>(config.GetSection(EmailOptions.Section));
 
 var jwt = config.GetSection(JwtOptions.Section).Get<JwtOptions>() ?? new JwtOptions();
 if (string.IsNullOrWhiteSpace(jwt.SigningKey))
@@ -54,6 +55,7 @@ builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(conn
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddSingleton<FileStorageService>();
+builder.Services.AddSingleton<IEmailSender, SmtpEmailSender>();
 
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

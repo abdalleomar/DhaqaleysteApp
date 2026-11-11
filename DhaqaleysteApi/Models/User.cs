@@ -32,6 +32,13 @@ namespace DhaqaleysteApi.Models
 
         public DateTime? LastLoginAtUtc { get; set; }
 
+        /// <summary>Hash of the 6-digit "forgot password" code (never the code itself).</summary>
+        public string? PasswordResetCodeHash { get; set; }
+
+        public DateTime? PasswordResetExpiresUtc { get; set; }
+
+        public int PasswordResetAttempts { get; set; }
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public DateTime? UpdatedAtUtc { get; set; }

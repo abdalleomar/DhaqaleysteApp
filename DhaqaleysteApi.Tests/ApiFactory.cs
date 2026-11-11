@@ -1,5 +1,8 @@
 using DhaqaleysteApi.Data;
+using DhaqaleysteApi.Services;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,8 +27,12 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
         _connectionString = $"{server};Database=DhaqTest_{Guid.NewGuid():N}";
     }
 
+    /// <summary>Emails the API "sent" during the tests.</summary>
+    public CapturingEmailSender Emails { get; } = new();
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        builder.ConfigureTestServices(services => services.AddSingleton<IEmailSender>(Emails));
         builder.UseEnvironment("Development");
         builder.UseSetting("ConnectionStrings:DefaultConnection", _connectionString);
         builder.UseSetting("Jwt:SigningKey", "test-signing-key-that-is-long-enough-1234567890");
@@ -55,5 +62,23 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
             Directory.Delete(_storageRoot, recursive: true);
 
         await base.DisposeAsync();
+    }
+}
+
+public class CapturingEmailSender : IEmailSender
+{
+    private readonly List<(string To, string Subject, string Body)> _sent = new();
+
+    public Task<bool> SendAsync(string to, string subject, string body, CancellationToken ct = default)
+    {
+        lock (_sent)
+            _sent.Add((to, subject, body));
+        return Task.FromResult(true);
+    }
+
+    public IReadOnlyList<(string To, string Subject, string Body)> SentTo(string to)
+    {
+        lock (_sent)
+            return _sent.Where(m => m.To == to).ToList();
     }
 }

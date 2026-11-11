@@ -27,6 +27,7 @@ namespace DhaqaleysteApi.Data
                 user.Property(x => x.Role).HasMaxLength(20);
                 user.Property(x => x.SecurityStamp).HasMaxLength(64);
                 user.Property(x => x.IsActive).HasDefaultValue(true);
+                user.Property(x => x.PasswordResetCodeHash).HasMaxLength(200);
 
                 user.HasIndex(x => x.Email).IsUnique().HasFilter("[Email] <> ''");
                 user.HasIndex(x => x.Phone).IsUnique().HasFilter("[Phone] <> ''");
@@ -107,6 +108,7 @@ namespace DhaqaleysteApi.Data
                 company.Property(x => x.TikTokUrl).HasMaxLength(500);
                 company.Property(x => x.WebsiteUrl).HasMaxLength(500);
                 company.Property(x => x.CurrencyCode).HasMaxLength(3);
+                company.Property(x => x.StaffInviteCode).HasMaxLength(32);
 
                 company.HasData(new Models.CompanySettings { CompanySettingsId = Models.CompanySettings.SingletonId });
             });
