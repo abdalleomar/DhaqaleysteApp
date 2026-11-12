@@ -49,8 +49,10 @@ if (-not (Test-Path $keystore)) {
 }
 
 # 4. Build and sign
-Step 'Building the APK (this takes a few minutes)'
+Step 'Building the APK (the first time can take 10-20 minutes: it downloads Android build tools)'
+# TargetFrameworks limited to Android so restore does not download iOS/Mac/Windows packages.
 dotnet publish $project -f net9.0-android -c Release `
+    -p:TargetFrameworks=net9.0-android `
     -p:AndroidPackageFormat=apk `
     -p:AndroidKeyStore=true `
     -p:AndroidSigningKeyStore="$keystore" `
