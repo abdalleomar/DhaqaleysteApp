@@ -65,6 +65,12 @@ if ($LASTEXITCODE -ne 0) {
 
 # 5. Start the API in its own window (forwarded headers on: it sits behind the tunnel)
 Step 'Starting the API in a new window'
+# An API that is still running (from Visual Studio or an earlier run) blocks the new build.
+Get-Process -Name DhaqaleysteApi -ErrorAction SilentlyContinue | ForEach-Object {
+    Write-Host "Stopping an API that was already running (process $($_.Id))"
+    Stop-Process -Id $_.Id -Force
+}
+Start-Sleep -Seconds 1
 $apiCommand = "Set-Location '$apiDir'; `$env:ForwardedHeaders__Enabled='true'; dotnet run --launch-profile http"
 Start-Process powershell -ArgumentList '-NoExit', '-Command', $apiCommand | Out-Null
 
