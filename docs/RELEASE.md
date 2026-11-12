@@ -18,6 +18,27 @@ App identity (already set in `DhaqaleysteApp.csproj`):
 
 ## Stage 1 — Test on phones (APK)
 
+### Quick way: two scripts
+
+In **Developer PowerShell** (Visual Studio → View → Terminal), in the repository folder:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\tools\start-test-server.ps1
+```
+
+It starts the database, opens the API in its own window, creates a public Dev Tunnel (sign in once in the
+browser when asked) and writes the tunnel address into the app. Leave that window open. Then, in a second
+PowerShell window:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\tools\build-apk.ps1
+```
+
+It asks for a signing-key password (the first time it creates the key in `%USERPROFILE%\DhaqaleysteKeys` —
+back that folder up), builds the signed APK and puts **Dhaqaleyste.apk** on your Desktop.
+
+The manual steps below do the same thing by hand.
+
 ### 1. Give the API a public https address (Visual Studio Dev Tunnel)
 
 Phones cannot reach `localhost` on your PC, so the API needs a public address while you test.
