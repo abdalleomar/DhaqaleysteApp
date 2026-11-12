@@ -8,7 +8,8 @@
   and asks you to choose a password. KEEP THAT FILE AND PASSWORD SAFE: Google Play needs the same key
   for every future update. Never put it in Git.
 #>
-$ErrorActionPreference = 'Stop'
+# Native tools (keytool, dotnet) write normal messages to stderr; check exit codes instead.
+$ErrorActionPreference = 'Continue'
 $repo = Split-Path -Parent $PSScriptRoot
 $project = Join-Path $repo 'DhaqaleysteApp\DhaqaleysteApp.csproj'
 $appSettings = Join-Path $repo 'DhaqaleysteApp\Resources\Raw\appsettings.json'
@@ -31,15 +32,20 @@ $password = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropS
 if ($password.Length -lt 6) { throw 'The password must be at least 6 characters.' }
 $env:DHAQ_KEY_PASS = $password
 
-# 3. Create the signing key the first time
-if (-not (Test-Path $keystore)) {
-    Step "Creating your signing key: $keystore"
-    $keytool = Get-Command keytool -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source
-    if (-not $keytool) {
-        $keytool = Get-ChildItem -Path 'C:\Program Files\Microsoft', 'C:\Program Files (x86)\Android', 'C:\Program Files\Android' `
+# 3. Signing key: create it the first time, otherwise check the password before a long build
+function Find-Keytool {
+    $k = Get-Command keytool -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source
+    if (-not $k) {
+        $k = Get-ChildItem -Path 'C:\Program Files\Microsoft', 'C:\Program Files (x86)\Android', 'C:\Program Files\Android' `
             -Filter keytool.exe -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1 -ExpandProperty FullName
     }
-    if (-not $keytool) { throw 'keytool.exe (part of the Java JDK that Visual Studio installs for Android) was not found.' }
+    if (-not $k) { throw 'keytool.exe (part of the Java JDK that Visual Studio installs for Android) was not found.' }
+    return $k
+}
+$keytool = Find-Keytool
+
+if (-not (Test-Path $keystore)) {
+    Step "Creating your signing key: $keystore"
     New-Item -ItemType Directory -Force -Path $keyDir | Out-Null
     & $keytool -genkeypair -v -keystore $keystore -alias $alias -keyalg RSA -keysize 2048 -validity 10000 `
         -storepass $password -keypass $password -dname 'CN=Dhaqaleyste, O=Dhaqaleyste, C=SO'
@@ -47,11 +53,21 @@ if (-not (Test-Path $keystore)) {
     Write-Host 'Signing key created. Back up this folder somewhere safe (not in Git):' -ForegroundColor Yellow
     Write-Host "  $keyDir" -ForegroundColor Yellow
 }
+else {
+    Step 'Checking the signing key password'
+    & $keytool -list -keystore $keystore -alias $alias -storepass $password *> $null
+    if ($LASTEXITCODE -ne 0) {
+        throw "That is not the password of the signing key in $keystore. Run the script again and type the password you chose the first time."
+    }
+    Write-Host 'Password OK.'
+}
 
 # 4. Build and sign
 Step 'Building the APK (the first time can take 10-20 minutes: it downloads Android build tools)'
 # TargetFrameworks limited to Android so restore does not download iOS/Mac/Windows packages.
-dotnet publish $project -f net9.0-android -c Release `
+# The full log goes to tools\build-apk.log so a failure can be explained.
+$log = Join-Path $PSScriptRoot 'build-apk.log'
+dotnet publish $project -f net9.0-android -c Release -tl:off -v:minimal "-flp:logfile=$log;verbosity=normal" `
     -p:TargetFrameworks=net9.0-android `
     -p:AndroidPackageFormat=apk `
     -p:AndroidKeyStore=true `
@@ -59,7 +75,14 @@ dotnet publish $project -f net9.0-android -c Release `
     -p:AndroidSigningKeyAlias=$alias `
     -p:AndroidSigningKeyPass=env:DHAQ_KEY_PASS `
     -p:AndroidSigningStorePass=env:DHAQ_KEY_PASS
-if ($LASTEXITCODE -ne 0) { throw 'The build failed. Scroll up for the first error and send it to Claude.' }
+if ($LASTEXITCODE -ne 0) {
+    Write-Host ''
+    Write-Host 'The build failed. Details from the log (send these lines to Claude):' -ForegroundColor Red
+    Get-Content $log | Select-String -Pattern 'error|exception|keystore|password|apksigner|java' -SimpleMatch:$false |
+        Select-Object -Last 40 | ForEach-Object { Write-Host $_.Line }
+    Write-Host "Full log: $log" -ForegroundColor Yellow
+    throw 'The build failed.'
+}
 Remove-Item Env:\DHAQ_KEY_PASS
 
 # 5. Copy to the Desktop
