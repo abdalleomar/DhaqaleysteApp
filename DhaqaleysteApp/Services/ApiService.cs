@@ -25,6 +25,9 @@ public class ApiService
         if (config.ApiBaseUrl != null)
             _http.BaseAddress = config.ApiBaseUrl;
         _http.Timeout = TimeSpan.FromSeconds(100);
+        // While testing through a Visual Studio Dev Tunnel, skip its "you are about to connect" page
+        // (meant for people in a browser). Ignored by every other server.
+        _http.DefaultRequestHeaders.Add("X-Tunnel-Skip-AntiPhishing-Page", "true");
     }
 
     public bool IsConfigured => _config.ApiBaseUrl != null;
